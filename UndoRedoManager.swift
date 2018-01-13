@@ -16,8 +16,8 @@ struct UndoRedoManager {
      *                      *
      ************************/
     
-    var undoStack: Stack<CGMutablePath> = Stack<CGMutablePath>()
-    var redoStack: Stack<CGMutablePath> = Stack<CGMutablePath>()
+    var undoStack: Stack<(CGMutablePath, Brush)> = Stack<(CGMutablePath, Brush)>()
+    var redoStack: Stack<(CGMutablePath, Brush)> = Stack<(CGMutablePath, Brush)>()
     
     
     
@@ -28,26 +28,18 @@ struct UndoRedoManager {
      *                      *
      ************************/
     
-    mutating func _undo(path: inout CGMutablePath, view: UIView) {
+    mutating func _undo(drawing: inout Bool, view: UIView) {
         if !undoStack.isEmpty {
-            // First, get the current line so it can be used for redo.
-            redoStack.push(path.mutableCopy()!)
-            
-            // Undo.
-            let p = undoStack.pop()!
-            path = p
+            drawing = false
+            redoStack.push(undoStack.pop()!)
             view.setNeedsDisplay()
         }
     }
     
-    mutating func _redo(path: inout CGMutablePath, view: UIView) {
+    mutating func _redo(drawing: inout Bool, view: UIView) {
         if !redoStack.isEmpty {
-            // First, add back to the undo stack.
-            undoStack.push(path.mutableCopy()!)
-            
-            // Redo.
-            let p = redoStack.pop()!
-            path = p
+            drawing = false
+            undoStack.push(redoStack.pop()!)
             view.setNeedsDisplay()
         }
     }

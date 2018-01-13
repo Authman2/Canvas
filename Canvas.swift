@@ -22,8 +22,6 @@ public class Canvas: UIView {
     
     /** The path used to draw the curves. */
     var tempPath: CGMutablePath
-    var lines: [(CGMutablePath, Brush)]
-    var redos: [(CGMutablePath, Brush)]
     var drawing = false
     
     /** The manager for undo and redo operations. */
@@ -57,16 +55,12 @@ public class Canvas: UIView {
     
     public required init?(coder aDecoder: NSCoder) {
         tempPath = CGMutablePath()
-        lines = []
-        redos = []
         super.init(coder: aDecoder)
     }
     
     /** Creates a blank canvas. */
     public init() {
         tempPath = CGMutablePath()
-        lines = []
-        redos = []
         undoRedoManager = UndoRedoManager()
         isAntiAliasEnabled = false
         currentBrush = Brush.Default
@@ -89,25 +83,23 @@ public class Canvas: UIView {
     
     /** Undos the last line/shape that was drawn on the Canvas. */
     public func undo() {
-        drawing = false
-        redos.append(lines.removeLast())
-        setNeedsDisplay()
-        print("\(lines.count)")
+        undoRedoManager._undo(drawing: &drawing, view: self)
     }
     
     
     /** Handles putting back the last line that was drawn on the Canvas. */
     public func redo() {
-        drawing = false
-        lines.append(redos.removeLast())
-        setNeedsDisplay()
-        print("\(lines.count)")
+        undoRedoManager._redo(drawing: &drawing, view: self)
     }
     
     
     /** Clears the Canvas completly. */
     public func clear() {
+        drawing = true
+        undoRedoManager.undoStack.push((tempPath, currentBrush))
         
+        tempPath = CGMutablePath()
+        setNeedsDisplay()
     }
     
     
@@ -131,7 +123,7 @@ public class Canvas: UIView {
         let context = UIGraphicsGetCurrentContext()
         
         if !drawing {
-            for path in lines {
+            for path in undoRedoManager.undoStack.array {
                 context?.addPath(path.0)
                 context?.setLineCap(path.1.shape)
                 context?.setAlpha(path.1.opacity)

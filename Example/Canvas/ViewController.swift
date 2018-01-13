@@ -138,7 +138,8 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     @objc func redo() {
-        canvasView.redo()
+//        canvasView.redo()
+        canvasView.clear()
     }
     
     

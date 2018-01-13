@@ -9,7 +9,7 @@ import Foundation
 
 /** An implementation of a Stack. */
 public struct Stack<T> {
-    fileprivate var array = [T]()
+    public var array = [T]()
     
     public var isEmpty: Bool {
         return array.isEmpty

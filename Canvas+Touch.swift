@@ -17,9 +17,6 @@ public extension Canvas {
         self.lastLastPoint = touch.previousLocation(in: self)
         self.currentPoint = touch.location(in: self)
         
-        // Retrieve the path up to this point (for the undo/redo function).
-        undoRedoManager.undoStack.push(tempPath.mutableCopy()!)
-        
         delegate?.didBeginDrawing(self)
     }
     
@@ -46,12 +43,13 @@ public extension Canvas {
         let drawBox = bounds.insetBy(dx: Constants.drawDistance * currentBrush.thickness, dy: Constants.drawDistance * currentBrush.thickness)
         
         // Clear the redo stack.
+        drawing = true
         undoRedoManager.redoStack.clear()
+        
         
         // Add and close the path, then update.
         tempPath.addPath(subpath)
         subpath.closeSubpath()
-        drawing = true
         self.setNeedsDisplay(drawBox)
         
         delegate?.isDrawing(self)
@@ -59,7 +57,7 @@ public extension Canvas {
     
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        lines.append((tempPath, currentBrush))
+        undoRedoManager.undoStack.push((tempPath.mutableCopy()!, currentBrush))
         tempPath = CGMutablePath()
         
         delegate?.didEndDrawing(self)
