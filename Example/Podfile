@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'Canvas_Example' do
+  pod 'Canvas', :path => '../'
+
+  target 'Canvas_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
