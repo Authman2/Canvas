@@ -21,7 +21,10 @@ public class Canvas: UIView {
     var lastLastPoint: CGPoint!
     
     /** The path used to draw the curves. */
-    var _path: CGMutablePath
+    var tempPath: CGMutablePath
+    var lines: [(CGMutablePath, Brush)]
+    var redos: [(CGMutablePath, Brush)]
+    var drawing = false
     
     /** The manager for undo and redo operations. */
     var undoRedoManager: UndoRedoManager!
@@ -53,13 +56,17 @@ public class Canvas: UIView {
      ************************/
     
     public required init?(coder aDecoder: NSCoder) {
-        _path = CGMutablePath()
+        tempPath = CGMutablePath()
+        lines = []
+        redos = []
         super.init(coder: aDecoder)
     }
     
     /** Creates a blank canvas. */
     public init() {
-        _path = CGMutablePath()
+        tempPath = CGMutablePath()
+        lines = []
+        redos = []
         undoRedoManager = UndoRedoManager()
         isAntiAliasEnabled = false
         currentBrush = Brush.Default
@@ -81,15 +88,27 @@ public class Canvas: UIView {
     // Undo/Redo/Clear
     
     /** Undos the last line/shape that was drawn on the Canvas. */
-    public func undo() { undoRedoManager._undo(path: &_path, view: self) }
+    public func undo() {
+        drawing = false
+        redos.append(lines.removeLast())
+        setNeedsDisplay()
+        print("\(lines.count)")
+    }
     
     
     /** Handles putting back the last line that was drawn on the Canvas. */
-    public func redo() { undoRedoManager._redo(path: &_path, view: self) }
+    public func redo() {
+        drawing = false
+        lines.append(redos.removeLast())
+        setNeedsDisplay()
+        print("\(lines.count)")
+    }
     
     
     /** Clears the Canvas completly. */
-    public func clear() { _path = CGMutablePath(); setNeedsDisplay() }
+    public func clear() {
+        
+    }
     
     
     
@@ -110,18 +129,38 @@ public class Canvas: UIView {
         UIRectFill(rect)
         
         let context = UIGraphicsGetCurrentContext()
-        context?.addPath(_path)
-        context?.setLineCap(currentBrush.shape)
-        context?.setAlpha(currentBrush.opacity)
-        context?.setLineWidth(currentBrush.thickness)
-        context?.setLineJoin(currentBrush.joinStyle)
-        context?.setFlatness(currentBrush.flatness)
-        context?.setMiterLimit(currentBrush.miter)
-        context?.setStrokeColor(currentBrush.color.cgColor)
-        context?.setShouldAntialias(self.isAntiAliasEnabled)
-        context?.setAllowsAntialiasing(self.isAntiAliasEnabled)
         
-        context?.strokePath()
+        if !drawing {
+            for path in lines {
+                context?.addPath(path.0)
+                context?.setLineCap(path.1.shape)
+                context?.setAlpha(path.1.opacity)
+                context?.setLineWidth(path.1.thickness)
+                context?.setLineJoin(path.1.joinStyle)
+                context?.setFlatness(path.1.flatness)
+                context?.setMiterLimit(path.1.miter)
+                context?.setStrokeColor(path.1.color.cgColor)
+                
+                context?.setShouldAntialias(self.isAntiAliasEnabled)
+                context?.setAllowsAntialiasing(self.isAntiAliasEnabled)
+                
+                context?.strokePath()
+            }
+        } else {
+            context?.addPath(tempPath)
+            context?.setLineCap(currentBrush.shape)
+            context?.setAlpha(currentBrush.opacity)
+            context?.setLineWidth(currentBrush.thickness)
+            context?.setLineJoin(currentBrush.joinStyle)
+            context?.setFlatness(currentBrush.flatness)
+            context?.setMiterLimit(currentBrush.miter)
+            context?.setStrokeColor(currentBrush.color.cgColor)
+            
+            context?.setShouldAntialias(self.isAntiAliasEnabled)
+            context?.setAllowsAntialiasing(self.isAntiAliasEnabled)
+            
+            context?.strokePath()
+        }
     }
     
     

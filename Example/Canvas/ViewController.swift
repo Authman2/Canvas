@@ -119,7 +119,8 @@ class ViewController: UIViewController, CanvasDelegate {
      ************************/
     
     func didBeginDrawing(_ canvas: Canvas) {
-        
+        let rand = Int(arc4random_uniform(UInt32(brushes.count)))
+        canvas.currentBrush = brushes[rand]
     }
     
     func isDrawing(_ canvas: Canvas) {
