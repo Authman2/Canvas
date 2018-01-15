@@ -20,9 +20,8 @@ class ViewController: UIViewController, CanvasDelegate {
     lazy var canvasView: Canvas = {
         let a = Canvas()
         a.translatesAutoresizingMaskIntoConstraints = false
-//        a.backgroundColor = .white
+        a.backgroundColor = .white
         a.delegate = self
-        a.isAntiAliasEnabled = true
         
         return a
     }()
@@ -128,7 +127,11 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     func didEndDrawing(_ canvas: Canvas) {
-        
+        if canvas.getLayers().count == 1 {
+            let a = CanvasLayer()
+            a.backgroundColor = UIColor(red: 0, green: 0.8, blue: 0.5, alpha: 0.8).cgColor
+            canvas.addDrawingLayer(layer: a)
+        }
     }
     
     

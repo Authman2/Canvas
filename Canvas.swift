@@ -20,15 +20,9 @@ public class Canvas: UIView {
     var lastPoint: CGPoint!
     var lastLastPoint: CGPoint!
     
-    /** Whether or not the Canvas is currently in drawing mode. */
-    var drawing = false
-    
     /** All of the layers on the Canvas. */
     var layers: [CanvasLayer]!
     var currentLayer: Int = 0
-    
-    /** The manager for undo and redo operations. */
-    var undoRedoManager: UndoRedoManager!
     
     /** The delegate. */
     public var delegate: CanvasDelegate?
@@ -40,8 +34,6 @@ public class Canvas: UIView {
     /** The brush that is currently being used to draw on the Canvas. */
     public var currentBrush: Brush!
     
-    /** Whether or not anti-aliasing should be used when drawing. Default is false. */
-    public var isAntiAliasEnabled: Bool!
     
     
     
@@ -63,12 +55,8 @@ public class Canvas: UIView {
     /** Creates a blank canvas. */
     public init() {
         layers = []
-        undoRedoManager = UndoRedoManager()
-        isAntiAliasEnabled = false
         currentBrush = Brush.Default
-        
         super.init(frame: CGRect.zero)
-        
         clipsToBounds = true
     }
     
@@ -93,37 +81,19 @@ public class Canvas: UIView {
     
     /** Undos the last line/shape that was drawn on the Canvas. */
     public func undo() {
-        undoRedoManager._undo(drawing: &drawing, view: self)
+        
     }
     
     
     /** Handles putting back the last line that was drawn on the Canvas. */
     public func redo() {
-        undoRedoManager._redo(drawing: &drawing, view: self)
         
-//        let sub = CAShapeLayer()
-//        sub.frame = frame
-//        sub.backgroundColor = UIColor.white.cgColor
-//        sub.opacity = 0.8
-//        let a = CGMutablePath()
-//        a.move(to: CGPoint(x: 50, y: 50))
-//        a.addLine(to: CGPoint(x: 300, y: 500))
-//        let ctx = UIGraphicsGetCurrentContext()
-//        ctx?.setStrokeColor(UIColor.green.cgColor)
-//        ctx?.strokePath()
-//        sub.contents = a
-//        layer.insertSublayer(sub, above: layer)
-//        sub.zPosition = 0
-//        setNeedsDisplay()
     }
     
     
     /** Clears the Canvas completly. */
     public func clear() {
-        drawing = true
-        undoRedoManager.undoStack.push((layers[currentLayer].path! as! CGMutablePath, currentBrush))
-        layers[currentLayer].path! = CGMutablePath()
-        setNeedsDisplay()
+        
     }
     
     
@@ -134,14 +104,71 @@ public class Canvas: UIView {
     public func addDrawingLayer(layer l: CanvasLayer) {
         l.frame = bounds
         l.bounds = bounds
+        l.brush = currentBrush
+        l.isAntiAliasEnabled = true
         layers.append(l)
         self.layer.insertSublayer(l, above: self.layer)
         currentLayer = layers.count - 1
     }
     
     
+    /** Switches to the layer at the specified index. */
+    public func switchLayer(to: Int) {
+        if to > layers.count { currentLayer = layers.count - 1 }
+        else if to < 0 { currentLayer = 0 }
+        else { currentLayer = to }
+    }
     
     
+    /** Moves the layer at the given index to a different position, then switches to that layer. */
+    public func moveLayer(at: Int, toPosition to: Int) {
+        let layer = layers[at]
+        layers.remove(at: at)
+        layers.insert(layer, at: to)
+        switchLayer(to: to)
+    }
+    
+    
+    /** Removes the layer at the given index. */
+    public func removeLayer(at: Int) {
+        layers.remove(at: at)
+        layer.sublayers?.remove(at: at)
+        currentLayer = 0
+    }
+    
+    
+    /** Hides the layer at the given index. */
+    public func hideLayer(at: Int) {
+        if at < layers.count && at >= 0 {
+            layers[at].isHidden = true
+        }
+    }
+    
+    
+    /** Shows the layer at the given index. Only necessary after calling "hideLayer." */
+    public func showLayer(at: Int) {
+        if at < layers.count && at >= 0 {
+            layers[at].isHidden = false
+        }
+    }
+    
+    
+    /** Returns the array of all CanvasLayers. */
+    public func getLayers() -> [CanvasLayer] {
+        return layers
+    }
+    
+    
+    /** Returns the index of the current layer. */
+    public func getCurrentLayer() -> Int {
+        return currentLayer
+    }
+    
+    
+    /** Returns the current layer's object. */
+    public func getCurrentLayer() -> CanvasLayer {
+        return layers[currentLayer]
+    }
     
     
     
