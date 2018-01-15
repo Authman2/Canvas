@@ -46,19 +46,20 @@ public extension Canvas {
         drawing = true
         undoRedoManager.redoStack.clear()
         
-        
         // Add and close the path, then update.
-        tempPath.addPath(subpath)
-        subpath.closeSubpath()
-        self.setNeedsDisplay(drawBox)
+        if !layers.isEmpty {
+            drawOnLayer(subpath: subpath, drawBox: drawBox)
+            subpath.closeSubpath()
+        }
         
         delegate?.isDrawing(self)
     }
     
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        undoRedoManager.undoStack.push((tempPath.mutableCopy()!, currentBrush))
-        tempPath = CGMutablePath()
+        if !layers.isEmpty {
+            undoRedoManager.undoStack.push((layers[currentLayer].path!.mutableCopy()!, currentBrush))
+        }
         
         delegate?.didEndDrawing(self)
     }

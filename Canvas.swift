@@ -20,9 +20,12 @@ public class Canvas: UIView {
     var lastPoint: CGPoint!
     var lastLastPoint: CGPoint!
     
-    /** The path used to draw the curves. */
-    var tempPath: CGMutablePath
+    /** Whether or not the Canvas is currently in drawing mode. */
     var drawing = false
+    
+    /** All of the layers on the Canvas. */
+    var layers: [CanvasLayer]!
+    var currentLayer: Int = 0
     
     /** The manager for undo and redo operations. */
     var undoRedoManager: UndoRedoManager!
@@ -54,18 +57,25 @@ public class Canvas: UIView {
      ************************/
     
     public required init?(coder aDecoder: NSCoder) {
-        tempPath = CGMutablePath()
         super.init(coder: aDecoder)
     }
     
     /** Creates a blank canvas. */
     public init() {
-        tempPath = CGMutablePath()
+        layers = []
         undoRedoManager = UndoRedoManager()
         isAntiAliasEnabled = false
         currentBrush = Brush.Default
         
         super.init(frame: CGRect.zero)
+        
+        clipsToBounds = true
+    }
+    
+    public override func layoutMarginsDidChange() {
+        // Create the default layer.
+        let defL = CanvasLayer()
+        addDrawingLayer(layer: defL)
     }
     
     
@@ -90,17 +100,46 @@ public class Canvas: UIView {
     /** Handles putting back the last line that was drawn on the Canvas. */
     public func redo() {
         undoRedoManager._redo(drawing: &drawing, view: self)
+        
+//        let sub = CAShapeLayer()
+//        sub.frame = frame
+//        sub.backgroundColor = UIColor.white.cgColor
+//        sub.opacity = 0.8
+//        let a = CGMutablePath()
+//        a.move(to: CGPoint(x: 50, y: 50))
+//        a.addLine(to: CGPoint(x: 300, y: 500))
+//        let ctx = UIGraphicsGetCurrentContext()
+//        ctx?.setStrokeColor(UIColor.green.cgColor)
+//        ctx?.strokePath()
+//        sub.contents = a
+//        layer.insertSublayer(sub, above: layer)
+//        sub.zPosition = 0
+//        setNeedsDisplay()
     }
     
     
     /** Clears the Canvas completly. */
     public func clear() {
         drawing = true
-        undoRedoManager.undoStack.push((tempPath, currentBrush))
-        
-        tempPath = CGMutablePath()
+        undoRedoManager.undoStack.push((layers[currentLayer].path! as! CGMutablePath, currentBrush))
+        layers[currentLayer].path! = CGMutablePath()
         setNeedsDisplay()
     }
+    
+    
+    
+    // Layers
+    
+    /** Adds a new layer to the Canvas and sets that layer to the current one. */
+    public func addDrawingLayer(layer l: CanvasLayer) {
+        l.frame = bounds
+        l.bounds = bounds
+        layers.append(l)
+        self.layer.insertSublayer(l, above: self.layer)
+        currentLayer = layers.count - 1
+    }
+    
+    
     
     
     
@@ -116,43 +155,14 @@ public class Canvas: UIView {
      *                      *
      ************************/
     
-    public override func draw(_ rect: CGRect) {
-        backgroundColor?.set()
-        UIRectFill(rect)
+    /** Draws on the current layer. */
+    func drawOnLayer(subpath: CGMutablePath, drawBox: CGRect) {
+        UIGraphicsBeginImageContext(frame.size)
         
-        let context = UIGraphicsGetCurrentContext()
+        (layers[currentLayer].path as! CGMutablePath).addPath(subpath)
+        layers[currentLayer].setNeedsDisplay(drawBox)
         
-        if !drawing {
-            for path in undoRedoManager.undoStack.array {
-                context?.addPath(path.0)
-                context?.setLineCap(path.1.shape)
-                context?.setAlpha(path.1.opacity)
-                context?.setLineWidth(path.1.thickness)
-                context?.setLineJoin(path.1.joinStyle)
-                context?.setFlatness(path.1.flatness)
-                context?.setMiterLimit(path.1.miter)
-                context?.setStrokeColor(path.1.color.cgColor)
-                
-                context?.setShouldAntialias(self.isAntiAliasEnabled)
-                context?.setAllowsAntialiasing(self.isAntiAliasEnabled)
-                
-                context?.strokePath()
-            }
-        } else {
-            context?.addPath(tempPath)
-            context?.setLineCap(currentBrush.shape)
-            context?.setAlpha(currentBrush.opacity)
-            context?.setLineWidth(currentBrush.thickness)
-            context?.setLineJoin(currentBrush.joinStyle)
-            context?.setFlatness(currentBrush.flatness)
-            context?.setMiterLimit(currentBrush.miter)
-            context?.setStrokeColor(currentBrush.color.cgColor)
-            
-            context?.setShouldAntialias(self.isAntiAliasEnabled)
-            context?.setAllowsAntialiasing(self.isAntiAliasEnabled)
-            
-            context?.strokePath()
-        }
+        UIGraphicsEndImageContext()
     }
     
     

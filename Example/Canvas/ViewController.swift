@@ -20,7 +20,7 @@ class ViewController: UIViewController, CanvasDelegate {
     lazy var canvasView: Canvas = {
         let a = Canvas()
         a.translatesAutoresizingMaskIntoConstraints = false
-        a.backgroundColor = .white
+//        a.backgroundColor = .white
         a.delegate = self
         a.isAntiAliasEnabled = true
         
@@ -138,8 +138,7 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     @objc func redo() {
-//        canvasView.redo()
-        canvasView.clear()
+        canvasView.redo()
     }
     
     
