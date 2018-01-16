@@ -122,7 +122,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     
     
     
-    public func _undo() {
+    func _undo() {
         drawing = false
         
         if !lines.isEmpty {
@@ -132,7 +132,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         }
     }
     
-    public func _redo() {
+    func _redo() {
         drawing = false
         
         if !redos.isEmpty {
@@ -142,7 +142,11 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         }
     }
     
-    
+    func _clear() {
+        drawing = false
+        lines.append((path! as! CGMutablePath, brush))
+        path = CGMutablePath()
+    }
     
     
     

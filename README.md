@@ -7,77 +7,33 @@
 
 Canvas is an iOS library for drawing lines and other shapes on the screen easily and efficiently.
 
-## Usage
+# Docs
+## Canvas
+- **currentBrush**: The type of Brush to use when drawing on the Canvas.
+- **undo()**: Undo the last brush stroke.
+- **redo()**: Redo the last brush stroke.
+- **clear()**: Clear the current drawing layer.
+- **addDrawingLayer(CanvasLayer)**:  Add and switch to a new layer on top of the current one.
+- **switchLayer(to)**: Switch to the specified layer for drawing.
+- **moveLayer(at, to)**: Moves the layer at the given index to the second paramater index.
+- **removeLayer(at)**: Removes the layer at the given index.
+- **hideLayer(at)**: Hides the layer at the given index.
+- **showLayer(at)**: Shows the layer at the given index.
+- **getLayers()**: Returns an array of the CanvasLayers on the Canvas.
+- **getCurrentLayer()**: Returns the current layer object.
+- **getCurrentLayer()**: Returns the index of the current layer.
 
-Here is a simple example to show how Canvas can be used in your app.
-```swift
-import UIKit
+## CanvasLayer
+- **isAntiAliasEnabled**: Whether or not the Canvas should have anti-aliasing enabled.
 
-// 1.) Import Canvas
-import Canvas
+## Brush
+- **Default**: The default brush to use when drawing on the canvas.
+- **Eraser**: An eraser brush that works out of the box. The user can still define their own eraser brush.
 
-
-// 2.) Add the CanvasDelegate protocol (Optional).
-class Home: UIViewController, CanvasDelegate {
-
-
-// 3.) Create a new, blank Canvas.
-lazy var canvas: Canvas = {
-let a = Canvas()
-a.translatesAutoresizingMaskIntoConstraints = false
-a.backgroundColor = .white
-a.delegate = self
-a.isAntiAliasEnabled = true
-
-return a
-}()
-
-
-// 4.) Create a new Brush to use when drawing on the Canvas (Optional).
-let newBrush: Brush = {
-let a = Brush()
-a.color = .purple
-a.thickness = 5
-a.opacity = 0.5
-a.flatness = 0.7
-a.joinStyle = .bevel
-
-return a
-}()
-
-
-
-// 5.) Add the Canvas to the view.
-override func viewDidLoad() {
-super.viewDidLoad()
-view.addSubview(canvas)
-
-canvas.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-canvas.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-canvas.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-canvas.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-
-
-// 6.) Change the current Brush (Optional).
-canvas.setCurrentBrush(brush: newBrush)
-}
-
-
-// 7.) Add the CanvasDelegate methods (Optional).
-func didBeginDrawing(_ canvas: Canvas) {
-print("Started drawing.")
-}
-
-func isDrawing(_ canvas: Canvas) {
-print("Currently drawing...")
-}
-
-func didEndDrawing(_ canvas: Canvas) {
-print("Finished drawing!")
-}
-
-}
-```
+## CanvasDelegate
+- **didBeginDrawing(canvas)**: Called when the user starts drawing on the Canvas.
+- **isDrawing(canvas)**: Called (multiple times) while the user is drawing.
+- **didEndDrawing(canvas)**: Called when the user stops drawing on the Canvas.
 
 
 ## Installation

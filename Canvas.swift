@@ -27,11 +27,6 @@ public class Canvas: UIView {
     /** The delegate. */
     public var delegate: CanvasDelegate?
     
-    /** The drawing history, which is really just an array of shape layers.
-     It is an array of (Layer, index of layer). */
-    var history: Stack<(CanvasLayer, Int)>
-    var redoHistory: Stack<(CanvasLayer, Int)>
-    
     
     // Canvas Settings
     
@@ -53,16 +48,12 @@ public class Canvas: UIView {
      ************************/
     
     public required init?(coder aDecoder: NSCoder) {
-        history = Stack<(CanvasLayer, Int)>()
-        redoHistory = Stack<(CanvasLayer, Int)>()
         super.init(coder: aDecoder)
     }
     
     /** Creates a blank canvas. */
     public init() {
         layers = []
-        history = Stack<(CanvasLayer, Int)>()
-        redoHistory = Stack<(CanvasLayer, Int)>()
         currentBrush = Brush.Default
         super.init(frame: CGRect.zero)
         clipsToBounds = true
@@ -101,7 +92,7 @@ public class Canvas: UIView {
     
     /** Clears the Canvas completely. */
     public func clear() {
-        
+        layers[currentLayer]._clear()
     }
     
     

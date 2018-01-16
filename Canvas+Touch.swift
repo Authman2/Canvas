@@ -17,9 +17,6 @@ public extension Canvas {
         self.lastLastPoint = touch.previousLocation(in: self)
         self.currentPoint = touch.location(in: self)
         
-        // Add to the history that you are drawing a line.
-//        layers[currentLayer].lines.append((layers[currentLayer].path! as! CGMutablePath, currentBrush))
-        
         delegate?.didBeginDrawing(self)
     }
     

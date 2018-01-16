@@ -9,7 +9,7 @@ import Foundation
 
 
 /** Returns the midpoint between two points. */
-public func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {
+func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {
     return CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
 }
 
