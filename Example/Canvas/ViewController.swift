@@ -36,28 +36,6 @@ class ViewController: UIViewController, CanvasDelegate {
         return c
     }()
     
-    let d: Brush = {
-        let c = Brush()
-        c.color = .green
-        c.thickness = 5
-        c.opacity = 1
-        c.flatness = 0.7
-        c.joinStyle = .bevel
-        return c
-    }()
-    
-    let e: Brush = {
-        let c = Brush()
-        c.color = .red
-        c.thickness = 5
-        c.opacity = 1
-        c.flatness = 0.7
-        c.joinStyle = .bevel
-        return c
-    }()
-    
-    
-    lazy var brushes = [b, d, e]
     
     
     lazy var undoBtn: UIButton = {
@@ -82,6 +60,27 @@ class ViewController: UIViewController, CanvasDelegate {
         return a
     }()
     
+    lazy var addLayerBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Add Layer", for: .normal)
+        a.backgroundColor = .blue
+        a.layer.cornerRadius = 15
+        a.addTarget(self, action: #selector(redo), for: .touchUpInside)
+        
+        return a
+    }()
+    
+    lazy var switchLayer: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Switch Layer (Random)", for: .normal)
+        a.backgroundColor = .blue
+        a.layer.cornerRadius = 15
+        a.addTarget(self, action: #selector(redo), for: .touchUpInside)
+        
+        return a
+    }()
     
     
     
@@ -118,8 +117,7 @@ class ViewController: UIViewController, CanvasDelegate {
      ************************/
     
     func didBeginDrawing(_ canvas: Canvas) {
-        let rand = Int(arc4random_uniform(UInt32(brushes.count)))
-        canvas.currentBrush = brushes[rand]
+        
     }
     
     func isDrawing(_ canvas: Canvas) {
@@ -127,11 +125,7 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     func didEndDrawing(_ canvas: Canvas) {
-        if canvas.getLayers().count == 1 {
-            let a = CanvasLayer()
-            a.backgroundColor = UIColor(red: 0, green: 0.8, blue: 0.5, alpha: 0.8).cgColor
-            canvas.addDrawingLayer(layer: a)
-        }
+        
     }
     
     

@@ -17,6 +17,9 @@ public extension Canvas {
         self.lastLastPoint = touch.previousLocation(in: self)
         self.currentPoint = touch.location(in: self)
         
+        // Add to the history that you are drawing a line.
+//        layers[currentLayer].lines.append((layers[currentLayer].path! as! CGMutablePath, currentBrush))
+        
         delegate?.didBeginDrawing(self)
     }
     
@@ -43,12 +46,13 @@ public extension Canvas {
         let drawBox = bounds.insetBy(dx: Constants.drawDistance * currentBrush.thickness, dy: Constants.drawDistance * currentBrush.thickness)
         
         // Clear the redo stack.
-        
+        layers[currentLayer].redos.removeAll()
         
         // Add and close the path, then update.
         if !layers.isEmpty {
             drawOnLayer(subpath: subpath, drawBox: drawBox)
             subpath.closeSubpath()
+            layers[currentLayer].drawing = true
         }
         
         delegate?.isDrawing(self)
@@ -56,10 +60,8 @@ public extension Canvas {
     
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !layers.isEmpty {
-            
-        }
-        
+        layers[currentLayer].lines.append((layers[currentLayer].path! as! CGMutablePath, currentBrush))
+        layers[currentLayer].path = CGMutablePath()
         delegate?.didEndDrawing(self)
     }
     
