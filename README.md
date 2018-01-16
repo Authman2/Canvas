@@ -1,4 +1,4 @@
-# Canvas ![](https://github.com/Authman2/Canvas/blob/master/Icon.png =28x28)
+# Canvas <img src="https://github.com/Authman2/Canvas/blob/master/Icon.png" width='64px' height='64px' />
 
 [![Version](https://img.shields.io/cocoapods/v/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
 [![License](https://img.shields.io/cocoapods/l/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
