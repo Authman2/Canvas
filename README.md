@@ -1,4 +1,4 @@
-# Canvas
+# Canvas ![alt text](https://github.com/Authman2/Canvas/Icon.png "Icon")
 
 [![Version](https://img.shields.io/cocoapods/v/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
 [![License](https://img.shields.io/cocoapods/l/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
@@ -41,7 +41,7 @@ Canvas is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'PaintCanvas'
+pod '+Canvas+'
 ```
 
 ## Author
