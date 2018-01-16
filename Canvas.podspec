@@ -7,8 +7,8 @@
 #
 
     Pod::Spec.new do |s|
-    s.name             = 'Canvas'
-    s.version          = '1.1.1'
+    s.name             = 'CANVAS'
+    s.version          = '1.1.2'
     s.summary          = 'Create artistic applications extremely easily.'
 
     # This description is used to generate tags and improve search results.
@@ -21,7 +21,7 @@
     Canvas provides a simple solution to creating freeform drawings in iOS applications. This means that the user no longer needs to write messy code when trying to create something like a simple painting application.
     DESC
 
-    s.homepage         = 'https://github.com/authman2/Canvas'
+    s.homepage         = 'https://github.com/authman2/PaintCanvas'
     # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
     s.license          = { :type => 'MIT', :file => 'LICENSE' }
     s.author           = { 'authman2' => 'authman2@gmail.com' }
