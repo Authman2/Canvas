@@ -1,4 +1,4 @@
-# Canvas ![alt text](https://github.com/Authman2/Canvas/Icon.png "Icon")
+# Canvas ![alt text](https://github.com/Authman2/Canvas/blob/master/Icon.png "Icon")
 
 [![Version](https://img.shields.io/cocoapods/v/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
 [![License](https://img.shields.io/cocoapods/l/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
