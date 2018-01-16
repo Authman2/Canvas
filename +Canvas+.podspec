@@ -8,7 +8,7 @@
 
     Pod::Spec.new do |s|
     s.name             = '+Canvas+'
-    s.version          = '1.1.6'
+    s.version          = '1.1.7'
     s.summary          = 'Create artistic applications extremely easily.'
 
     # This description is used to generate tags and improve search results.
