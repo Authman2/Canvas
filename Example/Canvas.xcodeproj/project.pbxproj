@@ -31,7 +31,7 @@
 		2F4A60768CC8E28157035E5E /* Pods-Canvas_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Tests/Pods-Canvas_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		37908DA9768BE1ADD2FED936 /* Pods_Canvas_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Canvas_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4374F31642489AF71AD28E8A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		57668353CD85ABC0BDBB1320 /* CANVAS.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CANVAS.podspec; path = ../CANVAS.podspec; sourceTree = "<group>"; };
+		57668353CD85ABC0BDBB1320 /* PaintCanvas.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = PaintCanvas.podspec; path = ../PaintCanvas.podspec; sourceTree = "<group>"; };
 		5E71B21CC5E181F2A685E71B /* Pods-Canvas_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Example/Pods-Canvas_Example.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* Canvas_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Canvas_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 		607FACF51AFB993E008FA782 /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				57668353CD85ABC0BDBB1320 /* CANVAS.podspec */,
+				57668353CD85ABC0BDBB1320 /* PaintCanvas.podspec */,
 				AE1DA7AD05DF4E934B1009C8 /* README.md */,
 				4374F31642489AF71AD28E8A /* LICENSE */,
 			);
