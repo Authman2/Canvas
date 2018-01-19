@@ -7,9 +7,9 @@
 #
 
     Pod::Spec.new do |s|
-    s.name             = '+Canvas+'
-    s.version          = '1.1.7'
-    s.summary          = 'Create artistic applications extremely easily.'
+    s.name             = 'Canvas+'
+    s.version          = '1.0.0'
+    s.summary          = 'A customizable painting canvas for iOS applications.'
 
     # This description is used to generate tags and improve search results.
     #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@
     #   * Finally, don't worry about the indent, CocoaPods strips it!
 
     s.description      = <<-DESC
-    Canvas provides a simple solution to creating freeform drawings in iOS applications. This means that the user no longer needs to write messy code when trying to create something like a simple painting application.
+    Canvas provides a simple solution to creating freeform drawings in iOS applications. The Canvas is extendable, meaning that the user can create a variety of brushes and change different settings to make the Canvas suit specific needs.
     DESC
 
     s.homepage         = 'https://github.com/authman2/Canvas'
