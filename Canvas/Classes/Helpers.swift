@@ -9,7 +9,7 @@ import Foundation
 
 
 /** Returns the midpoint between two points. */
-public func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {
+func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {
     return CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
 }
 
@@ -19,6 +19,6 @@ public func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {
 struct Constants {
     
     /** The drawing distance for each line. */
-    static let drawDistance: CGFloat = -0.5
+    static let drawDistance: CGFloat = -0.3
     
 }
