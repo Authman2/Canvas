@@ -1,8 +1,8 @@
 # Canvas &nbsp; <img src="https://github.com/Authman2/Canvas/blob/master/Icon.png" width='60px' height='60px' />
 
-[![Version](https://img.shields.io/cocoapods/v/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
-[![License](https://img.shields.io/cocoapods/l/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
-[![Platform](https://img.shields.io/cocoapods/p/Canvas.svg?style=flat)](http://cocoapods.org/pods/PaintCanvas)
+[![Version](https://img.shields.io/cocoapods/v/Canvas.svg?style=flat)](http://cocoapods.org/pods/Canvas+)
+[![License](https://img.shields.io/cocoapods/l/Canvas.svg?style=flat)](http://cocoapods.org/pods/Canvas+)
+[![Platform](https://img.shields.io/cocoapods/p/Canvas.svg?style=flat)](http://cocoapods.org/pods/Canvas+)
 
 Canvas is an iOS library for drawing lines and other shapes on the screen easily and efficiently.
 
