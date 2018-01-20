@@ -60,9 +60,11 @@ public class Canvas: UIView {
     }
     
     public override func layoutMarginsDidChange() {
-        // Create the default layer.
-        let defL = CanvasLayer()
-        addDrawingLayer(layer: defL)
+        if layers.count == 0 {
+            // Create the default layer.
+            let defL = CanvasLayer()
+            addDrawingLayer(layer: defL)
+        }
     }
     
     
