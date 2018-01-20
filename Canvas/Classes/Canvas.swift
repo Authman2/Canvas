@@ -34,6 +34,8 @@ public class Canvas: UIView {
     public var currentBrush: Brush!
     
     
+    /** Whether or not the Canvas should create a default layer. True by default. */
+    public var shouldCreateDefaultLayer: Bool!
     
     
     
@@ -55,14 +57,17 @@ public class Canvas: UIView {
     public init() {
         layers = []
         currentBrush = Brush.Default
+        shouldCreateDefaultLayer = true
         super.init(frame: CGRect.zero)
         clipsToBounds = true
     }
     
     public override func layoutMarginsDidChange() {
-        // Create the default layer.
-        let defL = CanvasLayer()
-        addDrawingLayer(layer: defL)
+        if layers.count == 0 && shouldCreateDefaultLayer {
+            // Create the default layer.
+            let defL = CanvasLayer()
+            addDrawingLayer(layer: defL)
+        }
     }
     
     
@@ -104,7 +109,6 @@ public class Canvas: UIView {
         l.frame = bounds
         l.bounds = bounds
         l.brush = currentBrush
-        l.isAntiAliasEnabled = true
         layers.append(l)
         self.layer.insertSublayer(l, above: self.layer)
         currentLayer = layers.count - 1
