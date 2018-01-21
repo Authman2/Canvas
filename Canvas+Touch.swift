@@ -43,7 +43,7 @@ public extension Canvas {
         let drawBox = bounds.insetBy(dx: Constants.drawDistance * currentBrush.thickness, dy: Constants.drawDistance * currentBrush.thickness)
         
         // Clear the redo stack.
-        layers[currentLayer].redos.removeAll()
+        if !layers.isEmpty { layers[currentLayer].redos.removeAll() }
         
         // Add and close the path, then update.
         if !layers.isEmpty {
@@ -57,8 +57,10 @@ public extension Canvas {
     
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        layers[currentLayer].lines.append((layers[currentLayer].path! as! CGMutablePath, currentBrush))
-        layers[currentLayer].path = CGMutablePath()
+        if !layers.isEmpty {
+            layers[currentLayer].lines.append((layers[currentLayer].path! as! CGMutablePath, currentBrush))
+            layers[currentLayer].path = CGMutablePath()
+        }
         delegate?.didEndDrawing(self)
     }
     

@@ -33,7 +33,6 @@ public class Canvas: UIView {
     /** The brush that is currently being used to draw on the Canvas. */
     public var currentBrush: Brush!
     
-    
     /** Whether or not the Canvas should create a default layer. True by default. */
     public var shouldCreateDefaultLayer: Bool!
     
