@@ -21,15 +21,20 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     /** The brush to use for drawing on this layer. */
     var brush: Brush
     
-    /** Whether or not the layer should use anti-aliasing. */
-    public var isAntiAliasEnabled: Bool
-    
     /** The lines that are already drawn. */
     var lines: [(CGMutablePath, Brush)]
     var redos: [(CGMutablePath, Brush)]
     
     /** Whether the layer is drawing or not. */
     var drawing: Bool = true
+    
+    /** Whether or not the layer should use anti-aliasing. */
+    public var isAntiAliasEnabled: Bool
+    
+    /** Enable/Disable drawing on this layer. */
+    public var allowsDrawing: Bool
+    
+    
     
     
     
@@ -43,6 +48,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     public required init?(coder aDecoder: NSCoder) {
         self.brush = Brush.Default
         self.isAntiAliasEnabled = true
+        self.allowsDrawing = true
         self.lines = []
         self.redos = []
         super.init(coder: aDecoder)
@@ -53,6 +59,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     public override init() {
         self.brush = Brush.Default
         self.isAntiAliasEnabled = true
+        self.allowsDrawing = true
         self.lines = []
         self.redos = []
         super.init()
@@ -63,6 +70,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     public init(brush: Brush) {
         self.brush = brush
         self.isAntiAliasEnabled = true
+        self.allowsDrawing = true
         self.lines = []
         self.redos = []
         super.init()
@@ -73,6 +81,7 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     public override init(layer: Any) {
         self.brush = Brush.Default
         self.isAntiAliasEnabled = true
+        self.allowsDrawing = true
         self.lines = []
         self.redos = []
         super.init(layer: layer)
@@ -91,31 +100,33 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
      ************************/
     
     public override func draw(in context: CGContext) {
-        if drawing == true {
-            context.addPath(self.path!)
-            context.setLineCap(self.brush.shape)
-            context.setAlpha(self.brush.opacity)
-            context.setLineWidth(self.brush.thickness)
-            context.setLineJoin(self.brush.joinStyle)
-            context.setFlatness(self.brush.flatness)
-            context.setMiterLimit(self.brush.miter)
-            context.setStrokeColor(self.brush.color.cgColor)
-            context.setShouldAntialias(self.isAntiAliasEnabled)
-            context.setAllowsAntialiasing(self.isAntiAliasEnabled)
-            context.strokePath()
-        } else {
-            for path in lines {
-                context.addPath(path.0)
-                context.setLineCap(path.1.shape)
-                context.setAlpha(path.1.opacity)
-                context.setLineWidth(path.1.thickness)
-                context.setLineJoin(path.1.joinStyle)
-                context.setFlatness(path.1.flatness)
-                context.setMiterLimit(path.1.miter)
-                context.setStrokeColor(path.1.color.cgColor)
+        if allowsDrawing == true {
+            if drawing == true {
+                context.addPath(self.path!)
+                context.setLineCap(self.brush.shape)
+                context.setAlpha(self.brush.opacity)
+                context.setLineWidth(self.brush.thickness)
+                context.setLineJoin(self.brush.joinStyle)
+                context.setFlatness(self.brush.flatness)
+                context.setMiterLimit(self.brush.miter)
+                context.setStrokeColor(self.brush.color.cgColor)
                 context.setShouldAntialias(self.isAntiAliasEnabled)
                 context.setAllowsAntialiasing(self.isAntiAliasEnabled)
                 context.strokePath()
+            } else {
+                for path in lines {
+                    context.addPath(path.0)
+                    context.setLineCap(path.1.shape)
+                    context.setAlpha(path.1.opacity)
+                    context.setLineWidth(path.1.thickness)
+                    context.setLineJoin(path.1.joinStyle)
+                    context.setFlatness(path.1.flatness)
+                    context.setMiterLimit(path.1.miter)
+                    context.setStrokeColor(path.1.color.cgColor)
+                    context.setShouldAntialias(self.isAntiAliasEnabled)
+                    context.setAllowsAntialiasing(self.isAntiAliasEnabled)
+                    context.strokePath()
+                }
             }
         }
     }
