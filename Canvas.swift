@@ -37,7 +37,7 @@ public class Canvas: UIView {
     public var shouldCreateDefaultLayer: Bool!
     
     /** Enable/Disable drawing on the entire Canvas. */
-    public var allowDrawing: Bool!
+    public var allowsDrawing: Bool!
     
     
     
