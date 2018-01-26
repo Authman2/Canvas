@@ -18,6 +18,9 @@ public class Brush {
      *                      *
      ************************/
     
+    /** The type of brush that this is. */
+    public var type: BrushType
+    
     /** The color of the brush. */
     public var color: UIColor
     
@@ -50,6 +53,7 @@ public class Brush {
     /** A default Brush to use. */
     public static let Default: Brush = {
         let a = Brush()
+        a.type = .freeHand
         a.color = .black
         a.thickness = 2
         a.opacity = 1
@@ -64,6 +68,7 @@ public class Brush {
     /** A brush that can be used as an eraser. The user can always create their own eraser, but here is one that works right out of the box. */
     public static let Eraser: Brush = {
         let a = Brush()
+        a.type = .freeHand
         a.color = .clear
         a.thickness = 2
         a.opacity = 1
@@ -88,6 +93,7 @@ public class Brush {
     
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public init() {
+        type = BrushType.freeHand
         color = UIColor.black
         thickness = 2
         opacity = 1
