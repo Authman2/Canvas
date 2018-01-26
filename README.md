@@ -9,6 +9,8 @@ Canvas is an iOS library for drawing lines and other shapes on the screen easily
 # Docs
 ## Canvas
 - **currentBrush**: The type of Brush to use when drawing on the Canvas.
+- **allowsDrawing**: Whether or not the user should be able to draw on the Canvas.
+- **shouldCreateDefaultLayer**: Tells the Canvas whether or not it should create a default layer for the user to draw on. Otherwise the user can just create one manually.
 - **undo()**: Undo the last brush stroke.
 - **redo()**: Redo the last brush stroke.
 - **clear()**: Clear the current drawing layer.
@@ -24,6 +26,7 @@ Canvas is an iOS library for drawing lines and other shapes on the screen easily
 
 ## CanvasLayer
 - **isAntiAliasEnabled**: Whether or not the Canvas should have anti-aliasing enabled.
+- **alllowsDrawing**: Whether or not the user can draw on this layer specifically as opposed to the entire Canvas.
 
 ## Brush
 - **Default**: The default brush to use when drawing on the canvas.

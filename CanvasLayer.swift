@@ -95,6 +95,33 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     
     /************************
      *                      *
+     *     PUBLIC FUNCS     *
+     *                      *
+     ************************/
+    
+    /** Returns each line that is drawn on this layer and the brush that was used to draw it. Useful for
+     saving how a path looks at a particular time and loading it back up from those strokes. */
+    public func getStrokes() -> [(CGMutablePath, Brush)] {
+        return self.lines
+    }
+    
+    
+    /** Loads and displays a drawing from the array of strokes and brushes that make it up. */
+    public func drawFromStrokes(input: [(CGMutablePath, Brush)]) {
+        self.lines = input
+        self.drawing = false
+        setNeedsDisplay()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /************************
+     *                      *
      *       FUNCTIONS      *
      *                      *
      ************************/
@@ -157,6 +184,8 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         drawing = false
         lines.append((path! as! CGMutablePath, brush))
         path = CGMutablePath()
+        setNeedsDisplay()
+        drawing = true
     }
     
     
