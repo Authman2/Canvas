@@ -37,7 +37,7 @@ public class Canvas: UIView {
     public var shouldCreateDefaultLayer: Bool!
     
     /** Enable/Disable drawing on the entire Canvas. */
-    public var allowDrawing: Bool!
+    public var allowsDrawing: Bool!
     
     
     
@@ -56,7 +56,7 @@ public class Canvas: UIView {
     /** Creates a blank canvas. */
     public init() {
         layers = []
-        allowDrawing = true
+        allowsDrawing = true
         currentBrush = Brush.Default
         shouldCreateDefaultLayer = true
         super.init(frame: CGRect.zero)
@@ -188,7 +188,7 @@ public class Canvas: UIView {
     
     /** Draws on the current layer. */
     func drawOnLayer(subpath: CGMutablePath, drawBox: CGRect) {
-        if !allowDrawing { return }
+        if !allowsDrawing { return }
         
         
         UIGraphicsBeginImageContext(frame.size)

@@ -95,6 +95,33 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     
     /************************
      *                      *
+     *     PUBLIC FUNCS     *
+     *                      *
+     ************************/
+    
+    /** Returns each line that is drawn on this layer and the brush that was used to draw it. Useful for
+     saving how a path looks at a particular time and loading it back up from those strokes. */
+    public func getStrokes() -> [(CGMutablePath, Brush)] {
+        return self.lines
+    }
+    
+    
+    /** Loads and displays a drawing from the array of strokes and brushes that make it up. */
+    public func drawFromStrokes(input: [(CGMutablePath, Brush)]) {
+        self.lines = input
+        self.drawing = false
+        setNeedsDisplay()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /************************
+     *                      *
      *       FUNCTIONS      *
      *                      *
      ************************/
@@ -102,36 +129,91 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     public override func draw(in context: CGContext) {
         if allowsDrawing == true {
             if drawing == true {
-                context.addPath(self.path!)
-                context.setLineCap(self.brush.shape)
-                context.setAlpha(self.brush.opacity)
-                context.setLineWidth(self.brush.thickness)
-                context.setLineJoin(self.brush.joinStyle)
-                context.setFlatness(self.brush.flatness)
-                context.setMiterLimit(self.brush.miter)
-                context.setStrokeColor(self.brush.color.cgColor)
-                context.setShouldAntialias(self.isAntiAliasEnabled)
-                context.setAllowsAntialiasing(self.isAntiAliasEnabled)
-                context.strokePath()
-            } else {
-                for path in lines {
-                    context.addPath(path.0)
-                    context.setLineCap(path.1.shape)
-                    context.setAlpha(path.1.opacity)
-                    context.setLineWidth(path.1.thickness)
-                    context.setLineJoin(path.1.joinStyle)
-                    context.setFlatness(path.1.flatness)
-                    context.setMiterLimit(path.1.miter)
-                    context.setStrokeColor(path.1.color.cgColor)
-                    context.setShouldAntialias(self.isAntiAliasEnabled)
-                    context.setAllowsAntialiasing(self.isAntiAliasEnabled)
-                    context.strokePath()
+                
+                // Draw based on the type.
+                switch(brush.type) {
+                    case .freeHand:
+                        self.drawFreeHand(context: context)
+                        break
+                    case .line:
+                        self.drawLine(context: context)
+                        break
                 }
+                
+            } else {
+                drawEachStroke(context: context)
             }
         }
     }
     
     
+    
+    
+    
+    /** Allows free hand drawing on the Canvas. */
+    private func drawFreeHand(context: CGContext) {
+        context.addPath(self.path!)
+        context.setLineCap(self.brush.shape)
+        context.setAlpha(self.brush.opacity)
+        context.setLineWidth(self.brush.thickness)
+        context.setLineJoin(self.brush.joinStyle)
+        context.setFlatness(self.brush.flatness)
+        context.setMiterLimit(self.brush.miter)
+        context.setStrokeColor(self.brush.color.cgColor)
+        context.setShouldAntialias(self.isAntiAliasEnabled)
+        context.setAllowsAntialiasing(self.isAntiAliasEnabled)
+        context.strokePath()
+    }
+    
+    
+    /** Draws a line on this layer of the Canvas. */
+    private func drawLine(context: CGContext) {
+        
+    }
+    
+    
+    
+    
+    
+    
+    /** Draws each line in the lines array. */
+    private func drawEachStroke(context: CGContext) {
+        for path in lines {
+            context.addPath(path.0)
+            context.setLineCap(path.1.shape)
+            context.setAlpha(path.1.opacity)
+            context.setLineWidth(path.1.thickness)
+            context.setLineJoin(path.1.joinStyle)
+            context.setFlatness(path.1.flatness)
+            context.setMiterLimit(path.1.miter)
+            context.setStrokeColor(path.1.color.cgColor)
+            context.setShouldAntialias(self.isAntiAliasEnabled)
+            context.setAllowsAntialiasing(self.isAntiAliasEnabled)
+            context.strokePath()
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /************************
+     *                      *
+     *        HELPERS       *
+     *                      *
+     ************************/
     
     func _undo() {
         drawing = false
@@ -157,12 +239,18 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         drawing = false
         lines.append((path! as! CGMutablePath, brush))
         path = CGMutablePath()
+        setNeedsDisplay()
+        drawing = true
     }
     
     
     
     
-    
+    /************************
+     *                      *
+     *         OTHER        *
+     *                      *
+     ************************/
     
     public func copy(with zone: NSZone? = nil) -> Any {
         let copy = CanvasLayer()
