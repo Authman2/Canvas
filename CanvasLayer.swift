@@ -198,17 +198,6 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /************************
      *                      *
      *        HELPERS       *
@@ -242,6 +231,14 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         setNeedsDisplay()
         drawing = true
     }
+    
+    
+    /** Clears this drawing layer completely. */
+    public func clear() {
+        self._clear()
+        lines = []
+    }
+    
     
     
     
