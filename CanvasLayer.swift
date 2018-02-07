@@ -135,8 +135,8 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
                     case .freeHand:
                         self.drawFreeHand(context: context)
                         break
-                    case .line:
-                        self.drawLine(context: context)
+                    default:
+                        self.drawFreeHand(context: context)
                         break
                 }
                 
@@ -164,13 +164,6 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         context.setAllowsAntialiasing(self.isAntiAliasEnabled)
         context.strokePath()
     }
-    
-    
-    /** Draws a line on this layer of the Canvas. */
-    private func drawLine(context: CGContext) {
-        
-    }
-    
     
     
     
