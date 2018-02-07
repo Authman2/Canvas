@@ -14,7 +14,7 @@ Canvas is an iOS library for drawing lines and other shapes on the screen easily
 - **undo()**: Undo the last brush stroke.
 - **redo()**: Redo the last brush stroke.
 - **clear()**: Clear the current drawing layer.
-- **addDrawingLayer(CanvasLayer)**:  Add and switch to a new layer on top of the current one.
+- **addDrawingLayer(CanvasLayer, LayerPosition)**:  Add and switch to a new layer on top of the current one. Optional parameter to add the layer above or below the current one.
 - **switchLayer(to)**: Switch to the specified layer for drawing.
 - **moveLayer(at, to)**: Moves the layer at the given index to the second paramater index.
 - **removeLayer(at)**: Removes the layer at the given index.
