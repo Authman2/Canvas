@@ -7,6 +7,13 @@
 
 import Foundation
 
+/** The position of the layer. */
+public enum LayerPosition {
+    case above
+    case below
+}
+
+
 public class Canvas: UIView {
     
     /************************
@@ -105,13 +112,18 @@ public class Canvas: UIView {
     
     // Layers
     
-    /** Adds a new layer to the Canvas and sets that layer to the current one. */
-    public func addDrawingLayer(layer l: CanvasLayer) {
+    /** Adds a new layer to the Canvas and sets that layer to the current one. By default, the layer is
+     added above the current layer, however that can be changed. */
+    public func addDrawingLayer(layer l: CanvasLayer, position: LayerPosition = .above) {
         l.frame = bounds
         l.bounds = bounds
         l.brush = currentBrush
         layers.append(l)
-        self.layer.insertSublayer(l, above: self.layer)
+        if position == .above {
+            self.layer.insertSublayer(l, above: self.layer)
+        } else {
+            self.layer.insertSublayer(l, below: self.layer)
+        }
         currentLayer = layers.count - 1
     }
     
