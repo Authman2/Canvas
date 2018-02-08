@@ -8,6 +8,16 @@
 import Foundation
 
 
+/** The type of Brush to use when drawing. This could be a free hand drawing, a line, or any other shape. */
+public enum BrushType {
+    
+    case freeHand
+    case line
+    
+}
+
+
+
 /** A Brush defines a way to draw on a Canvas. It contains a variety of properties that the Canvas then uses
  to draw lines and shapes. */
 public class Brush {
@@ -118,4 +128,5 @@ public class Brush {
     
     
 }
+
 

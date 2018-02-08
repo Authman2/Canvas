@@ -132,12 +132,12 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
                 
                 // Draw based on the type.
                 switch(brush.type) {
-                    case .freeHand:
-                        self.drawFreeHand(context: context)
-                        break
-                    case .line:
-                        self.drawLine(context: context)
-                        break
+                case .freeHand:
+                    self.drawFreeHand(context: context)
+                    break
+                case .line:
+                    self.drawLine(context: context)
+                    break
                 }
                 
             } else {
@@ -269,3 +269,4 @@ public class CanvasLayer: CAShapeLayer, NSCopying {
         return copy
     }
 }
+
