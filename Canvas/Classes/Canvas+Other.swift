@@ -10,22 +10,20 @@ import Foundation
 public extension Canvas {
     
     /** Updates the image with new changes. */
-    func updateDrawing(redraw: Bool) {
+    internal func updateDrawing(redraw: Bool) {
         UIGraphicsBeginImageContextWithOptions(self.frame.size, false, 0)
         
         if redraw {
-            self.drawingImage = nil
+            currentLayer?.drawImage = nil
             
-            for node in self.nodeArray {
-                (node as! Node).draw()
-            }
-            
+            // Draw each node in the current layer.
+            if let l = currentLayer { for node in l.nodeArray { (node as! Node).draw() } }
         } else {
-            self.drawingImage.draw(at: CGPoint.zero)
-            self.nextNode?.draw()
+            currentLayer?.drawImage.draw(at: CGPoint.zero)
+            currentLayer?.nextNode?.draw()
         }
         
-        self.drawingImage = UIGraphicsGetImageFromCurrentImageContext()
+        currentLayer?.drawImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
     

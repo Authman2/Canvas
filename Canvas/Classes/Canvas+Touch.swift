@@ -16,11 +16,11 @@ public extension Canvas {
      ************************/
     
     /** Cleans up the line when you finish drawing a line. */
-    func finishDrawingNode() {
+    private func finishDrawingNode() {
         self.updateDrawing(redraw: false)
         self.redos.removeAllObjects()
-        self.delegate?.didEndDrawing(self)
-        self.nextNode = nil
+        self.delegate?.didEndDrawing(on: self, withTool: currentTool)
+        currentLayer?.nextNode = nil
     }
     
     
@@ -43,14 +43,16 @@ public extension Canvas {
         currentPoint = touch.location(in: self)
         
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
-        self.nextNode = getNodeWithCurrentBrush()
+        currentLayer?.nextNode = getNodeWithCurrentBrush()
         
         // Add to arrays and set initial point.
-        self.nodeArray.add(self.nextNode!)
-        self.nextNode?.setInitialPoint(point: currentPoint)
+        if let l = currentLayer {
+            l.nodeArray.add(l.nextNode!)
+            l.nextNode?.setInitialPoint(point: currentPoint)
+        }
         
         // Call delegate.
-        delegate?.didBeginDrawing(self)
+        delegate?.didBeginDrawing(on: self, withTool: currentTool)
     }
     
     
@@ -66,19 +68,21 @@ public extension Canvas {
         
         // Draw based on the current tool.
         if currentTool == CanvasTool.pen || currentTool == CanvasTool.eraser {
-            var boundingBox = self.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
+            var boundingBox = currentLayer?.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
             
-            boundingBox.origin.x -= (self.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.origin.y -= (self.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.size.width += (self.nextNode?.brush.thickness ?? 5) * 4.0;
-            boundingBox.size.height += (self.nextNode?.brush.thickness ?? 5) * 4.0;
+            boundingBox.origin.x -= (currentLayer?.nextNode?.brush.thickness ?? 5) * 2.0;
+            boundingBox.origin.y -= (currentLayer?.nextNode?.brush.thickness ?? 5) * 2.0;
+            boundingBox.size.width += (currentLayer?.nextNode?.brush.thickness ?? 5) * 4.0;
+            boundingBox.size.height += (currentLayer?.nextNode?.brush.thickness ?? 5) * 4.0;
             
             setNeedsDisplay(boundingBox)
         }
         else {
-            self.nextNode?.move(from: lastPoint, to: currentPoint)
+            currentLayer?.nextNode?.move(from: lastPoint, to: currentPoint)
             setNeedsDisplay()
         }
+        
+        self.delegate?.isDrawing(on: self, withTool: currentTool)
     }
     
     

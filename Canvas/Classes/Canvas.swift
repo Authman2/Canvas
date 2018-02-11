@@ -8,6 +8,13 @@
 import Foundation
 
 
+/** The position to add a new layer on: above or below. */
+public enum LayerPosition {
+    case above
+    case below
+}
+
+
 /** A component that the user can draw on. */
 public class Canvas: UIView {
     
@@ -19,33 +26,56 @@ public class Canvas: UIView {
     
     // -- PRIVATE VARS --
     
-    /** The next node to be drawn on the screen, whether that be a curve, a line, or a shape. */
-    var nextNode: Node?
-    
-    /** The image that the user is drawing on. */
-    var drawingImage: UIImage!
+    /** The type of tool that is currently being used. */
+    internal var currentTool: CanvasTool!
     
     /** The touch points. */
-    var currentPoint: CGPoint = CGPoint()
-    var lastPoint: CGPoint = CGPoint()
-    var lastLastPoint: CGPoint = CGPoint()
+    internal var currentPoint: CGPoint = CGPoint()
+    internal var lastPoint: CGPoint = CGPoint()
+    internal var lastLastPoint: CGPoint = CGPoint()
     
     /** The arrays of the nodes, the undos, and the redos. */
-    var nodeArray: NSMutableArray!
-    var undos: NSMutableArray!
-    var redos: NSMutableArray!
+    internal var undos: NSMutableArray!
+    internal var redos: NSMutableArray!
+    
+    /** The different layers of the canvas. */
+    internal var layers: [CanvasLayer]!
+    internal var currentCanvasLayer: Int = 0
+    
+    /** Whether or not the canvas should create a default layer. */
+    internal var createDefaultLayer: Bool = true
+    
     
     
     // -- PUBLIC VARS --
-    
-    /** The type of tool that is currently being used. */
-    public var currentTool: CanvasTool!
     
     /** The brush to use when drawing. */
     public var currentBrush: Brush!
     
     /** The delegate. */
     public var delegate: CanvasDelegate?
+    
+    
+    
+    // -- PUBLIC COMPUTED PROPERTIES --
+    
+    /** Returns all of layers on the canvas. */
+    public var canvasLayers: [CanvasLayer] { return self.layers }
+    
+    /** Returns the current canvas layer as an object. */
+    public var currentLayer: CanvasLayer? {
+        if layers.count == 0 { return nil }
+        if currentCanvasLayer >= layers.count { return nil }
+        return layers[currentCanvasLayer]
+    }
+    
+    /** Returns the index of the current layer, or -1 if there are no layers. */
+    public var currentLayerIndex: Int {
+        if layers.count == 0 { return -1 }
+        return currentCanvasLayer
+    }
+    
+    
     
     
     
@@ -67,24 +97,26 @@ public class Canvas: UIView {
         setupCanvas()
     }
     
+    public init(createDefaultLayer b: Bool) {
+        super.init(frame: CGRect.zero)
+        self.createDefaultLayer = b
+        setupCanvas()
+    }
+    
     
     /** Configure the Canvas. */
     private func setupCanvas() {
-        nodeArray = NSMutableArray()
         undos = NSMutableArray()
         redos = NSMutableArray()
         
         backgroundColor = .clear
-        drawingImage = UIImage()
+        
+        if createDefaultLayer == true { layers = [CanvasLayer()] }
+        else { layers = [] }
         
         currentTool = .pen
         currentBrush = Brush.Default
     }
-    
-    
-    
-    
-    
     
     
     
@@ -95,6 +127,13 @@ public class Canvas: UIView {
      *       FUNCTIONS      *
      *                      *
      ************************/
+    
+    /** Sets the tool that the canvas should use to draw. */
+    public func setTool(tool: CanvasTool) {
+        self.currentTool = tool
+    }
+    
+    
     
     
     
@@ -112,8 +151,10 @@ public class Canvas: UIView {
      ************************/
     
     public override func draw(_ rect: CGRect) {
-        self.drawingImage.draw(at: CGPoint.zero)
-        self.nextNode?.draw()
+        for layer in layers {
+            layer.draw()
+            layer.nextNode?.draw()
+        }
     }
     
     
