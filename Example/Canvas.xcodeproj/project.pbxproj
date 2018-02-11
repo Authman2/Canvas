@@ -28,7 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0468707EC9AA0FA18CBF86FC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		0468707EC9AA0FA18CBF86FC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		2AFFA8D84BA061CDFD9DBB89 /* Pods_Canvas_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Canvas_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3853A30EB0BD2050FAF4BBC2 /* Pods-Canvas_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Example/Pods-Canvas_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		39AFC965A33D234AA8DCA533 /* Pods-Canvas_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Tests/Pods-Canvas_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -43,9 +43,9 @@
 		607FACE51AFB9204008FA782 /* Canvas_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Canvas_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		75681211DE79395831C1D129 /* Canvas.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = Canvas.podspec; path = ../Canvas.podspec; sourceTree = "<group>"; };
+		75681211DE79395831C1D129 /* Canvas+.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "Canvas+.podspec"; path = "../Canvas+.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		82B03ADE79E7CA47317302DF /* Pods-Canvas_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Example/Pods-Canvas_Example.release.xcconfig"; sourceTree = "<group>"; };
-		98653BE190258154B9DFAFC5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		98653BE190258154B9DFAFC5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		C25C2F12BD9153FDAD565888 /* Pods-Canvas_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Canvas_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Canvas_Tests/Pods-Canvas_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,7 +141,7 @@
 		607FACF51AFB993E008FA782 /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				75681211DE79395831C1D129 /* Canvas.podspec */,
+				75681211DE79395831C1D129 /* Canvas+.podspec */,
 				98653BE190258154B9DFAFC5 /* README.md */,
 				0468707EC9AA0FA18CBF86FC /* LICENSE */,
 			);
@@ -215,6 +215,7 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = ZNAXL37NHX;
 						LastSwiftMigration = 0900;
 					};
 					607FACE41AFB9204008FA782 = {
@@ -517,6 +518,7 @@
 			baseConfigurationReference = 3853A30EB0BD2050FAF4BBC2 /* Pods-Canvas_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = ZNAXL37NHX;
 				INFOPLIST_FILE = Canvas/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -524,6 +526,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -532,6 +535,7 @@
 			baseConfigurationReference = 82B03ADE79E7CA47317302DF /* Pods-Canvas_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = ZNAXL37NHX;
 				INFOPLIST_FILE = Canvas/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -539,6 +543,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

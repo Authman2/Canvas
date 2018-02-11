@@ -1,0 +1,16 @@
+PODS:
+  - Canvas (0.1.0)
+
+DEPENDENCIES:
+  - Canvas (from `../`)
+
+EXTERNAL SOURCES:
+  Canvas:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Canvas: a4bb0fe09e3fd487d48b339b2806980b8844dc65
+
+PODFILE CHECKSUM: 8894004838d689237ea4aeda48d69bece4c83a36
+
+COCOAPODS: 1.4.0
