@@ -51,7 +51,7 @@ public extension Canvas {
         
         // Add to arrays and set initial point.
         currLayer.nodeArray.add(currLayer.nextNode!)
-        currLayer.nextNode?.setInitialPoint(point: currentPoint)
+        currLayer.nextNode!.setInitialPoint(point: currentPoint)
         
         // Call delegate.
         delegate?.didBeginDrawing(on: self, withTool: currentTool)
