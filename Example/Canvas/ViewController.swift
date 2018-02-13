@@ -136,7 +136,7 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        canvas.setTool(tool: CanvasTool.line)
+        canvas.setTool(tool: CanvasTool.rectangleFill)
     }
     
     
