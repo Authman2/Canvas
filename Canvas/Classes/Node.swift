@@ -85,6 +85,8 @@ public enum CanvasTool {
     case pen
     case eraser
     case line
+    case rectangle
+    case rectangleFill
 }
 
 

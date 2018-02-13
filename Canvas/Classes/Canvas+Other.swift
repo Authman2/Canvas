@@ -38,6 +38,8 @@ public extension Canvas {
         case CanvasTool.pen: n = PenNode(); break
         case CanvasTool.eraser: n = EraserNode(); break
         case CanvasTool.line: n = LineNode(); break
+        case CanvasTool.rectangle: n = RectangleNode(shouldFill: false); break
+        case CanvasTool.rectangleFill: n = RectangleNode(shouldFill: true); break
         }
         
         n.brush = self.currentBrush
