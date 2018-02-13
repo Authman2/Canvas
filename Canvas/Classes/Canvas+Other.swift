@@ -30,8 +30,8 @@ public extension Canvas {
     
     
     
-    /** Returns the node that you are going to use to draw, with the current brush settings. */
-    internal func getNodeWithCurrentBrush() -> Node {
+    /** Creates the node that you are going to use to draw, with the current brush settings. */
+    internal func createNodeWithCurrentBrush() -> Node {
         let n: Node
         
         switch currentTool! {

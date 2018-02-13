@@ -16,16 +16,29 @@ public class CanvasLayer {
      *                      *
      ************************/
     
+    // -- PRIVATE VARS --
+    
     /** The next node to be drawn on the screen, whether that be a curve, a line, or a shape. */
-    var nextNode: Node?
+    internal var nextNode: Node?
     
     /** The image that the user is drawing on. */
-    var drawImage: UIImage!
+    internal var drawImage: UIImage!
     
     /** All of the nodes on this layer. */
-    var nodeArray: NSMutableArray!
+    internal var nodeArray: NSMutableArray!
     
     
+    // -- PUBLIC VARS --
+    
+    /** Whether or not this layer is visible. True by default. */
+    public var isVisible: Bool
+    
+    /** Whether or not this layer allows drawing. True by default. */
+    public var allowsDrawing: Bool
+    
+    
+    
+    // -- PUBLIC COMPUTED VARS --
     
     /** Returns the number of nodes on this layer. */
     public var nodeCount: Int { return self.nodeArray.count }
@@ -46,6 +59,8 @@ public class CanvasLayer {
         nextNode = nil
         drawImage = UIImage()
         nodeArray = NSMutableArray()
+        isVisible = true
+        allowsDrawing = true
     }
     
     
@@ -69,8 +84,10 @@ public class CanvasLayer {
      ************************/
     
     public func draw() {
-        self.drawImage.draw(at: CGPoint.zero)
-        self.nextNode?.draw()
+        if self.isVisible == true {
+            self.drawImage.draw(at: CGPoint.zero)
+            self.nextNode?.draw()
+        }
     }
     
     

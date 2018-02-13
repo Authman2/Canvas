@@ -59,7 +59,7 @@ public class Canvas: UIView {
     
     // -- PUBLIC COMPUTED PROPERTIES --
     
-    /** Returns all of layers on the canvas. */
+    /** Returns all of the layers on the canvas. */
     public var canvasLayers: [CanvasLayer] { return self.layers }
     
     /** Returns the current canvas layer as an object. */

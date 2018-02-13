@@ -169,7 +169,7 @@ class ViewController: UIViewController, CanvasDelegate {
     
     @objc func addLayer() {
         let n = CanvasLayer()
-        canvas.addDrawingLayer(newLayer: n, position: .below)
+        canvas.addDrawingLayer(newLayer: n, position: .above)
     }
     
     @objc func switchLayer() {

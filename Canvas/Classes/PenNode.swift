@@ -18,13 +18,12 @@ class PenNode: Node {
     
     
     
-    
-    
     /************************
      *                      *
      *         INIT         *
      *                      *
      ************************/
+    
     
     
     
@@ -43,8 +42,6 @@ class PenNode: Node {
     override func move(from: CGPoint, to: CGPoint) {
         addQuadCurve(to: midpoint(a: from, b: to), controlPoint: from)
     }
-    
-    
     
     override func addPathLastLastPoint(p1: CGPoint, p2: CGPoint, currentPoint: CGPoint) -> CGRect {
         let mid1 = midpoint(a: p1, b: p2)

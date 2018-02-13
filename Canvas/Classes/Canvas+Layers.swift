@@ -15,7 +15,12 @@ public extension Canvas {
         if position == .above {
             layers.append(newLayer)
         } else {
-            layers.insert(newLayer, at: self.currentCanvasLayer)
+            if layers.count > 0 {
+                layers.insert(newLayer, at: self.currentCanvasLayer)
+                currentCanvasLayer += 1
+            } else {
+                layers.append(newLayer)
+            }
         }
     }
     
@@ -72,7 +77,53 @@ public extension Canvas {
         layers.remove(at: at)
         
         if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
+        
+        updateDrawing(redraw: false)
+        setNeedsDisplay()
     }    
+    
+    
+    /** Hides the layer at the given index. */
+    public func hideLayer(at: Int) {
+        if layers.count == 0 { return }
+        if at >= layers.count { return }
+        
+        layers[at].isVisible = false
+        
+        updateDrawing(redraw: false)
+        setNeedsDisplay()
+    }
+    
+    
+    /** Makes the layer at the given index visible. */
+    public func showLayer(at: Int) {
+        if layers.count == 0 { return }
+        if at >= layers.count { return }
+        
+        layers[at].isVisible = true
+        
+        updateDrawing(redraw: false)
+        setNeedsDisplay()
+    }
+    
+    
+    /** Locks a layer so that the user cannot draw on it. */
+    public func lockLayer(at: Int) {
+        if layers.count == 0 { return }
+        if at >= layers.count { return }
+        
+        layers[at].allowsDrawing = false
+    }
+    
+    
+    /** Unlocks a layer so that the user can draw on it. */
+    public func unlockLayer(at: Int) {
+        if layers.count == 0 { return }
+        if at >= layers.count { return }
+        
+        layers[at].allowsDrawing = true
+    }
+    
     
     
 }
