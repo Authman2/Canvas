@@ -136,7 +136,10 @@ class ViewController: UIViewController, CanvasDelegate {
     }
     
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        canvas.setTool(tool: CanvasTool.rectangleFill)
+        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangleFill, .ellipseFill]
+        let rand = Int(arc4random_uniform(UInt32(tools.count)))
+        
+        canvas.setTool(tool: tools[rand])
     }
     
     
