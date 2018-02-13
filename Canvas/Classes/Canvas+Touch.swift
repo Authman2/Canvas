@@ -16,11 +16,11 @@ public extension Canvas {
      ************************/
     
     /** Cleans up the line when you finish drawing a line. */
-    func finishDrawingNode() {
+    private func finishDrawingNode() {
         self.updateDrawing(redraw: false)
         self.redos.removeAllObjects()
-        self.delegate?.didEndDrawing(self)
-        self.nextNode = nil
+        self.delegate?.didEndDrawing(on: self, withTool: currentTool)
+        currentLayer?.nextNode = nil
     }
     
     
@@ -37,20 +37,24 @@ public extension Canvas {
     
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
+        guard let currLayer = currentLayer else { return }
+        
+        // Don't continue if the layer does not allow drawing.
+        if currLayer.allowsDrawing == false { return }
         
         // Get the first touch point.
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
         
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
-        self.nextNode = getNodeWithCurrentBrush()
+        currLayer.nextNode = createNodeWithCurrentBrush()
         
         // Add to arrays and set initial point.
-        self.nodeArray.add(self.nextNode!)
-        self.nextNode?.setInitialPoint(point: currentPoint)
+        currLayer.nodeArray.add(currLayer.nextNode!)
+        currLayer.nextNode?.setInitialPoint(point: currentPoint)
         
         // Call delegate.
-        delegate?.didBeginDrawing(self)
+        delegate?.didBeginDrawing(on: self, withTool: currentTool)
     }
     
     
@@ -58,6 +62,10 @@ public extension Canvas {
     
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
+        guard let currLayer = currentLayer else { return }
+        
+        // Don't continue if the layer does not allow drawing.
+        if currLayer.allowsDrawing == false { return }
         
         // Collect touches.
         lastLastPoint = lastPoint
@@ -66,24 +74,31 @@ public extension Canvas {
         
         // Draw based on the current tool.
         if currentTool == CanvasTool.pen || currentTool == CanvasTool.eraser {
-            var boundingBox = self.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
+            var boundingBox = currLayer.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
             
-            boundingBox.origin.x -= (self.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.origin.y -= (self.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.size.width += (self.nextNode?.brush.thickness ?? 5) * 4.0;
-            boundingBox.size.height += (self.nextNode?.brush.thickness ?? 5) * 4.0;
+            boundingBox.origin.x -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
+            boundingBox.origin.y -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
+            boundingBox.size.width += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
+            boundingBox.size.height += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
             
             setNeedsDisplay(boundingBox)
         }
         else {
-            self.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
             setNeedsDisplay()
         }
+        
+        self.delegate?.isDrawing(on: self, withTool: currentTool)
     }
     
     
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let currLayer = currentLayer else { return }
+        
+        // Don't continue if the layer does not allow drawing.
+        if currLayer.allowsDrawing == false { return }
+        
         // Make sure the point is recorded.
         touchesMoved(touches, with: event)
         
@@ -94,6 +109,11 @@ public extension Canvas {
     
     
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let currLayer = currentLayer else { return }
+        
+        // Don't continue if the layer does not allow drawing.
+        if currLayer.allowsDrawing == false { return }
+        
         // Make sure the point is recorded.
         touchesEnded(touches, with: event)
     }

@@ -10,30 +10,28 @@ import Foundation
 public extension Canvas {
     
     /** Updates the image with new changes. */
-    func updateDrawing(redraw: Bool) {
+    internal func updateDrawing(redraw: Bool) {
         UIGraphicsBeginImageContextWithOptions(self.frame.size, false, 0)
         
         if redraw {
-            self.drawingImage = nil
+            currentLayer?.drawImage = nil
             
-            for node in self.nodeArray {
-                (node as! Node).draw()
-            }
-            
+            // Draw each node in the current layer.
+            if let l = currentLayer { for node in l.nodeArray { (node as! Node).draw() } }
         } else {
-            self.drawingImage.draw(at: CGPoint.zero)
-            self.nextNode?.draw()
+            currentLayer?.drawImage.draw(at: CGPoint.zero)
+            currentLayer?.nextNode?.draw()
         }
         
-        self.drawingImage = UIGraphicsGetImageFromCurrentImageContext()
+        currentLayer?.drawImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
     
     
     
     
-    /** Returns the node that you are going to use to draw, with the current brush settings. */
-    internal func getNodeWithCurrentBrush() -> Node {
+    /** Creates the node that you are going to use to draw, with the current brush settings. */
+    internal func createNodeWithCurrentBrush() -> Node {
         let n: Node
         
         switch currentTool! {

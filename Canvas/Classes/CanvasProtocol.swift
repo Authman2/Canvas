@@ -11,13 +11,13 @@ import Foundation
 public protocol CanvasDelegate {
     
     /** Called when the user starts drawing on the canvas. */
-    func didBeginDrawing(_ canvas: Canvas)
+    func didBeginDrawing(on canvas: Canvas, withTool tool: CanvasTool)
     
     /** Called each time the user moves a finger around the canvas. */
-    func isDrawing(_ canvas: Canvas)
+    func isDrawing(on canvas: Canvas, withTool tool: CanvasTool)
     
     /** Called when the user stops drawing on the canvas. */
-    func didEndDrawing(_ canvas: Canvas)
+    func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool)
     
 }
 
