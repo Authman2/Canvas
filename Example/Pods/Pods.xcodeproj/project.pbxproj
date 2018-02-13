@@ -21,6 +21,7 @@
 		5AA0B9FD202EBFF80039D2EA /* EraserNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA0B9FC202EBFF80039D2EA /* EraserNode.swift */; };
 		5AA0B9FF202EC00F0039D2EA /* Canvas+Touch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA0B9FE202EC00F0039D2EA /* Canvas+Touch.swift */; };
 		5AA0BA01202EC1670039D2EA /* Brush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA0BA00202EC1670039D2EA /* Brush.swift */; };
+		5AD1A4E42033670000E95703 /* LineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD1A4E32033670000E95703 /* LineNode.swift */; };
 		6FE4779B983A092903794F1A92F85CB3 /* Pods-Canvas_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDC9BCD2B5053C08924D62136FDB582 /* Pods-Canvas_Tests-dummy.m */; };
 		89BCF01696FBF00B6D964FFE23176FD5 /* Canvas-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0078970FF840920F3E11F95599D87439 /* Canvas-dummy.m */; };
 		ABC2752780C4C58530F3DC5F50C740BC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
@@ -60,6 +61,7 @@
 		5AA0B9FC202EBFF80039D2EA /* EraserNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EraserNode.swift; path = Canvas/Classes/EraserNode.swift; sourceTree = "<group>"; };
 		5AA0B9FE202EC00F0039D2EA /* Canvas+Touch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Touch.swift"; path = "Canvas/Classes/Canvas+Touch.swift"; sourceTree = "<group>"; };
 		5AA0BA00202EC1670039D2EA /* Brush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Brush.swift; path = Canvas/Classes/Brush.swift; sourceTree = "<group>"; };
+		5AD1A4E32033670000E95703 /* LineNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LineNode.swift; path = Canvas/Classes/LineNode.swift; sourceTree = "<group>"; };
 		64AD4ECCF677EC2AE12A0DAB5F52B6F6 /* Pods-Canvas_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-Canvas_Tests.modulemap"; sourceTree = "<group>"; };
 		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		663BA14C8C10F8DF7847D959E277E21C /* Canvas.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Canvas.xcconfig; sourceTree = "<group>"; };
@@ -170,13 +172,14 @@
 			children = (
 				5AA0B9F0202EBF5F0039D2EA /* Canvas.swift */,
 				5AA0B9FE202EC00F0039D2EA /* Canvas+Touch.swift */,
-				5A34E258202F42FA00239696 /* Canvas+Other.swift */,
 				5A6CDDC4202FFC70003D5DB1 /* Canvas+Layers.swift */,
+				5A34E258202F42FA00239696 /* Canvas+Other.swift */,
 				5A6CDDC2202FDABD003D5DB1 /* CanvasLayer.swift */,
 				5AA0BA00202EC1670039D2EA /* Brush.swift */,
 				5AA0B9F8202EBFD60039D2EA /* Node.swift */,
 				5AA0B9FA202EBFEA0039D2EA /* PenNode.swift */,
 				5AA0B9FC202EBFF80039D2EA /* EraserNode.swift */,
+				5AD1A4E32033670000E95703 /* LineNode.swift */,
 				5AA0B9F2202EBF930039D2EA /* CanvasProtocol.swift */,
 				5AA0B9F4202EBFA50039D2EA /* Helpers.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
@@ -386,6 +389,7 @@
 				5AA0BA01202EC1670039D2EA /* Brush.swift in Sources */,
 				89BCF01696FBF00B6D964FFE23176FD5 /* Canvas-dummy.m in Sources */,
 				5AA0B9FD202EBFF80039D2EA /* EraserNode.swift in Sources */,
+				5AD1A4E42033670000E95703 /* LineNode.swift in Sources */,
 				5AA0B9F1202EBF5F0039D2EA /* Canvas.swift in Sources */,
 				5A6CDDC5202FFC70003D5DB1 /* Canvas+Layers.swift in Sources */,
 				5AA0B9F5202EBFA50039D2EA /* Helpers.swift in Sources */,

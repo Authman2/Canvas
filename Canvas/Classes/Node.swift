@@ -24,6 +24,11 @@ class Node: UIBezierPath {
     /** The brush that the tool should use to draw. */
     var brush: Brush
     
+    /** The first point of the node. */
+    var firstPoint: CGPoint
+    
+    /** The last point of the node. */
+    var lastPoint: CGPoint
     
     
     
@@ -38,6 +43,8 @@ class Node: UIBezierPath {
     public required init?(coder aDecoder: NSCoder) {
         path = CGMutablePath()
         brush = Brush.Default
+        firstPoint = CGPoint()
+        lastPoint = CGPoint()
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
@@ -45,6 +52,8 @@ class Node: UIBezierPath {
     override init() {
         path = CGMutablePath()
         brush = Brush.Default
+        firstPoint = CGPoint()
+        lastPoint = CGPoint()
         super.init()
         lineCapStyle = .round
     }
@@ -75,6 +84,7 @@ class Node: UIBezierPath {
 public enum CanvasTool {
     case pen
     case eraser
+    case line
 }
 
 

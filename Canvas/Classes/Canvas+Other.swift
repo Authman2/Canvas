@@ -37,6 +37,7 @@ public extension Canvas {
         switch currentTool! {
         case CanvasTool.pen: n = PenNode(); break
         case CanvasTool.eraser: n = EraserNode(); break
+        case CanvasTool.line: n = LineNode(); break
         }
         
         n.brush = self.currentBrush
