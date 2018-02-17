@@ -49,6 +49,16 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         return a
     }()
     
+    lazy var toolBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Change Tool (Random)", for: .normal)
+        a.backgroundColor = UIColor.lightGray
+        a.addTarget(self, action: #selector(newTool), for: .touchUpInside)
+        
+        return a
+    }()
+    
     lazy var undoBtn: UIButton = {
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +103,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.setTitle("Import Image", for: .normal)
-        a.backgroundColor = UIColor.lightGray
+        a.backgroundColor = UIColor.gray
         a.addTarget(self, action: #selector(importImage), for: .touchUpInside)
         
         return a
@@ -103,7 +113,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.setTitle("Export Image", for: .normal)
-        a.backgroundColor = UIColor.gray
+        a.backgroundColor = UIColor.lightGray
         a.addTarget(self, action: #selector(exportImage), for: .touchUpInside)
         
         return a
@@ -134,6 +144,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(redoBtn)
         view.addSubview(addLayerBtn)
         view.addSubview(switchLayerBtn)
+        view.addSubview(toolBtn)
         view.addSubview(importBtn)
         view.addSubview(exportBtn)
         
@@ -158,10 +169,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangleFill, .ellipseFill]
-        let rand = Int(arc4random_uniform(UInt32(tools.count)))
         
-        canvas.setTool(tool: tools[rand])
     }
     
     
@@ -187,6 +195,17 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
             return a
         }()
         canvas.setBrush(brush: nBrush)
+        
+        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color) and size \(nBrush.thickness)")
+    }
+    
+    @objc func newTool() {
+        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .rectangleFill, .ellipse, .ellipseFill]
+        let rand = Int(arc4random_uniform(UInt32(tools.count)))
+        
+        canvas.setTool(tool: tools[rand])
+        
+        alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
     @objc func undo() {
@@ -205,6 +224,8 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     @objc func switchLayer() {
         let rand = Int(arc4random_uniform(UInt32(canvas.canvasLayers.count)))
         canvas.switchLayer(to: rand)
+        
+        alert(title: "Switched Layer", message: "You are now on layer \(canvas.currentLayerIndex)")
     }
     
     @objc func importImage() {
@@ -222,7 +243,9 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        canvas.swapLayers(first: 0, second: 1)
+        
+        
+        // Alert export success.
     }
     
     
@@ -235,7 +258,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     
-    
+    func alert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.cancel, handler: nil))
+        self.show(alert, sender: self)
+    }
     
     
     
@@ -281,15 +308,20 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         switchLayerBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         switchLayerBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
         
-        importBtn.topAnchor.constraint(equalTo: canvasView.bottomAnchor).isActive = true
+        toolBtn.topAnchor.constraint(equalTo: canvasView.bottomAnchor).isActive = true
+        toolBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
+        toolBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
+        toolBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        importBtn.topAnchor.constraint(equalTo: toolBtn.bottomAnchor).isActive = true
         importBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
         importBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
-        importBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
+        importBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         exportBtn.topAnchor.constraint(equalTo: importBtn.bottomAnchor).isActive = true
         exportBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
         exportBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
-        exportBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
+        exportBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
     
     
