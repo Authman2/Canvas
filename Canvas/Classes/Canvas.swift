@@ -129,6 +129,7 @@ public class Canvas: UIView {
         allowsMultipleTouches = false
         
         backgroundColor = .clear
+        contentMode = UIViewContentMode.scaleAspectFit
         isMultipleTouchEnabled = allowsMultipleTouches == false ? true : false
         
         if createDefaultLayer == true { layers = [CanvasLayer()] }
@@ -148,6 +149,8 @@ public class Canvas: UIView {
      *                      *
      ************************/
     
+    // -- TOOLS AND BRUSHES --
+    
     /** Sets the tool that the canvas should use to draw. */
     public func setTool(tool: CanvasTool) {
         self.currentDrawingTool = tool
@@ -159,6 +162,9 @@ public class Canvas: UIView {
         self.currentDrawingBrush = brush
     }
     
+    
+    
+    // -- UNDO / REDO --
     
     /** Undo the last drawing stroke. */
     public func undo() {
@@ -193,6 +199,23 @@ public class Canvas: UIView {
         
         // Update.
         updateDrawing(redraw: true)
+        setNeedsDisplay()
+    }
+    
+    
+    
+    // -- IMPORT / EXPORT --
+    
+    /** Takes a UIImage as input and adds it to the canvas as a separate layer. */
+    public func importImage(image: UIImage) {
+        // Adding the canvas as a parameter to this layer lets it know how to draw
+        // the background image.
+        let newLayer = CanvasLayer(canvas: self)
+        newLayer.backgroundImage = image
+        newLayer.allowsDrawing = false
+        
+        addDrawingLayer(newLayer: newLayer)
+        updateDrawing(redraw: false)
         setNeedsDisplay()
     }
     

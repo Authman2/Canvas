@@ -9,7 +9,7 @@
 import UIKit
 import Canvas
 
-class ViewController: UIViewController, CanvasDelegate {
+class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     /************************
      *                      *
@@ -53,7 +53,7 @@ class ViewController: UIViewController, CanvasDelegate {
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.setTitle("Undo", for: .normal)
-        a.backgroundColor = UIColor.gray
+        a.backgroundColor = UIColor.lightGray
         a.addTarget(self, action: #selector(undo), for: .touchUpInside)
         
         return a
@@ -73,7 +73,7 @@ class ViewController: UIViewController, CanvasDelegate {
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.setTitle("Add Layer", for: .normal)
-        a.backgroundColor = UIColor.gray
+        a.backgroundColor = UIColor.lightGray
         a.addTarget(self, action: #selector(addLayer), for: .touchUpInside)
         
         return a
@@ -85,6 +85,26 @@ class ViewController: UIViewController, CanvasDelegate {
         a.setTitle("Switch Layer (Random)", for: .normal)
         a.backgroundColor = UIColor.gray
         a.addTarget(self, action: #selector(switchLayer), for: .touchUpInside)
+        
+        return a
+    }()
+    
+    lazy var importBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Import Image", for: .normal)
+        a.backgroundColor = UIColor.lightGray
+        a.addTarget(self, action: #selector(importImage), for: .touchUpInside)
+        
+        return a
+    }()
+    
+    lazy var exportBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Export Image", for: .normal)
+        a.backgroundColor = UIColor.gray
+        a.addTarget(self, action: #selector(exportImage), for: .touchUpInside)
         
         return a
     }()
@@ -114,6 +134,8 @@ class ViewController: UIViewController, CanvasDelegate {
         view.addSubview(redoBtn)
         view.addSubview(addLayerBtn)
         view.addSubview(switchLayerBtn)
+        view.addSubview(importBtn)
+        view.addSubview(exportBtn)
         
         setupLayout()
     }
@@ -185,8 +207,32 @@ class ViewController: UIViewController, CanvasDelegate {
         canvas.switchLayer(to: rand)
     }
     
+    @objc func importImage() {
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            let imagePicker: UIImagePickerController = {
+                let a = UIImagePickerController()
+                a.delegate = self
+                a.sourceType = .photoLibrary
+                a.allowsEditing = false
+                return a
+            }()
+            
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func exportImage() {
+        canvas.swapLayers(first: 0, second: 1)
+    }
     
     
+    
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
+        canvas.importImage(image: image)
+        self.dismiss(animated: true, completion: nil)
+    }
     
     
     
@@ -211,29 +257,39 @@ class ViewController: UIViewController, CanvasDelegate {
         canvas.heightAnchor.constraint(equalTo: canvasView.heightAnchor).isActive = true
         
         colorBtn.topAnchor.constraint(equalTo: canvasView.bottomAnchor).isActive = true
-        colorBtn.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor).isActive = true
-        colorBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor).isActive = true
+        colorBtn.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
+        colorBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         colorBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
 
         undoBtn.topAnchor.constraint(equalTo: colorBtn.bottomAnchor).isActive = true
-        undoBtn.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor).isActive = true
-        undoBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor).isActive = true
+        undoBtn.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
+        undoBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         undoBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
 
         redoBtn.topAnchor.constraint(equalTo: undoBtn.bottomAnchor).isActive = true
-        redoBtn.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor).isActive = true
-        redoBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor).isActive = true
+        redoBtn.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
+        redoBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         redoBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
 
         addLayerBtn.topAnchor.constraint(equalTo: redoBtn.bottomAnchor).isActive = true
-        addLayerBtn.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor).isActive = true
-        addLayerBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor).isActive = true
+        addLayerBtn.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
+        addLayerBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         addLayerBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
 
         switchLayerBtn.topAnchor.constraint(equalTo: addLayerBtn.bottomAnchor).isActive = true
-        switchLayerBtn.centerXAnchor.constraint(equalTo: canvasView.centerXAnchor).isActive = true
-        switchLayerBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor).isActive = true
+        switchLayerBtn.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
+        switchLayerBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         switchLayerBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
+        
+        importBtn.topAnchor.constraint(equalTo: canvasView.bottomAnchor).isActive = true
+        importBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
+        importBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
+        importBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
+        
+        exportBtn.topAnchor.constraint(equalTo: importBtn.bottomAnchor).isActive = true
+        exportBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
+        exportBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
+        exportBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
     }
     
     

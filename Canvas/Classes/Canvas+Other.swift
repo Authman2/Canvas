@@ -12,20 +12,25 @@ public extension Canvas {
     /** Updates the image with new changes. */
     internal func updateDrawing(redraw: Bool) {
         UIGraphicsBeginImageContextWithOptions(self.frame.size, false, 0)
+        guard let currLayer = currentLayer else { UIGraphicsEndImageContext(); return }
         
         if redraw {
-            currentLayer?.drawImage = nil
+            currLayer.drawImage = nil
             
             // Redraw each node in the current layer.
             for layer in layers {
                 for node in layer.nodeArray { node.draw() }
             }
         } else {
-            currentLayer?.drawImage.draw(at: CGPoint.zero)
-            currentLayer?.nextNode?.draw()
+            // Draw background image.
+            if currLayer.canvas != nil { currLayer.backgroundImage.draw(in: currLayer.canvas.frame) }
+            
+            // Draw the actual drawing image.
+            currLayer.drawImage.draw(at: CGPoint.zero)
+            currLayer.nextNode?.draw()
         }
         
-        currentLayer?.drawImage = UIGraphicsGetImageFromCurrentImageContext()
+        currLayer.drawImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
     
