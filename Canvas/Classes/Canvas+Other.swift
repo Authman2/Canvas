@@ -16,8 +16,10 @@ public extension Canvas {
         if redraw {
             currentLayer?.drawImage = nil
             
-            // Draw each node in the current layer.
-            if let l = currentLayer { for node in l.nodeArray { (node as! Node).draw() } }
+            // Redraw each node in the current layer.
+            for layer in layers {
+                for node in layer.nodeArray { node.draw() }
+            }
         } else {
             currentLayer?.drawImage.draw(at: CGPoint.zero)
             currentLayer?.nextNode?.draw()
@@ -28,13 +30,11 @@ public extension Canvas {
     }
     
     
-    
-    
     /** Creates the node that you are going to use to draw, with the current brush settings. */
     internal func createNodeWithCurrentBrush() -> Node {
         let n: Node
         
-        switch currentTool! {
+        switch currentDrawingTool! {
         case CanvasTool.pen: n = PenNode(); break
         case CanvasTool.eraser: n = EraserNode(); break
         case CanvasTool.line: n = LineNode(); break
@@ -44,7 +44,8 @@ public extension Canvas {
         case CanvasTool.ellipseFill: n = EllipseNode(shouldFill: true); break
         }
         
-        n.brush = self.currentBrush
+        n.id = totalNodeCount
+        n.brush = currentDrawingBrush
         return n
     }
     

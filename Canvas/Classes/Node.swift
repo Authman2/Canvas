@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /** A Node on the canvas. A node is basically just any curve, line, or shape that appears on the canvas
  and is selectable. */
 class Node: UIBezierPath {
@@ -30,6 +29,9 @@ class Node: UIBezierPath {
     /** The last point of the node. */
     var lastPoint: CGPoint
     
+    /** The id used to identify different nodes on the canvas. */
+    var id: Int
+    
     
     
     
@@ -45,6 +47,7 @@ class Node: UIBezierPath {
         brush = Brush.Default
         firstPoint = CGPoint()
         lastPoint = CGPoint()
+        id = 0
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
@@ -54,6 +57,7 @@ class Node: UIBezierPath {
         brush = Brush.Default
         firstPoint = CGPoint()
         lastPoint = CGPoint()
+        id = 0
         super.init()
         lineCapStyle = .round
     }

@@ -25,7 +25,7 @@ public class CanvasLayer {
     internal var drawImage: UIImage!
     
     /** All of the nodes on this layer. */
-    internal var nodeArray: NSMutableArray!
+    internal var nodeArray: [Node]!
     
     
     // -- PUBLIC VARS --
@@ -58,7 +58,7 @@ public class CanvasLayer {
     public init() {
         nextNode = nil
         drawImage = UIImage()
-        nodeArray = NSMutableArray()
+        nodeArray = []
         isVisible = true
         allowsDrawing = true
     }

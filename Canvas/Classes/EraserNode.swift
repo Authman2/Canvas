@@ -31,7 +31,6 @@ class EraserNode: PenNode {
     
     
     
-    
     /************************
      *                      *
      *       FUNCTIONS      *

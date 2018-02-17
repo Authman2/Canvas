@@ -158,16 +158,21 @@ class ViewController: UIViewController, CanvasDelegate {
         let c: [UIColor] = [.green, .red, .blue, .orange, .purple]
         let rand = Int(arc4random_uniform(UInt32(c.count)))
         
-        canvas.currentBrush.color = c[rand]
-        canvas.currentBrush.thickness = canvas.currentBrush.thickness == 10 ? 5 : 10
+        let nBrush: Brush = {
+            let a = Brush()
+            a.color = c[rand]
+            a.thickness = canvas.currentBrush.thickness == 10 ? 5 : 10
+            return a
+        }()
+        canvas.setBrush(brush: nBrush)
     }
     
     @objc func undo() {
-        
+        canvas.undo()
     }
     
     @objc func redo() {
-        
+        canvas.redo()
     }
     
     @objc func addLayer() {

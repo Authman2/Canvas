@@ -17,9 +17,16 @@ public extension Canvas {
     
     /** Cleans up the line when you finish drawing a line. */
     private func finishDrawingNode() {
+        guard let currLayer = currentLayer else { return }
+        
+        // Update the drawing.
         self.updateDrawing(redraw: false)
-        self.redos.removeAllObjects()
-        self.delegate?.didEndDrawing(on: self, withTool: currentTool)
+        
+        // Undo/redo
+        self.undos.append((currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id))
+        self.redos.removeAll()
+
+        self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         currentLayer?.nextNode = nil
     }
     
@@ -50,11 +57,11 @@ public extension Canvas {
         currLayer.nextNode = createNodeWithCurrentBrush()
         
         // Add to arrays and set initial point.
-        currLayer.nodeArray.add(currLayer.nextNode!)
+        currLayer.nodeArray.append(currLayer.nextNode!)
         currLayer.nextNode!.setInitialPoint(point: currentPoint)
         
         // Call delegate.
-        delegate?.didBeginDrawing(on: self, withTool: currentTool)
+        delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
     }
     
     
@@ -73,7 +80,7 @@ public extension Canvas {
         currentPoint = touch.location(in: self)
         
         // Draw based on the current tool.
-        if currentTool == CanvasTool.pen || currentTool == CanvasTool.eraser {
+        if currentDrawingTool == CanvasTool.pen || currentDrawingTool == CanvasTool.eraser {
             var boundingBox = currLayer.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
             
             boundingBox.origin.x -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
@@ -88,7 +95,7 @@ public extension Canvas {
             setNeedsDisplay()
         }
         
-        self.delegate?.isDrawing(on: self, withTool: currentTool)
+        self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
     }
     
     
