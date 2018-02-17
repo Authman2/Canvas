@@ -49,6 +49,9 @@ public extension Canvas {
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
         
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
+        
         // Get the first touch point.
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
@@ -56,8 +59,10 @@ public extension Canvas {
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
         currLayer.nextNode = createNodeWithCurrentBrush()
         
-        // Add to arrays and set initial point.
+        // Add the drawing stroke.
         currLayer.nodeArray.append(currLayer.nextNode!)
+        
+        // Set initial point.
         currLayer.nextNode!.setInitialPoint(point: currentPoint)
         
         // Call delegate.
@@ -73,6 +78,9 @@ public extension Canvas {
         
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
+        
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
         
         // Collect touches.
         lastLastPoint = lastPoint
@@ -106,6 +114,9 @@ public extension Canvas {
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
         
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
+        
         // Make sure the point is recorded.
         touchesMoved(touches, with: event)
         
@@ -120,6 +131,9 @@ public extension Canvas {
         
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
+        
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
         
         // Make sure the point is recorded.
         touchesEnded(touches, with: event)

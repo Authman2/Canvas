@@ -55,6 +55,8 @@ public class Canvas: UIView {
     /** The delegate. */
     public var delegate: CanvasDelegate?
     
+    /** Whether or not the canvas should allow for multiple touches at a time. False by default. */
+    public var allowsMultipleTouches: Bool!
     
     
     // -- PUBLIC COMPUTED PROPERTIES --
@@ -124,7 +126,10 @@ public class Canvas: UIView {
         undos = []
         redos = []
         
+        allowsMultipleTouches = false
+        
         backgroundColor = .clear
+        isMultipleTouchEnabled = allowsMultipleTouches == false ? true : false
         
         if createDefaultLayer == true { layers = [CanvasLayer()] }
         else { layers = [] }
