@@ -85,6 +85,15 @@ public class CanvasLayer {
      *                      *
      ************************/
 
+    /** Returns a UIImage that is a combination of the background image and the drawing image. */
+    internal func mergedWithBackground() -> UIImage {
+        if canvas == nil { return drawImage }
+        switch canvas! {
+        case nil: return drawImage
+        default: return backgroundImage + drawImage
+        }
+    }
+    
     
     
     

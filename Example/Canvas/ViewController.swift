@@ -219,6 +219,8 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     @objc func addLayer() {
         let n = CanvasLayer()
         canvas.addDrawingLayer(newLayer: n, position: .above)
+        
+        alert(title: "New Layer", message: "Added a new layer to the canvas.")
     }
     
     @objc func switchLayer() {
@@ -243,9 +245,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        
+        let exported = canvas.export()
+        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
         
         // Alert export success.
+        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
     }
     
     

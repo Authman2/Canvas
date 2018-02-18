@@ -14,6 +14,13 @@ public enum LayerPosition {
     case below
 }
 
+/** The file format of the exported image. */
+public enum CanvasExportType {
+    case png
+    case jpeg
+}
+
+
 
 /** A component that the user can draw on. */
 public class Canvas: UIView {
@@ -220,6 +227,21 @@ public class Canvas: UIView {
     }
     
     
+    /** Exports the image from the entire canvas to a UIImage. The output image will look as the canvas does
+     at the time of export.*/
+    public func export() -> UIImage {
+        // Merge the images on each layer.
+        var merged = UIImage()
+        for i in 0..<layers.count { merged = merged + exportLayer(at: i) }
+        return merged
+    }
+    
+    
+    /** Exports only the layer at the specified index. */
+    public func exportLayer(at: Int) -> UIImage {
+        let merged = layers[at].mergedWithBackground()
+        return merged
+    }
     
     
     

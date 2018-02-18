@@ -19,6 +19,7 @@ public extension Canvas {
             
             // Redraw each node in the current layer.
             for layer in layers {
+                if layer.canvas != nil { layer.backgroundImage.draw(in: layer.canvas.frame) }
                 for node in layer.nodeArray { node.draw() }
             }
         } else {
