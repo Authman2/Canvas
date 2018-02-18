@@ -31,7 +31,7 @@ public class CanvasLayer {
     internal var backgroundImage: UIImage!
     
     /** All of the nodes on this layer. */
-    internal var nodeArray: [Node]!
+    var nodeArray: [Node]!
     
     
     // -- PUBLIC VARS --
@@ -101,6 +101,19 @@ public class CanvasLayer {
         drawImage = UIImage()
         nodeArray = []
     }
+    
+    
+    /** Returns all the nodes on this layer. */
+    public func getNodes() -> [Node] { return self.nodeArray }
+    
+    
+    /** Returns the background image of this layer. */
+    public func getBackgroundImage() -> UIImage { return backgroundImage }
+    
+    
+    /** Returns the drawing image. */
+    public func getDrawingImage() -> UIImage { return drawImage }
+    
     
     
     

@@ -13,14 +13,6 @@ public enum LayerPosition {
     case below
 }
 
-/** The file format of the exported image. */
-public enum CanvasExportType {
-    case png
-    case jpeg
-}
-
-
-
 /** A component that the user can draw on. */
 public class Canvas: UIView {
     
@@ -238,6 +230,8 @@ public class Canvas: UIView {
         let newLayer = CanvasLayer(canvas: self)
         newLayer.backgroundImage = image
         newLayer.allowsDrawing = false
+        
+        redos.removeAll()
         
         addDrawingLayer(newLayer: newLayer)
         updateDrawing(redraw: false)

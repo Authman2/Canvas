@@ -9,7 +9,7 @@ import Foundation
 
 /** A Node on the canvas. A node is basically just any curve, line, or shape that appears on the canvas
  and is selectable. */
-class Node: UIBezierPath {
+public class Node: UIBezierPath {
     
     /************************
      *                      *
