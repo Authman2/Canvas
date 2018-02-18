@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     #   * Finally, don't worry about the indent, CocoaPods strips it!
     
     s.description      = <<-DESC
-    Canvas provides a simple solution to creating freeform drawings in iOS applications. The Canvas is extendable, meaning that the user can create a variety of brushes and change different settings to make the Canvas suit specific needs.
+    Canvas creates an area on the screen where the user can draw lines and shapes, style drawings by adding different types of brushes, and work with multiple layers. It provides an easy way to add on-screen drawing to any iOS app.
     DESC
     
     s.homepage         = 'https://github.com/authman2/Canvas'

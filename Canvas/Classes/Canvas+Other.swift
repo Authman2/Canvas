@@ -12,29 +12,35 @@ public extension Canvas {
     /** Updates the image with new changes. */
     internal func updateDrawing(redraw: Bool) {
         UIGraphicsBeginImageContextWithOptions(self.frame.size, false, 0)
+        guard let currLayer = currentLayer else { UIGraphicsEndImageContext(); return }
         
         if redraw {
-            currentLayer?.drawImage = nil
+            currLayer.drawImage = nil
             
-            // Draw each node in the current layer.
-            if let l = currentLayer { for node in l.nodeArray { (node as! Node).draw() } }
+            // Redraw each node in the current layer.
+            for layer in layers {
+                if layer.canvas != nil { layer.backgroundImage.draw(in: layer.canvas.frame) }
+                for node in layer.nodeArray { node.draw() }
+            }
         } else {
-            currentLayer?.drawImage.draw(at: CGPoint.zero)
-            currentLayer?.nextNode?.draw()
+            // Draw background image.
+            if currLayer.canvas != nil { currLayer.backgroundImage.draw(in: currLayer.canvas.frame) }
+            
+            // Draw the actual drawing image.
+            currLayer.drawImage.draw(at: CGPoint.zero)
+            currLayer.nextNode?.draw()
         }
         
-        currentLayer?.drawImage = UIGraphicsGetImageFromCurrentImageContext()
+        currLayer.drawImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
-    
-    
     
     
     /** Creates the node that you are going to use to draw, with the current brush settings. */
     internal func createNodeWithCurrentBrush() -> Node {
         let n: Node
         
-        switch currentTool! {
+        switch currentDrawingTool! {
         case CanvasTool.pen: n = PenNode(); break
         case CanvasTool.eraser: n = EraserNode(); break
         case CanvasTool.line: n = LineNode(); break
@@ -44,7 +50,8 @@ public extension Canvas {
         case CanvasTool.ellipseFill: n = EllipseNode(shouldFill: true); break
         }
         
-        n.brush = self.currentBrush
+        n.id = totalNodeCount
+        n.brush = currentDrawingBrush
         return n
     }
     

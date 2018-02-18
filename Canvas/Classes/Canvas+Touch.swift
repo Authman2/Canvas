@@ -17,9 +17,16 @@ public extension Canvas {
     
     /** Cleans up the line when you finish drawing a line. */
     private func finishDrawingNode() {
+        guard let currLayer = currentLayer else { return }
+        
+        // Update the drawing.
         self.updateDrawing(redraw: false)
-        self.redos.removeAllObjects()
-        self.delegate?.didEndDrawing(on: self, withTool: currentTool)
+        
+        // Undo/redo
+        self.undos.append((currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id))
+        self.redos.removeAll()
+
+        self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         currentLayer?.nextNode = nil
     }
     
@@ -42,6 +49,9 @@ public extension Canvas {
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
         
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
+        
         // Get the first touch point.
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
@@ -49,12 +59,14 @@ public extension Canvas {
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
         currLayer.nextNode = createNodeWithCurrentBrush()
         
-        // Add to arrays and set initial point.
-        currLayer.nodeArray.add(currLayer.nextNode!)
+        // Add the drawing stroke.
+        currLayer.nodeArray.append(currLayer.nextNode!)
+        
+        // Set initial point.
         currLayer.nextNode!.setInitialPoint(point: currentPoint)
         
         // Call delegate.
-        delegate?.didBeginDrawing(on: self, withTool: currentTool)
+        delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
     }
     
     
@@ -67,13 +79,16 @@ public extension Canvas {
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
         
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
+        
         // Collect touches.
         lastLastPoint = lastPoint
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
         
         // Draw based on the current tool.
-        if currentTool == CanvasTool.pen || currentTool == CanvasTool.eraser {
+        if currentDrawingTool == CanvasTool.pen || currentDrawingTool == CanvasTool.eraser {
             var boundingBox = currLayer.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
             
             boundingBox.origin.x -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
@@ -88,7 +103,7 @@ public extension Canvas {
             setNeedsDisplay()
         }
         
-        self.delegate?.isDrawing(on: self, withTool: currentTool)
+        self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
     }
     
     
@@ -98,6 +113,9 @@ public extension Canvas {
         
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
+        
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
         
         // Make sure the point is recorded.
         touchesMoved(touches, with: event)
@@ -113,6 +131,9 @@ public extension Canvas {
         
         // Don't continue if the layer does not allow drawing.
         if currLayer.allowsDrawing == false { return }
+        
+        // Don't continue if there is more than one touch.
+        if touches.count > 1 { return }
         
         // Make sure the point is recorded.
         touchesEnded(touches, with: event)
