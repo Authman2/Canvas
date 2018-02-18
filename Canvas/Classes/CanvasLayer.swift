@@ -49,7 +49,8 @@ public class CanvasLayer {
     /** Returns the number of nodes on this layer. */
     public var nodeCount: Int { return self.nodeArray.count }
     
-    
+    /** Whether or not his layer has a background image. */
+    public var hasBackgroundImage: Bool { return self.canvas != nil }
     
     
     
