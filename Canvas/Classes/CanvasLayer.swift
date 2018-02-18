@@ -95,6 +95,14 @@ public class CanvasLayer {
     }
     
     
+    /** Clears the drawing on this layer. */
+    public func clear() {
+        backgroundImage = UIImage()
+        drawImage = UIImage()
+        nodeArray = []
+    }
+    
+    
     
     
     

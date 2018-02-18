@@ -79,6 +79,16 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         return a
     }()
     
+    lazy var clearBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Clear", for: .normal)
+        a.backgroundColor = UIColor.gray
+        a.addTarget(self, action: #selector(clear), for: .touchUpInside)
+        
+        return a
+    }()
+    
     lazy var addLayerBtn: UIButton = {
         let a = UIButton()
         a.translatesAutoresizingMaskIntoConstraints = false
@@ -142,6 +152,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(colorBtn)
         view.addSubview(undoBtn)
         view.addSubview(redoBtn)
+        view.addSubview(clearBtn)
         view.addSubview(addLayerBtn)
         view.addSubview(switchLayerBtn)
         view.addSubview(toolBtn)
@@ -214,6 +225,10 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     @objc func redo() {
         canvas.redo()
+    }
+    
+    @objc func clear() {
+        canvas.clear()
     }
     
     @objc func addLayer() {
@@ -326,6 +341,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         exportBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
         exportBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         exportBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        clearBtn.topAnchor.constraint(equalTo: exportBtn.bottomAnchor).isActive = true
+        clearBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
+        clearBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
+        clearBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
     
     

@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /** The position to add a new layer on: above or below. */
 public enum LayerPosition {
     case above
@@ -171,7 +170,7 @@ public class Canvas: UIView {
     
     
     
-    // -- UNDO / REDO --
+    // -- UNDO / REDO / CLEAR --
     
     /** Undo the last drawing stroke. */
     public func undo() {
@@ -208,6 +207,25 @@ public class Canvas: UIView {
         updateDrawing(redraw: true)
         setNeedsDisplay()
     }
+    
+    
+    /** Clears the entire canvas. */
+    public func clear() {
+        for layer in layers { layer.clear() }
+        updateDrawing(redraw: true)
+        setNeedsDisplay()
+    }
+    
+    
+    /** Clears a drawing on the layer at the specified index. */
+    public func clearLayer(at: Int) {
+        if at < 0 || at >= layers.count { return }
+        layers[at].clear()
+        updateDrawing(redraw: true)
+        setNeedsDisplay()
+    }
+    
+    
     
     
     
