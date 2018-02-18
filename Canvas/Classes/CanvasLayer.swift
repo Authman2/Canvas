@@ -115,7 +115,12 @@ public class CanvasLayer {
     public func getDrawingImage() -> UIImage { return drawImage }
     
     
+    /** Sets the drawing image. */
+    public func setDrawingImage(img: UIImage) { self.drawImage = img }
     
+    
+    /** Sets the background image. */
+    public func setBackgroundImage(img: UIImage) { self.backgroundImage = img }
     
     
     
