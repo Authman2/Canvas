@@ -116,12 +116,24 @@ public class CanvasLayer {
     public func getDrawingImage() -> UIImage { return drawImage }
     
     
+    
     /** Sets the drawing image. */
     public func setDrawingImage(img: UIImage) { self.drawImage = img }
     
     
     /** Sets the background image. */
     public func setBackgroundImage(img: UIImage) { self.backgroundImage = img }
+    
+    
+    /** Takes an array of nodes as input and draws them all on this layer. */
+    public func drawFrom(nodes: [Node], on canvas: Canvas, background: UIImage? = nil) {
+        self.nodeArray.append(contentsOf: nodes)
+        
+        if background != nil { self.backgroundImage = background }
+        
+        canvas.updateDrawing(redraw: true)
+        canvas.setNeedsDisplay()
+    }
     
     
     
