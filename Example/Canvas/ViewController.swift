@@ -232,7 +232,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func addLayer() {
-        let n = CanvasLayer()
+        let n = CanvasLayer(canvas: canvas)
         canvas.addDrawingLayer(newLayer: n, position: .above)
         
         alert(title: "New Layer", message: "Added a new layer to the canvas.")
@@ -260,11 +260,12 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        let exported = canvas.export()
-        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
-        
-        // Alert export success.
-        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
+        canvas.canvasLayers[0].opacity = 0.3
+//        let exported = canvas.export()
+//        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
+//
+//        // Alert export success.
+//        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
     }
     
     

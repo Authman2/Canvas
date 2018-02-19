@@ -130,7 +130,7 @@ public class Canvas: UIView {
         contentMode = UIViewContentMode.scaleAspectFit
         isMultipleTouchEnabled = allowsMultipleTouches == false ? true : false
         
-        if createDefaultLayer == true { layers = [CanvasLayer()] }
+        if createDefaultLayer == true { layers = [CanvasLayer(canvas: self)] }
         else { layers = [] }
         
         currentDrawingTool = .pen

@@ -42,6 +42,17 @@ public class CanvasLayer {
     /** Whether or not this layer allows drawing. True by default. */
     public var allowsDrawing: Bool
     
+    /** The opacity of everything on this layer. */
+    public var opacity: CGFloat {
+        didSet {
+            if backgroundImage != nil { backgroundImage = backgroundImage.withOpacity(opacity) }
+            drawImage = drawImage.withOpacity(opacity)
+            canvas.updateDrawing(redraw: false)
+            canvas.setNeedsDisplay()
+        }
+    }
+    
+    
     
     
     // -- PUBLIC COMPUTED VARS --
@@ -50,7 +61,7 @@ public class CanvasLayer {
     public var nodeCount: Int { return self.nodeArray.count }
     
     /** Whether or not his layer has a background image. */
-    public var hasBackgroundImage: Bool { return self.canvas != nil }
+    public var hasBackgroundImage: Bool { return self.backgroundImage != nil }
     
     
     
@@ -62,19 +73,15 @@ public class CanvasLayer {
      *                      *
      ************************/
     
-    public init() {
+    public init(canvas: Canvas) {
         nextNode = nil
         drawImage = UIImage()
-        backgroundImage = UIImage()
+        backgroundImage = nil
         nodeArray = []
         isVisible = true
         allowsDrawing = true
-        canvas = nil
-    }
-    
-    internal convenience init(canvas: Canvas) {
-        self.init()
         self.canvas = canvas
+        opacity = 1
     }
     
     
@@ -88,8 +95,7 @@ public class CanvasLayer {
 
     /** Returns a UIImage that is a combination of the background image and the drawing image. */
     internal func mergedWithBackground() -> UIImage {
-        if canvas == nil { return drawImage }
-        switch canvas! {
+        switch backgroundImage {
         case nil: return drawImage
         default: return backgroundImage + drawImage
         }
@@ -116,15 +122,6 @@ public class CanvasLayer {
     public func getDrawingImage() -> UIImage { return drawImage }
     
     
-    
-    /** Sets the drawing image. */
-    public func setDrawingImage(img: UIImage) { self.drawImage = img }
-    
-    
-    /** Sets the background image. */
-    public func setBackgroundImage(img: UIImage) { self.backgroundImage = img }
-    
-    
     /** Takes an array of nodes as input and draws them all on this layer. */
     public func drawFrom(nodes: [Node], on canvas: Canvas, background: UIImage? = nil) {
         self.nodeArray.append(contentsOf: nodes)
@@ -146,20 +143,14 @@ public class CanvasLayer {
      ************************/
     
     public func draw() {
-        // If there is no reference to a canvas, then draw at the point CGPoint.zero
-        // Otherwise, draw inside the frame of the canvas.
-        guard let cv = canvas else {
-            if self.isVisible == true {
-                self.backgroundImage.draw(at: CGPoint.zero)
-                self.drawImage.draw(at: CGPoint.zero)
-                self.nextNode?.draw()
-            }
-            return
-        }
+        if isVisible == false { return }
         
-        // If this layer knows what canvas it's on, then draw inside that frame.
-        // Only used for drawing background images.
-        if self.isVisible == true {
+        // If there is no background image, draw at CGPoint.zero, otherwise inside frame.
+        if backgroundImage == nil {
+            self.drawImage.draw(at: CGPoint.zero)
+            self.nextNode?.draw()
+        } else {
+            let cv = self.canvas!
             self.backgroundImage.draw(in: cv.frame)
             self.drawImage.draw(in: cv.frame)
             self.nextNode?.draw()

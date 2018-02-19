@@ -39,4 +39,23 @@ public extension UIImage {
         return combine
     }
     
+    
+    
+    /** Returns this UIImage, but dimmed with the specified opacity. */
+    func withOpacity(_ value: CGFloat) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        var img: UIImage = UIImage()
+        if let context = UIGraphicsGetCurrentContext() {
+            let area = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            context.scaleBy(x: 1, y: -1)
+            context.translateBy(x: 0, y: -area.size.height)
+            context.setBlendMode(.multiply)
+            context.setAlpha(value)
+            context.draw(cgImage!, in: area)
+            img = UIGraphicsGetImageFromCurrentImageContext()!
+        }
+        UIGraphicsEndImageContext()
+        return img
+    }
+    
 }
