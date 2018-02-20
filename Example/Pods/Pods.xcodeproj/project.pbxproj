@@ -11,6 +11,8 @@
 		2C3D4852F63B02AA1C8F3932575D0D2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		36EFE09DC334C5765072E51F134DE132 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		5A34E259202F42FA00239696 /* Canvas+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A34E258202F42FA00239696 /* Canvas+Other.swift */; };
+		5A4C9DAD203B907A00B1D5D6 /* UIImage+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */; };
+		5A4C9DAF203B908900B1D5D6 /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */; };
 		5A6CDDC3202FDABD003D5DB1 /* CanvasLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6CDDC2202FDABD003D5DB1 /* CanvasLayer.swift */; };
 		5A6CDDC5202FFC70003D5DB1 /* Canvas+Layers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6CDDC4202FFC70003D5DB1 /* Canvas+Layers.swift */; };
 		5AA0B9F1202EBF5F0039D2EA /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA0B9F0202EBF5F0039D2EA /* Canvas.swift */; };
@@ -53,6 +55,8 @@
 		430909C79C3B6D7CFBF92B02A726163B /* Canvas-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Canvas-umbrella.h"; sourceTree = "<group>"; };
 		57DC85AB85F80F091008A91FE9DFB7A4 /* Pods-Canvas_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Canvas_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		5A34E258202F42FA00239696 /* Canvas+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Other.swift"; path = "Canvas/Classes/Canvas+Other.swift"; sourceTree = "<group>"; };
+		5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIImage+Properties.swift"; path = "Canvas/Classes/UIImage+Properties.swift"; sourceTree = "<group>"; };
+		5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIColor+RGB.swift"; path = "Canvas/Classes/UIColor+RGB.swift"; sourceTree = "<group>"; };
 		5A6CDDC2202FDABD003D5DB1 /* CanvasLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CanvasLayer.swift; path = Canvas/Classes/CanvasLayer.swift; sourceTree = "<group>"; };
 		5A6CDDC4202FFC70003D5DB1 /* Canvas+Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Layers.swift"; path = "Canvas/Classes/Canvas+Layers.swift"; sourceTree = "<group>"; };
 		5AA0B9F0202EBF5F0039D2EA /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Canvas.swift; path = Canvas/Classes/Canvas.swift; sourceTree = "<group>"; };
@@ -188,6 +192,8 @@
 				5AD1A4E72033727B00E95703 /* EllipseNode.swift */,
 				5AA0B9F2202EBF930039D2EA /* CanvasProtocol.swift */,
 				5AA0B9F4202EBFA50039D2EA /* Helpers.swift */,
+				5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */,
+				5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
 				4EAF8B9810D832A8FA7B2CC9547EB64D /* Support Files */,
 			);
@@ -389,9 +395,11 @@
 			files = (
 				5AA0B9F3202EBF930039D2EA /* CanvasProtocol.swift in Sources */,
 				5AA0B9FB202EBFEA0039D2EA /* PenNode.swift in Sources */,
+				5A4C9DAD203B907A00B1D5D6 /* UIImage+Properties.swift in Sources */,
 				5A6CDDC3202FDABD003D5DB1 /* CanvasLayer.swift in Sources */,
 				5AD1A4E620336CF400E95703 /* RectangleNode.swift in Sources */,
 				5A34E259202F42FA00239696 /* Canvas+Other.swift in Sources */,
+				5A4C9DAF203B908900B1D5D6 /* UIColor+RGB.swift in Sources */,
 				5AA0B9F9202EBFD60039D2EA /* Node.swift in Sources */,
 				5AA0BA01202EC1670039D2EA /* Brush.swift in Sources */,
 				89BCF01696FBF00B6D964FFE23176FD5 /* Canvas-dummy.m in Sources */,

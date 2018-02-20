@@ -53,8 +53,6 @@ public class CanvasLayer {
     }
     
     
-    
-    
     // -- PUBLIC COMPUTED VARS --
     
     /** Returns the number of nodes on this layer. */

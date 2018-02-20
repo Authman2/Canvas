@@ -207,7 +207,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         }()
         canvas.setBrush(brush: nBrush)
         
-        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color) and size \(nBrush.thickness)")
+        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color.getRGBA()) and size \(nBrush.thickness)")
     }
     
     @objc func newTool() {
@@ -260,12 +260,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        canvas.canvasLayers[0].opacity = 0.3
-//        let exported = canvas.export()
-//        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
-//
-//        // Alert export success.
-//        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
+        let exported = canvas.export()
+        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
+
+        // Alert export success.
+        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
     }
     
     
