@@ -105,6 +105,8 @@ public class CanvasLayer {
         backgroundImage = UIImage()
         drawImage = UIImage()
         nodeArray = []
+        canvas.updateDrawing(redraw: true)
+        canvas.setNeedsDisplay()
     }
     
     

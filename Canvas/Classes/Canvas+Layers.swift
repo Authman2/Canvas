@@ -72,11 +72,10 @@ public extension Canvas {
     /** Removes a layer at the given index. */
     public func removeLayer(at: Int) {
         if layers.count == 0 { return }
-        if at >= layers.count { return }
-        
-        layers.remove(at: at)
+        if at < 0 && at >= layers.count { return }
         
         if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
+        layers.remove(at: at)
         
         updateDrawing(redraw: false)
         setNeedsDisplay()

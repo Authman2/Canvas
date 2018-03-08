@@ -223,8 +223,8 @@ public class Canvas: UIView {
     
     // -- IMPORT / EXPORT --
     
-    /** Takes a UIImage as input and adds it to the canvas as a separate layer. */
-    public func importImage(image: UIImage) {
+    /** Takes a UIImage as input and adds it to the canvas as a separate layer. Returns the newly added layer. */
+    public func importImage(image: UIImage) -> CanvasLayer {
         // Adding the canvas as a parameter to this layer lets it know how to draw
         // the background image.
         let newLayer = CanvasLayer(canvas: self)
@@ -236,6 +236,8 @@ public class Canvas: UIView {
         addDrawingLayer(newLayer: newLayer)
         updateDrawing(redraw: false)
         setNeedsDisplay()
+        
+        return newLayer
     }
     
     
