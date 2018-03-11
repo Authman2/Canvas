@@ -123,7 +123,7 @@ public class CanvasLayer {
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
-    public func drawFrom(nodes: [Node], on canvas: Canvas, background: UIImage? = nil) {
+    public func drawFrom(nodes: [Node], background: UIImage? = nil) {
         self.nodeArray.append(contentsOf: nodes)
         
         if background != nil { self.backgroundImage = background }

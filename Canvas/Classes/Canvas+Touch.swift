@@ -46,8 +46,8 @@ public extension Canvas {
         guard let touch = touches.first else { return }
         guard let currLayer = currentLayer else { return }
         
-        // Don't continue if the layer does not allow drawing.
-        if currLayer.allowsDrawing == false { return }
+        // Don't continue if the layer does not allow drawing or should be preempted.
+        if currLayer.allowsDrawing == false || preemptTouch?() == true { return }
         
         // Don't continue if there is more than one touch.
         if touches.count > 1 { return }
@@ -76,8 +76,8 @@ public extension Canvas {
         guard let touch = touches.first else { return }
         guard let currLayer = currentLayer else { return }
         
-        // Don't continue if the layer does not allow drawing.
-        if currLayer.allowsDrawing == false { return }
+        // Don't continue if the layer does not allow drawing or should be preempted.
+        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
         
         // Don't continue if there is more than one touch.
         if touches.count > 1 { return }
@@ -111,8 +111,8 @@ public extension Canvas {
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let currLayer = currentLayer else { return }
         
-        // Don't continue if the layer does not allow drawing.
-        if currLayer.allowsDrawing == false { return }
+        // Don't continue if the layer does not allow drawing or should be preempted.
+        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
         
         // Don't continue if there is more than one touch.
         if touches.count > 1 { return }
@@ -129,8 +129,8 @@ public extension Canvas {
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let currLayer = currentLayer else { return }
         
-        // Don't continue if the layer does not allow drawing.
-        if currLayer.allowsDrawing == false { return }
+        // Don't continue if the layer does not allow drawing or should be preempted.
+        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
         
         // Don't continue if there is more than one touch.
         if touches.count > 1 { return }

@@ -32,6 +32,9 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let a = Canvas()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.delegate = self
+        a.preemptTouch = {
+            return true
+        }
         
         return a
     }()

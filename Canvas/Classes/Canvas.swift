@@ -56,6 +56,10 @@ public class Canvas: UIView {
     /** Whether or not the canvas should allow for multiple touches at a time. False by default. */
     public var allowsMultipleTouches: Bool!
     
+    /** A condition that, when true, will preempt any drawing when a touch occurs on the canvas. */
+    public var preemptTouch: (() -> Bool)?
+    
+    
     
     // -- PUBLIC COMPUTED PROPERTIES --
     
@@ -96,6 +100,7 @@ public class Canvas: UIView {
     
     
     
+    
     /************************
      *                      *
      *         INIT         *
@@ -125,6 +130,7 @@ public class Canvas: UIView {
         redos = []
         
         allowsMultipleTouches = false
+        preemptTouch = nil
         
         backgroundColor = .clear
         contentMode = UIViewContentMode.scaleAspectFit
@@ -216,8 +222,6 @@ public class Canvas: UIView {
         updateDrawing(redraw: true)
         setNeedsDisplay()
     }
-    
-    
     
     
     
