@@ -11,7 +11,7 @@ import Foundation
 public extension UIColor {
     
     /** Returns the RGBA values of a color, or (0,0,0,0) if the color could not be extracted. */
-    public func getRGBA() -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+    public var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         guard let comps = cgColor.components else { return (red: 255, green: 255, blue: 255, alpha: 1) }
         
         switch comps.count {

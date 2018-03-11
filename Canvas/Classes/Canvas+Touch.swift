@@ -23,8 +23,8 @@ public extension Canvas {
         self.updateDrawing(redraw: false)
         
         // Undo/redo
-        self.undos.append((currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id))
-        self.redos.removeAll()
+        undoRedoManager.addUndo(a: (currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id, nil))
+        undoRedoManager.clearRedo()
 
         self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         currentLayer?.nextNode = nil

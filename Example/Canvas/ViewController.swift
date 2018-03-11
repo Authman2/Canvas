@@ -32,9 +32,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let a = Canvas()
         a.translatesAutoresizingMaskIntoConstraints = false
         a.delegate = self
-        a.preemptTouch = {
-            return true
-        }
+        a.preemptTouch = { return false }
         
         return a
     }()
@@ -210,14 +208,22 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         }()
         canvas.setBrush(brush: nBrush)
         
-        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color.getRGBA()) and size \(nBrush.thickness)")
+        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color.rgba) and size \(nBrush.thickness)")
     }
     
     @objc func newTool() {
         let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .rectangleFill, .ellipse, .ellipseFill]
         let rand = Int(arc4random_uniform(UInt32(tools.count)))
         
+        let last = canvas.currentTool
         canvas.setTool(tool: tools[rand])
+        
+        // Changing the tool will be counted as an undo/redo action.
+        canvas.addCustomUndoRedo(cUndo: {
+            self.canvas.setTool(tool: last)
+        }) {
+            self.canvas.setTool(tool: tools[rand])
+        }
         
         alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }

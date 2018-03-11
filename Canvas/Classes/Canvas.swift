@@ -35,9 +35,8 @@ public class Canvas: UIView {
     internal var lastPoint: CGPoint = CGPoint()
     internal var lastLastPoint: CGPoint = CGPoint()
     
-    /** The arrays of the undos and the redos. */
-    internal var undos: [(Node, Int, Int)]!
-    internal var redos: [(Node, Int, Int)]!
+    /** The undo/redo manager. The generic parameter is a function that users can define themselves. */
+    internal var undoRedoManager: UndoRedoManger<() -> Void>!
     
     /** The different layers of the canvas. */
     internal var layers: [CanvasLayer]!
@@ -126,8 +125,7 @@ public class Canvas: UIView {
     
     /** Configure the Canvas. */
     private func setupCanvas() {
-        undos = []
-        redos = []
+        undoRedoManager = UndoRedoManger<() -> Void>()
         
         allowsMultipleTouches = false
         preemptTouch = nil
@@ -170,17 +168,26 @@ public class Canvas: UIView {
     
     // -- UNDO / REDO / CLEAR --
     
+    /** Allows the user to define custom behavior for undo and redo. For example, a custom function to undo changing the tool. */
+    public func addCustomUndoRedo(cUndo: @escaping () -> Void, cRedo: @escaping () -> Void) {
+        undoRedoManager.addUndo(a: (nil, nil, nil, (cUndo, cRedo)))
+    }
+    
+    
     /** Undo the last drawing stroke. */
     public func undo() {
-        // Pop the last item off the undo stack.
-        guard let last = undos.popLast() else { return }
-
-        // Add to the redos.
-        redos.append(last)
+        // Get the last undo item.
+        guard let last = undoRedoManager.lastUndo() else { return }
+        
+        // If there is a separately defined undo function, run that instead.
+        if last.3 != nil {
+            last.3!.0()
+            return
+        }
         
         // Remove that node from the layer that it is on.
-        if let idx = layers[last.1].nodeArray.index(where: { (found) -> Bool in return found.id == last.2 }) {
-            layers[last.1].nodeArray.remove(at: idx)
+        if let idx = layers[last.1 ?? 0].nodeArray.index(where: { (found) -> Bool in return found.id == last.2 }) {
+            layers[last.1 ?? 0].nodeArray.remove(at: idx)
         }
         
         // Update.
@@ -192,14 +199,17 @@ public class Canvas: UIView {
     /** Redo the last drawing stroke. */
     public func redo() {
         // Pop the last item off the redo stack.
-        guard let last = redos.popLast() else { return }
+        guard let last = undoRedoManager.lastRedo() else { return }
         
-        // Add to the undos.
-        undos.append(last)
+        // If there is a separately defined redo function, run that instead.
+        if last.3 != nil {
+            last.3!.1()
+            return
+        }
         
         // Add the node back to the canvas on the layer it was on.
-        last.0.id = last.2
-        layers[last.1].nodeArray.append(last.0)
+        last.0?.id = last.2 ?? 0
+        layers[last.1 ?? 0].nodeArray.append(last.0!)
         
         // Update.
         updateDrawing(redraw: true)
@@ -225,6 +235,7 @@ public class Canvas: UIView {
     
     
     
+    
     // -- IMPORT / EXPORT --
     
     /** Takes a UIImage as input and adds it to the canvas as a separate layer. Returns the newly added layer. */
@@ -235,7 +246,7 @@ public class Canvas: UIView {
         newLayer.backgroundImage = image
         newLayer.allowsDrawing = false
         
-        redos.removeAll()
+        undoRedoManager.clearRedo()
         
         addDrawingLayer(newLayer: newLayer)
         updateDrawing(redraw: false)
