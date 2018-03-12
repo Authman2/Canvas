@@ -32,6 +32,14 @@ public class Node: UIBezierPath {
     /** The id used to identify different nodes on the canvas. */
     var id: Int
     
+    /** The points used for detecting touches inside of the node. */
+    var points: [CGPoint]
+    
+    /** The bounding area of the entire shape. */
+    var boundingBox: CGRect
+    
+    
+    
     
     
     
@@ -47,6 +55,8 @@ public class Node: UIBezierPath {
         brush = Brush.Default
         firstPoint = CGPoint()
         lastPoint = CGPoint()
+        points = []
+        boundingBox = CGRect()
         id = 0
         super.init(coder: aDecoder)
         lineCapStyle = .round
@@ -57,6 +67,8 @@ public class Node: UIBezierPath {
         brush = Brush.Default
         firstPoint = CGPoint()
         lastPoint = CGPoint()
+        points = []
+        boundingBox = CGRect()
         id = 0
         super.init()
         lineCapStyle = .round
@@ -80,6 +92,31 @@ public class Node: UIBezierPath {
     func addPathLastLastPoint(p1: CGPoint, p2: CGPoint, currentPoint: CGPoint) -> CGRect { return CGRect() }
     
     func draw() {}
+
+    func addPoint(point: CGPoint) { points.append(point) }
+    
+    func setBoundingBox() {
+        boundingBox = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
+    }
+    
+    func contains(point: CGPoint) -> Bool { return false }
+    
+    func moveNode(to: CGPoint) {}
+    
+    
+    
+    
+    /************************
+     *                      *
+     *        TOUCHES       *
+     *                      *
+     ************************/
+    
+    
+    
+    
+    
+    
     
 }
 
@@ -93,6 +130,7 @@ public enum CanvasTool {
     case rectangleFill
     case ellipse
     case ellipseFill
+    case selection
 }
 
 

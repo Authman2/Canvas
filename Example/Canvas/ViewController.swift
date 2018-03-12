@@ -130,6 +130,16 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         return a
     }()
     
+    lazy var selectBtn: UIButton = {
+        let a = UIButton()
+        a.translatesAutoresizingMaskIntoConstraints = false
+        a.setTitle("Select Tool", for: .normal)
+        a.backgroundColor = UIColor.lightGray
+        a.addTarget(self, action: #selector(selectTool), for: .touchUpInside)
+        
+        return a
+    }()
+    
     
     
     
@@ -159,6 +169,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(toolBtn)
         view.addSubview(importBtn)
         view.addSubview(exportBtn)
+        view.addSubview(selectBtn)
         
         setupLayout()
     }
@@ -225,6 +236,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
             self.canvas.setTool(tool: tools[rand])
         }
         
+        alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
+    }
+    
+    @objc func selectTool() {
+        canvas.setTool(tool: CanvasTool.selection)
         alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
@@ -355,6 +371,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         clearBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
         clearBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
         clearBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        
+        selectBtn.topAnchor.constraint(equalTo: clearBtn.bottomAnchor).isActive = true
+        selectBtn.leadingAnchor.constraint(equalTo: colorBtn.trailingAnchor).isActive = true
+        selectBtn.widthAnchor.constraint(equalTo: canvasView.widthAnchor, multiplier: 0.5).isActive = true
+        selectBtn.heightAnchor.constraint(equalToConstant: 67).isActive = true
     }
     
     

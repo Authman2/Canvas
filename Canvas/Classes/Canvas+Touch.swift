@@ -59,14 +59,19 @@ public extension Canvas {
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
         currLayer.nextNode = createNodeWithCurrentBrush()
         
-        // Add the drawing stroke.
-        currLayer.nodeArray.append(currLayer.nextNode!)
+        // Selection tool vs other tools.
+        if currentTool == .selection {
+            currLayer.onTouch(touch: touch)
+        } else {
+            // Add the drawing stroke.
+            currLayer.nodeArray.append(currLayer.nextNode!)
         
-        // Set initial point.
-        currLayer.nextNode!.setInitialPoint(point: currentPoint)
+            // Set initial point.
+            currLayer.nextNode!.setInitialPoint(point: currentPoint)
         
-        // Call delegate.
-        delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
+            // Call delegate.
+            delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
+        }
     }
     
     
@@ -87,20 +92,52 @@ public extension Canvas {
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
         
+        // Selection tool vs other tools.
+        if currentDrawingTool == .selection {
+            currLayer.onMove(touch: touch)
+            self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
+            return
+        }
+        
         // Draw based on the current tool.
-        if currentDrawingTool == CanvasTool.pen || currentDrawingTool == CanvasTool.eraser {
+        switch(currentDrawingTool) {
+        case .pen, .eraser:
             var boundingBox = currLayer.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
-            
             boundingBox.origin.x -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
             boundingBox.origin.y -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
             boundingBox.size.width += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
             boundingBox.size.height += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
             
-            setNeedsDisplay(boundingBox)
-        }
-        else {
             currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.addPoint(point: currentPoint)
+            setNeedsDisplay(boundingBox)
+            break
+        case .line:
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.addPoint(point: currentPoint)
             setNeedsDisplay()
+            break
+        case .rectangle:
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.setBoundingBox()
+            setNeedsDisplay()
+            break
+        case .rectangleFill:
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.setBoundingBox()
+            setNeedsDisplay()
+            break
+        case .ellipse:
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.setBoundingBox()
+            setNeedsDisplay()
+            break
+        case .ellipseFill:
+            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            currLayer.nextNode?.setBoundingBox()
+            setNeedsDisplay()
+            break
+        default: break
         }
         
         self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)

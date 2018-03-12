@@ -56,6 +56,15 @@ class RectangleNode: Node {
         self.lastPoint = to
     }
     
+    override func contains(point: CGPoint) -> Bool {
+        return boundingBox.contains(point)
+    }
+    
+    override func moveNode(to: CGPoint) {
+        let rect = CGRect(x: self.firstPoint.x - (self.firstPoint.x - to.x), y: self.firstPoint.y - (self.firstPoint.y - to.y), width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
+        boundingBox = rect
+    }
+    
     override func draw() {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
@@ -67,14 +76,12 @@ class RectangleNode: Node {
         context.setAlpha(brush.opacity)
         
         // Create a rectangle to draw.
-        let rect = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
-        
         if self.shouldFill {
             context.setFillColor(brush.color.cgColor)
-            context.fill(rect)
+            context.fill(boundingBox)
         } else {
             context.setStrokeColor(brush.color.cgColor)
-            context.stroke(rect)
+            context.stroke(boundingBox)
         }
     }
     

@@ -56,6 +56,16 @@ class EllipseNode: Node {
         self.lastPoint = to
     }
     
+    override func contains(point: CGPoint) -> Bool {
+        let center = CGPoint(x: boundingBox.minX + boundingBox.width / 2, y: boundingBox.minY + boundingBox.height / 2)
+        let radius = boundingBox.width / 2
+        let dx = point.x - center.x
+        let dy = point.y - center.y
+        let dist = sqrt((dx ** 2) + (dy ** 2))
+        
+        return dist <= radius
+    }
+    
     override func draw() {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         

@@ -24,6 +24,9 @@ public class CanvasLayer {
     /** The next node to be drawn on the screen, whether that be a curve, a line, or a shape. */
     internal var nextNode: Node?
     
+    /** The (possibly nil) node that is selected and being moved. */
+    internal var selectNode: Node?
+    
     /** The image that the user is drawing on. */
     internal var drawImage: UIImage!
     
@@ -157,5 +160,38 @@ public class CanvasLayer {
         }
     }
     
+    
+    
+    
+    
+    /************************
+     *                      *
+     *        TOUCHES       *
+     *                      *
+     ************************/
+    
+    /** Handles a touch on this layer when it comes to selecting nodes. */
+    func onTouch(touch: UITouch) {
+        let loc = touch.location(in: canvas)
+        
+        for node in nodeArray {
+            if node is EraserNode { continue }
+            
+            if node.contains(point: loc) {
+                self.selectNode = node
+                break
+            }
+        }
+    }
+    
+    /** Handles movement events on a node. */
+    func onMove(touch: UITouch) {
+        guard let selNode = selectNode else { return }
+        let loc = touch.location(in: canvas)
+        
+        selNode.moveNode(to: loc)
+        canvas.updateDrawing(redraw: true)
+        canvas.setNeedsDisplay()
+    }
     
 }

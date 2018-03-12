@@ -18,3 +18,9 @@ extension Comparable {
         return min(max(self as! T, lower), upper)
     }
 }
+
+/** lhs to the power of rhs. */
+infix operator **
+func **(lhs: CGFloat, rhs: CGFloat) -> CGFloat {
+    return pow(lhs, rhs)
+}

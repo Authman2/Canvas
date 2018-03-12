@@ -36,10 +36,12 @@ class PenNode: Node {
      ************************/
     
     override func setInitialPoint(point: CGPoint) {
+        self.firstPoint = point
         move(to: point)
     }
     
     override func move(from: CGPoint, to: CGPoint) {
+        self.lastPoint = to
         addQuadCurve(to: midpoint(a: from, b: to), controlPoint: from)
     }
     
@@ -55,6 +57,10 @@ class PenNode: Node {
         path.addPath(subpath)
         subpath.closeSubpath()
         return bounds
+    }
+    
+    override func contains(point: CGPoint) -> Bool {
+        return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })
     }
     
     override func draw() {

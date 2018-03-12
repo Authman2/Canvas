@@ -46,6 +46,10 @@ class LineNode: Node {
         self.lastPoint = to
     }
     
+    override func contains(point: CGPoint) -> Bool {
+        return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })
+    }
+    
     override func draw() {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
