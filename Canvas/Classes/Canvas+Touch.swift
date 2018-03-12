@@ -156,7 +156,7 @@ public extension Canvas {
         
         // Selection tool vs other tools
         if currentDrawingTool == .selection {
-            currLayer.onRelease()
+            currLayer.onRelease(point: currentPoint)
         } else {
             // Make sure the point is recorded.
             touchesMoved(touches, with: event)

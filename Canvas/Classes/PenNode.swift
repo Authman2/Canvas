@@ -63,6 +63,10 @@ class PenNode: Node {
         return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })
     }
     
+    func moveNode(to: CGPoint, canvas: Canvas) {
+        
+    }
+    
     override func draw() {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
