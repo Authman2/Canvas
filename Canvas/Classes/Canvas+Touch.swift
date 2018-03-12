@@ -154,11 +154,16 @@ public extension Canvas {
         // Don't continue if there is more than one touch.
         if touches.count > 1 { return }
         
-        // Make sure the point is recorded.
-        touchesMoved(touches, with: event)
+        // Selection tool vs other tools
+        if currentDrawingTool == .selection {
+            currLayer.onRelease()
+        } else {
+            // Make sure the point is recorded.
+            touchesMoved(touches, with: event)
         
-        // Finish drawing.
-        self.finishDrawingNode()
+            // Finish drawing.
+            self.finishDrawingNode()
+        }
     }
     
     

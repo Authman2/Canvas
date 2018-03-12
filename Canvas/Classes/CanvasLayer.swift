@@ -194,4 +194,9 @@ public class CanvasLayer {
         canvas.setNeedsDisplay()
     }
     
+    /** Handles when a touch is released. */
+    func onRelease() {
+        selectNode = nil
+    }
+    
 }

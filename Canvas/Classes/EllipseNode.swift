@@ -66,6 +66,11 @@ class EllipseNode: Node {
         return dist <= radius
     }
     
+    override func moveNode(to: CGPoint) {
+        let rect = CGRect(x: self.firstPoint.x - (self.firstPoint.x - to.x), y: self.firstPoint.y - (self.firstPoint.y - to.y), width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
+        boundingBox = rect
+    }
+    
     override func draw() {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
@@ -77,14 +82,12 @@ class EllipseNode: Node {
         context.setAlpha(brush.opacity)
         
         // Create a ellipse to draw.
-        let ellipse = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
-        
         if self.shouldFill {
             context.setFillColor(brush.color.cgColor)
-            context.fillEllipse(in: ellipse)
+            context.fillEllipse(in: boundingBox)
         } else {
             context.setStrokeColor(brush.color.cgColor)
-            context.strokeEllipse(in: ellipse)
+            context.strokeEllipse(in: boundingBox)
         }
     }
     

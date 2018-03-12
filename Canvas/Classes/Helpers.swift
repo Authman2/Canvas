@@ -19,6 +19,12 @@ extension Comparable {
     }
 }
 
+extension CGPoint {
+    func distance(to: CGPoint) -> CGFloat {
+        return ((x ** 2) - (to.x ** 2)) + ((y ** 2) + (to.y ** 2))
+    }
+}
+
 /** lhs to the power of rhs. */
 infix operator **
 func **(lhs: CGFloat, rhs: CGFloat) -> CGFloat {
