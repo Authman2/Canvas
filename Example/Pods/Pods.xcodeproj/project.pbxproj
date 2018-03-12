@@ -10,6 +10,7 @@
 		2AD2C8CA0A0BE570FC4FF9D7F7CD0E16 /* Pods-Canvas_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 18EE7CE60022D3EA2F8C19EC0E73DD3E /* Pods-Canvas_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2C3D4852F63B02AA1C8F3932575D0D2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		36EFE09DC334C5765072E51F134DE132 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		5A0CE7412056FDAE00BAC574 /* UIBezierPath+Points.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0CE7402056FDAE00BAC574 /* UIBezierPath+Points.swift */; };
 		5A34E259202F42FA00239696 /* Canvas+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A34E258202F42FA00239696 /* Canvas+Other.swift */; };
 		5A4C9DAD203B907A00B1D5D6 /* UIImage+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */; };
 		5A4C9DAF203B908900B1D5D6 /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */; };
@@ -56,6 +57,7 @@
 		3F9B0CC8D71CE4553BB2A5F8AB968CCB /* Canvas.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = Canvas.modulemap; sourceTree = "<group>"; };
 		430909C79C3B6D7CFBF92B02A726163B /* Canvas-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Canvas-umbrella.h"; sourceTree = "<group>"; };
 		57DC85AB85F80F091008A91FE9DFB7A4 /* Pods-Canvas_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Canvas_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
+		5A0CE7402056FDAE00BAC574 /* UIBezierPath+Points.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Points.swift"; sourceTree = "<group>"; };
 		5A34E258202F42FA00239696 /* Canvas+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Other.swift"; path = "Canvas/Classes/Canvas+Other.swift"; sourceTree = "<group>"; };
 		5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIImage+Properties.swift"; path = "Canvas/Classes/UIImage+Properties.swift"; sourceTree = "<group>"; };
 		5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIColor+RGB.swift"; path = "Canvas/Classes/UIColor+RGB.swift"; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				5AA0B9F4202EBFA50039D2EA /* Helpers.swift */,
 				5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */,
 				5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */,
+				5A0CE7402056FDAE00BAC574 /* UIBezierPath+Points.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
 				4EAF8B9810D832A8FA7B2CC9547EB64D /* Support Files */,
 			);
@@ -399,6 +402,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A0CE7412056FDAE00BAC574 /* UIBezierPath+Points.swift in Sources */,
 				5AA0B9F3202EBF930039D2EA /* CanvasProtocol.swift in Sources */,
 				5AA0B9FB202EBFEA0039D2EA /* PenNode.swift in Sources */,
 				5A4C9DAD203B907A00B1D5D6 /* UIImage+Properties.swift in Sources */,

@@ -13,7 +13,8 @@ Canvas is an iOS library that creates an area on the screen where the user can d
 - **Brushes**: Create and use different brushes to style drawings on the canvas.
 - **Protocols**: Keep track of when the user starts drawing, is drawing, and finishes drawing by using the CanvasProtocol.
 - **Import/Export**: Import multiple UIImages as CanvasLayers, then export your canvas drawing as a UIImage.
-- **Undo/Redo/Clear**: Support for undo, redo, and clearing of drawings.
+- **Undo/Redo/Clear**: Support for undo, redo, and clearing of drawings. You can also define for yourself what actions in your app should count toward to the undo/redo stack by using the addCustomUndoRedo function.
+- **Selection Tool**: Select different drawing strokes and move them around the canvas.
 
 ## Installation
 

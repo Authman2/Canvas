@@ -60,11 +60,75 @@ class PenNode: Node {
     }
     
     override func contains(point: CGPoint) -> Bool {
-        return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })
+        return (points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })) || (path.bezierPoints.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 }))
     }
     
     func moveNode(to: CGPoint, canvas: Canvas) {
+        var instructions = path.bezierPointsAndTypes
+        path = CGMutablePath()
         
+        for i in 0..<instructions.count {
+            switch(instructions[i].1) {
+            case .moveToPoint:
+                let dx = CGFloat(5)
+                let dy = CGFloat(5)
+                instructions[i].0[0].x += dx
+                instructions[i].0[0].y += dy
+                break
+            case .addQuadCurveToPoint:
+                let dx = CGFloat(5)
+                let dy = CGFloat(5)
+                instructions[i].0[0].x += dx
+                instructions[i].0[0].y += dy
+                let dx2 = CGFloat(5)
+                let dy2 = CGFloat(5)
+                instructions[i].0[1].x += dx2
+                instructions[i].0[1].y += dy2
+                break
+            case .addLineToPoint:
+                let dx = CGFloat(5)
+                let dy = CGFloat(5)
+                instructions[i].0[0].x += dx
+                instructions[i].0[0].y += dy
+                break
+            case .addCurveToPoint:
+                let dx = CGFloat(5)
+                let dy = CGFloat(5)
+                instructions[i].0[0].x += dx
+                instructions[i].0[0].y += dy
+                let dx2 = CGFloat(5)
+                let dy2 = CGFloat(5)
+                instructions[i].0[1].x += dx2
+                instructions[i].0[1].y += dy2
+                let dx3 = CGFloat(5)
+                let dy3 = CGFloat(5)
+                instructions[i].0[2].x += dx3
+                instructions[i].0[2].y += dy3
+                break
+            case .closeSubpath:
+                continue
+            }
+        }
+        
+        for i in 0..<instructions.count {
+            switch(instructions[i].1) {
+            case .moveToPoint:
+                path.move(to: instructions[i].0[0])
+                break
+            case .addQuadCurveToPoint:
+                path.addQuadCurve(to: instructions[i].0[0], control: instructions[i].0[1])
+                break
+            case .addLineToPoint:
+                path.addLine(to: instructions[i].0[0])
+                break
+            case .addCurveToPoint:
+                path.addCurve(to: instructions[i].0[0], control1: instructions[i].0[1], control2: instructions[i].0[2])
+                break
+            case .closeSubpath:
+                path.closeSubpath()
+                break
+            }
+        }
     }
     
     override func draw() {
