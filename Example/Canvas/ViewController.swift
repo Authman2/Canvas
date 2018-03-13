@@ -195,7 +195,9 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
-    
+    func didSelectNode(on canvas: Canvas, selectedNode: Node) {
+        
+    }
     
     
     
@@ -235,7 +237,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         }) {
             self.canvas.setTool(tool: tools[rand])
         }
-        
+
         alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
@@ -297,7 +299,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
-        canvas.importImage(image: image)
+        let _ = canvas.importImage(image: image)
         self.dismiss(animated: true, completion: nil)
     }
     

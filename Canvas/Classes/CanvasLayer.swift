@@ -193,12 +193,14 @@ public class CanvasLayer {
     /** Handles when a touch is released. */
     func onRelease(point: CGPoint) {
         let loc = point
+        
         // If you are not currently selecting a node, select one.
         if selectNode == nil {
             for node in nodeArray {
                 if node is EraserNode { continue }
                 if node.contains(point: loc) {
-                    self.selectNode = node
+                    selectNode = node
+                    canvas.delegate?.didSelectNode(on: canvas, selectedNode: node)
                     break
                 }
             }

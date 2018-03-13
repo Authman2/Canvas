@@ -25,7 +25,13 @@ public class Canvas: UIView {
     // -- PRIVATE VARS --
     
     /** The type of tool that is currently being used. */
-    internal var currentDrawingTool: CanvasTool!
+    internal var currentDrawingTool: CanvasTool! {
+        didSet {
+            if currentDrawingTool != .selection {
+                currentLayer?.selectNode = nil
+            }
+        }
+    }
     
     /** The brush to use when drawing. */
     internal var currentDrawingBrush: Brush!
@@ -93,6 +99,13 @@ public class Canvas: UIView {
         var i = 0
         for layer in layers { i += layer.nodeCount }
         return i
+    }
+    
+    /** Returns the selected node if there is one (assuming the current tool is the selection tool). */
+    public var selectedNode: Node? {
+        guard let layer = self.currentLayer else { return nil }
+        if self.currentTool == .selection { return layer.selectNode }
+        return nil
     }
     
     

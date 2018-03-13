@@ -19,6 +19,9 @@ public protocol CanvasDelegate {
     /** Called when the user stops drawing on the canvas. */
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool)
     
+    /** Called when a node on the canvas is selected using the selection tool. */
+    func didSelectNode(on canvas: Canvas, selectedNode: Node)
+    
 }
 
 
