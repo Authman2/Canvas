@@ -30,3 +30,6 @@ infix operator **
 func **(lhs: CGFloat, rhs: CGFloat) -> CGFloat {
     return pow(lhs, rhs)
 }
+func **(lhs: Int, rhs: Int) -> Int {
+    return Int(pow(CGFloat(lhs), CGFloat(rhs)))
+}

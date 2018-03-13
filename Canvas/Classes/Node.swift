@@ -101,7 +101,7 @@ public class Node: UIBezierPath {
     
     func contains(point: CGPoint) -> Bool { return false }
     
-    func moveNode(to: CGPoint) {}
+    func moveNode(touch: UITouch, canvas: Canvas) {}
     
     
     

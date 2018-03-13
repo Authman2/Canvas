@@ -92,10 +92,13 @@ public extension Canvas {
         lastPoint = touch.previousLocation(in: self)
         currentPoint = touch.location(in: self)
         
+        // Calculate the translation of the touch.
+        touch.deltaX = currentPoint.x - lastPoint.x
+        touch.deltaY = currentPoint.y - lastPoint.y
+        
         // Selection tool vs other tools.
         if currentDrawingTool == .selection {
             currLayer.onMove(touch: touch)
-            self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
             return
         }
         
@@ -114,7 +117,6 @@ public extension Canvas {
             break
         case .line:
             currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.addPoint(point: currentPoint)
             setNeedsDisplay()
             break
         case .rectangle:

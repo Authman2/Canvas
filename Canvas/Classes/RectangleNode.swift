@@ -60,9 +60,8 @@ class RectangleNode: Node {
         return boundingBox.contains(point)
     }
     
-    override func moveNode(to: CGPoint) {
-        let rect = CGRect(x: self.firstPoint.x - (self.firstPoint.x - to.x), y: self.firstPoint.y - (self.firstPoint.y - to.y), width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
-        boundingBox = rect
+    override func moveNode(touch: UITouch, canvas: Canvas) {
+        boundingBox = boundingBox.offsetBy(dx: touch.deltaX, dy: touch.deltaY)
     }
     
     override func draw() {

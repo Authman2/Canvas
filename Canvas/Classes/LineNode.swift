@@ -47,31 +47,16 @@ class LineNode: Node {
     }
     
     override func contains(point: CGPoint) -> Bool {
-        return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })
+        points = pointsOnLine(startPoint: firstPoint, endPoint: lastPoint)
+        return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= brush.thickness && abs(point.y - p.y) <= brush.thickness }) || (path.bezierPoints.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= brush.thickness && abs(point.y - p.y) <= brush.thickness }))
     }
     
-    override func moveNode(to: CGPoint) {
-        let dx = lastPoint.x - firstPoint.x
-        let dy = lastPoint.y - firstPoint.y
-        var dists: [(CGFloat, CGFloat)] = []
+    override func moveNode(touch: UITouch, canvas: Canvas) {        
+        firstPoint.x += touch.deltaX
+        firstPoint.y += touch.deltaY
         
-        for i in 0..<points.count {
-            let dx = points[i].x - firstPoint.x
-            let dy = points[i].y - firstPoint.y
-            
-            dists.append((dx,dy))
-        }
-        
-        firstPoint.x = firstPoint.x - (firstPoint.x - to.x)
-        firstPoint.y = firstPoint.y - (firstPoint.y - to.y)
-        
-        lastPoint.x = firstPoint.x + dx
-        lastPoint.y = firstPoint.y + dy
-        
-        for i in 0..<points.count {
-            points[i].x = firstPoint.x + dists[i].0
-            points[i].y = firstPoint.y + dists[i].1
-        }
+        lastPoint.x += touch.deltaX
+        lastPoint.y += touch.deltaY
     }
     
     override func draw() {
@@ -97,9 +82,45 @@ class LineNode: Node {
     
     /************************
      *                      *
-     *        LAYOUT        *
+     *         OTHER        *
      *                      *
      ************************/
+    
+    /** Returns an array of points that lie on this line. */
+    func pointsOnLine(startPoint : CGPoint, endPoint : CGPoint) -> [CGPoint] {
+        var allPoints: [CGPoint] = [CGPoint]()
+        
+        let deltaX = fabs(endPoint.x - startPoint.x)
+        let deltaY = fabs(endPoint.y - startPoint.y)
+        
+        var x = startPoint.x
+        var y = startPoint.y
+        var err = deltaX - deltaY
+        
+        var sx = -0.5
+        var sy = -0.5
+        if(startPoint.x < endPoint.x){ sx = 0.5 }
+        if(startPoint.y < endPoint.y){ sy = 0.5; }
+        
+        repeat {
+            let pointObj = CGPoint(x: x, y: y)
+            allPoints.append(pointObj)
+            
+            let e = 2*err
+            if(e > -deltaY) {
+                err -= deltaY
+                x += CGFloat(sx)
+            }
+            if(e < deltaX) {
+                err += deltaX
+                y += CGFloat(sy)
+            }
+        } while (round(x) != round(endPoint.x) && round(y) != round(endPoint.y));
+        
+        allPoints.append(endPoint)
+        return allPoints
+    }
+
     
     
 }

@@ -60,71 +60,28 @@ class PenNode: Node {
     }
     
     override func contains(point: CGPoint) -> Bool {
-        return (points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 })) || (path.bezierPoints.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= 5 && abs(point.y - p.y) <= 5 }))
+        return (points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= brush.thickness && abs(point.y - p.y) <= brush.thickness })) || (path.bezierPoints.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= brush.thickness && abs(point.y - p.y) <= brush.thickness }))
     }
     
-    func moveNode(to: CGPoint, canvas: Canvas) {
+    override func moveNode(touch: UITouch, canvas: Canvas) {
         var instructions = path.bezierPointsAndTypes
         path = CGMutablePath()
         
         for i in 0..<instructions.count {
             switch(instructions[i].1) {
             case .moveToPoint:
-                let dx = CGFloat(5)
-                let dy = CGFloat(5)
-                instructions[i].0[0].x += dx
-                instructions[i].0[0].y += dy
-                break
-            case .addQuadCurveToPoint:
-                let dx = CGFloat(5)
-                let dy = CGFloat(5)
-                instructions[i].0[0].x += dx
-                instructions[i].0[0].y += dy
-                let dx2 = CGFloat(5)
-                let dy2 = CGFloat(5)
-                instructions[i].0[1].x += dx2
-                instructions[i].0[1].y += dy2
+                path.move(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY))
                 break
             case .addLineToPoint:
-                let dx = CGFloat(5)
-                let dy = CGFloat(5)
-                instructions[i].0[0].x += dx
-                instructions[i].0[0].y += dy
-                break
-            case .addCurveToPoint:
-                let dx = CGFloat(5)
-                let dy = CGFloat(5)
-                instructions[i].0[0].x += dx
-                instructions[i].0[0].y += dy
-                let dx2 = CGFloat(5)
-                let dy2 = CGFloat(5)
-                instructions[i].0[1].x += dx2
-                instructions[i].0[1].y += dy2
-                let dx3 = CGFloat(5)
-                let dy3 = CGFloat(5)
-                instructions[i].0[2].x += dx3
-                instructions[i].0[2].y += dy3
-                break
-            case .closeSubpath:
-                continue
-            }
-        }
-        
-        for i in 0..<instructions.count {
-            switch(instructions[i].1) {
-            case .moveToPoint:
-                path.move(to: instructions[i].0[0])
+                path.addLine(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY))
                 break
             case .addQuadCurveToPoint:
-                path.addQuadCurve(to: instructions[i].0[0], control: instructions[i].0[1])
-                break
-            case .addLineToPoint:
-                path.addLine(to: instructions[i].0[0])
+                path.addQuadCurve(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY), control: CGPoint(x: instructions[i].0[1].x + touch.deltaX, y: instructions[i].0[1].y + touch.deltaY))
                 break
             case .addCurveToPoint:
-                path.addCurve(to: instructions[i].0[0], control1: instructions[i].0[1], control2: instructions[i].0[2])
+                path.addCurve(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY), control1: CGPoint(x: instructions[i].0[1].x + touch.deltaX, y: instructions[i].0[1].y + touch.deltaY), control2: CGPoint(x: instructions[i].0[2].x + touch.deltaX, y: instructions[i].0[2].y + touch.deltaY))
                 break
-            case .closeSubpath:
+            default:
                 path.closeSubpath()
                 break
             }

@@ -172,37 +172,46 @@ public class CanvasLayer {
     
     /** Handles a touch on this layer when it comes to selecting nodes. */
     func onTouch(touch: UITouch) {
-        
+        guard let selNode = selectNode else { return }
+        let loc = touch.location(in: canvas)
+        if !selNode.contains(point: loc) {
+            selectNode = nil
+            return
+        }
     }
     
     /** Handles movement events on a node. */
     func onMove(touch: UITouch) {
         guard let selNode = selectNode else { return }
-        let loc = touch.location(in: canvas)
         
-        if selNode is PenNode {
-            (selNode as! PenNode).moveNode(to: loc, canvas: canvas)
-        } else {
-            selNode.moveNode(to: loc)
-        }
+        selNode.moveNode(touch: touch, canvas: canvas)
+        
         canvas.updateDrawing(redraw: true)
         canvas.setNeedsDisplay()
     }
     
     /** Handles when a touch is released. */
     func onRelease(point: CGPoint) {
+        let loc = point
+        // If you are not currently selecting a node, select one.
         if selectNode == nil {
-            let loc = point
-            
             for node in nodeArray {
                 if node is EraserNode { continue }
-                
                 if node.contains(point: loc) {
                     self.selectNode = node
                     break
                 }
             }
-        } else {
+        }
+        // If you have a node selected and no node is pressed, unselect.
+        else {
+            for node in nodeArray {
+                if node is EraserNode { continue }
+                if node.contains(point: loc) {
+                    selectNode = node
+                    return
+                }
+            }
             selectNode = nil
         }
     }
