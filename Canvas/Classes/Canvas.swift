@@ -204,7 +204,7 @@ public class Canvas: UIView {
         }
         
         // Update.
-        updateDrawing(redraw: true)
+        layers[last.1 ?? 0].updateLayer(redraw: true)
         setNeedsDisplay()
     }
     
@@ -225,15 +225,17 @@ public class Canvas: UIView {
         layers[last.1 ?? 0].nodeArray.append(last.0!)
         
         // Update.
-        updateDrawing(redraw: true)
+        layers[last.1 ?? 0].updateLayer(redraw: true)
         setNeedsDisplay()
     }
     
     
     /** Clears the entire canvas. */
     public func clear() {
-        for layer in layers { layer.clear() }
-        updateDrawing(redraw: true)
+        for layer in layers {
+            layer.clear()
+            layer.updateLayer(redraw: true)
+        }
         setNeedsDisplay()
     }
     
@@ -242,7 +244,7 @@ public class Canvas: UIView {
     public func clearLayer(at: Int) {
         if at < 0 || at >= layers.count { return }
         layers[at].clear()
-        updateDrawing(redraw: true)
+        layers[at].updateLayer(redraw: true)
         setNeedsDisplay()
     }
     
@@ -262,7 +264,7 @@ public class Canvas: UIView {
         undoRedoManager.clearRedo()
         
         addDrawingLayer(newLayer: newLayer)
-        updateDrawing(redraw: false)
+        for layer in layers { layer.updateLayer(redraw: true) }
         setNeedsDisplay()
         
         return newLayer
@@ -287,7 +289,15 @@ public class Canvas: UIView {
     
     
     
-    
+    public var temp: [Node] = {
+        let n = LineNode()
+        n.firstPoint = CGPoint(x: 20, y: 20)
+        n.lastPoint = CGPoint(x: 50, y: 50)
+        let n2 = LineNode()
+        n2.firstPoint = CGPoint(x: 100, y: 120)
+        n2.lastPoint = CGPoint(x: 150, y: 150)
+        return [n,n2]
+    }()
     
     
     
@@ -301,8 +311,11 @@ public class Canvas: UIView {
     
     public override func draw(_ rect: CGRect) {
         for layer in layers {
-            layer.draw()
-            layer.nextNode?.draw()
+            if layer.isVisible == false { continue }
+            else {
+                layer.draw()
+                layer.nextNode?.draw()
+            }
         }
     }
     

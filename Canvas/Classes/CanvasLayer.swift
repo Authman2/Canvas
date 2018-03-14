@@ -50,7 +50,7 @@ public class CanvasLayer: NSObject {
         didSet {
             if backgroundImage != nil { backgroundImage = backgroundImage?.withOpacity(opacity) }
             drawImage = drawImage?.withOpacity(opacity)
-            canvas.updateDrawing(redraw: false)
+            self.updateLayer(redraw: false)
             canvas.setNeedsDisplay()
         }
     }
@@ -103,16 +103,18 @@ public class CanvasLayer: NSObject {
     
     /** Clears the drawing on this layer. */
     public func clear() {
-        backgroundImage = UIImage()
+        backgroundImage = nil
         drawImage = UIImage()
         nodeArray = []
-        canvas.updateDrawing(redraw: true)
+        self.updateLayer(redraw: true)
         canvas.setNeedsDisplay()
     }
     
     
     /** Returns all the nodes on this layer. */
-    public func getNodes() -> [Node] { return self.nodeArray }
+    public func getNodes() -> [Node] {
+        return self.nodeArray.map { $0.copy() as! Node }
+    }
     
     
     /** Returns the background image of this layer. */
@@ -130,12 +132,9 @@ public class CanvasLayer: NSObject {
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
-    public func drawFrom(nodes: [Node], background: UIImage? = nil) {
-        self.nodeArray.append(contentsOf: nodes)
-        
-        if background != nil { self.backgroundImage = background }
-        
-        canvas.updateDrawing(redraw: true)
+    public func drawFrom(nodes: [Node]) {
+        self.nodeArray = nodes
+        updateLayer(redraw: true)
         canvas.setNeedsDisplay()
     }
     
@@ -150,8 +149,6 @@ public class CanvasLayer: NSObject {
      ************************/
     
     public func draw() {
-        if isVisible == false { return }
-        
         // If there is no background image, draw at CGPoint.zero, otherwise inside frame.
         if backgroundImage == nil {
             self.drawImage?.draw(at: CGPoint.zero)
@@ -163,6 +160,30 @@ public class CanvasLayer: NSObject {
             self.nextNode?.draw()
         }
     }
+    
+    
+    internal func updateLayer(redraw: Bool) {
+        UIGraphicsBeginImageContextWithOptions(canvas.frame.size, false, 0)
+        
+        if redraw {
+            drawImage = nil
+            
+            if backgroundImage != nil { backgroundImage?.draw(in: canvas.frame) }
+            for node in nodeArray { node.draw() }
+            
+        } else {
+            
+            if backgroundImage != nil { backgroundImage?.draw(in: canvas.frame) }
+            drawImage?.draw(at: CGPoint.zero)
+            nextNode?.draw()
+            
+        }
+        
+        drawImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+    }
+    
+    
     
     
     
@@ -190,7 +211,7 @@ public class CanvasLayer: NSObject {
         
         selNode.moveNode(touch: touch, canvas: canvas)
         
-        canvas.updateDrawing(redraw: true)
+        self.updateLayer(redraw: true)
         canvas.setNeedsDisplay()
     }
     

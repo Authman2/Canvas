@@ -46,7 +46,7 @@ public extension Canvas {
         
         let before = currentCanvasLayer
         currentCanvasLayer = at
-        updateDrawing(redraw: false)
+        layers[at].updateLayer(redraw: false)
         setNeedsDisplay()
         currentCanvasLayer = before
     }
@@ -62,7 +62,8 @@ public extension Canvas {
         
         let before = currentCanvasLayer
         currentCanvasLayer = second
-        updateDrawing(redraw: false)
+        layers[first].updateLayer(redraw: false)
+        layers[second].updateLayer(redraw: false)
         setNeedsDisplay()
         currentCanvasLayer = before
     }
@@ -76,31 +77,31 @@ public extension Canvas {
         if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
         layers.remove(at: at)
         
-        updateDrawing(redraw: false)
+        layers[at].updateLayer(redraw: false)
         setNeedsDisplay()
     }    
     
     
     /** Hides the layer at the given index. */
     public func hideLayer(at: Int) {
-        if layers.count == 0 { return }
         if at >= layers.count { return }
+        if at < 0 { return }
         
         layers[at].isVisible = false
         
-        updateDrawing(redraw: false)
+//        updateDrawing(redraw: false)
         setNeedsDisplay()
     }
     
     
     /** Makes the layer at the given index visible. */
     public func showLayer(at: Int) {
-        if layers.count == 0 { return }
         if at >= layers.count { return }
+        if at < 0 { return }
         
         layers[at].isVisible = true
         
-        updateDrawing(redraw: false)
+//        updateDrawing(redraw: false)
         setNeedsDisplay()
     }
     

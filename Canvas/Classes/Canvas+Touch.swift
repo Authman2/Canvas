@@ -20,7 +20,7 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         
         // Update the drawing.
-        self.updateDrawing(redraw: false)
+        currLayer.updateLayer(redraw: false)
         
         // Undo/redo
         undoRedoManager.addUndo(a: (currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id, nil))

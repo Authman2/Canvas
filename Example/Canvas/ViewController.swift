@@ -269,10 +269,6 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let rand = Int(arc4random_uniform(UInt32(canvas.canvasLayers.count)))
         canvas.switchLayer(to: rand)
         
-        for i in 0..<canvas.canvasLayers.count {
-            print(canvas.canvasLayers[i])
-        }
-        
         alert(title: "Switched Layer", message: "You are now on layer \(canvas.currentLayerIndex)")
     }
     

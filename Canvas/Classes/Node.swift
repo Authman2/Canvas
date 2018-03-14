@@ -108,11 +108,33 @@ public class Node: UIBezierPath {
     
     /************************
      *                      *
-     *        TOUCHES       *
+     *         OTHER        *
      *                      *
      ************************/
     
+    public override func copy() -> Any {
+        let n = Node()
+        n.path = path
+        n.brush = brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
     
+    public override func mutableCopy() -> Any {
+        let n = Node()
+        n.path = path
+        n.brush = brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
     
     
     
