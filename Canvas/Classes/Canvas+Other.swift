@@ -19,15 +19,15 @@ public extension Canvas {
             
             // Redraw each node in the current layer.
             for layer in layers {
-                if layer.backgroundImage != nil { layer.backgroundImage.draw(in: layer.canvas.frame) }
+                if layer.backgroundImage != nil { layer.backgroundImage?.draw(in: layer.canvas.frame) }
                 for node in layer.nodeArray { node.draw() }
             }
         } else {
             // Draw background image.
-            if currLayer.backgroundImage != nil { currLayer.backgroundImage.draw(in: currLayer.canvas.frame) }
+            if currLayer.backgroundImage != nil { currLayer.backgroundImage?.draw(in: currLayer.canvas.frame) }
             
             // Draw the actual drawing image.
-            currLayer.drawImage.draw(at: CGPoint.zero)
+            currLayer.drawImage?.draw(at: CGPoint.zero)
             currLayer.nextNode?.draw()
         }
         

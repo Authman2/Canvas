@@ -8,7 +8,7 @@
 import Foundation
 
 /** A single layer that can be drawn on. The Canvas can have multiple layers which can be rearranged to have different drawings appear on top of or below others. */
-public class CanvasLayer {
+public class CanvasLayer: NSObject {
     
     /************************
      *                      *
@@ -28,10 +28,10 @@ public class CanvasLayer {
     internal var selectNode: Node?
     
     /** The image that the user is drawing on. */
-    internal var drawImage: UIImage!
+    internal var drawImage: UIImage?
     
     /** The background drawing in case the user wants to import an image. */
-    internal var backgroundImage: UIImage!
+    internal var backgroundImage: UIImage?
     
     /** All of the nodes on this layer. */
     var nodeArray: [Node]!
@@ -48,8 +48,8 @@ public class CanvasLayer {
     /** The opacity of everything on this layer. */
     public var opacity: CGFloat {
         didSet {
-            if backgroundImage != nil { backgroundImage = backgroundImage.withOpacity(opacity) }
-            drawImage = drawImage.withOpacity(opacity)
+            if backgroundImage != nil { backgroundImage = backgroundImage?.withOpacity(opacity) }
+            drawImage = drawImage?.withOpacity(opacity)
             canvas.updateDrawing(redraw: false)
             canvas.setNeedsDisplay()
         }
@@ -96,10 +96,8 @@ public class CanvasLayer {
 
     /** Returns a UIImage that is a combination of the background image and the drawing image. */
     internal func mergedWithBackground() -> UIImage {
-        switch backgroundImage {
-        case nil: return drawImage
-        default: return backgroundImage + drawImage
-        }
+        if backgroundImage == nil { return (drawImage ?? UIImage()) }
+        return (backgroundImage ?? UIImage()) + (drawImage ?? UIImage())
     }
     
     
@@ -118,11 +116,17 @@ public class CanvasLayer {
     
     
     /** Returns the background image of this layer. */
-    public func getBackgroundImage() -> UIImage { return backgroundImage }
+    public func getBackgroundImage() -> UIImage? {
+        if let bg = backgroundImage { return bg }
+        else { return nil }
+    }
     
     
     /** Returns the drawing image. */
-    public func getDrawingImage() -> UIImage { return drawImage }
+    public func getDrawingImage() -> UIImage {
+        if let bg = drawImage { return bg }
+        else { return UIImage() }
+    }
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
@@ -150,12 +154,12 @@ public class CanvasLayer {
         
         // If there is no background image, draw at CGPoint.zero, otherwise inside frame.
         if backgroundImage == nil {
-            self.drawImage.draw(at: CGPoint.zero)
+            self.drawImage?.draw(at: CGPoint.zero)
             self.nextNode?.draw()
         } else {
             let cv = self.canvas!
-            self.backgroundImage.draw(in: cv.frame)
-            self.drawImage.draw(in: cv.frame)
+            self.backgroundImage?.draw(in: cv.frame)
+            self.drawImage?.draw(in: cv.frame)
             self.nextNode?.draw()
         }
     }

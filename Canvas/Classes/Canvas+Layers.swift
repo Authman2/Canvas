@@ -17,9 +17,8 @@ public extension Canvas {
         } else {
             if layers.count > 0 {
                 layers.insert(newLayer, at: self.currentCanvasLayer)
-                currentCanvasLayer += 1
             } else {
-                layers.append(newLayer)
+                layers = [newLayer]
             }
         }
     }
@@ -27,7 +26,7 @@ public extension Canvas {
     
     /** Switches the drawing to the specified layer. If an invalid layer index is put in, nothing will happen. */
     public func switchLayer(to: Int) {
-        if to > layers.count { currentCanvasLayer = layers.count - 1 }
+        if to >= layers.count { currentCanvasLayer = layers.count - 1 }
         else if to < 0 { currentCanvasLayer = 0 }
         else { currentCanvasLayer = to }
     }
