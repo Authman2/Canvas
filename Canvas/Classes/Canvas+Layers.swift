@@ -89,7 +89,6 @@ public extension Canvas {
         
         layers[at].isVisible = false
         
-//        updateDrawing(redraw: false)
         setNeedsDisplay()
     }
     
@@ -101,7 +100,6 @@ public extension Canvas {
         
         layers[at].isVisible = true
         
-//        updateDrawing(redraw: false)
         setNeedsDisplay()
     }
     

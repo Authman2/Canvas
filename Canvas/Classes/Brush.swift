@@ -9,7 +9,7 @@ import Foundation
 
 
 /** A Brush defines the styling for how things should be drawn on the canvas. */
-public class Brush {
+public class Brush: NSObject  {
     
     /************************
      *                      *
@@ -76,7 +76,7 @@ public class Brush {
      ************************/
     
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
-    public init() {
+    public override init() {
         color = UIColor.black
         thickness = 2
         opacity = 1
@@ -84,6 +84,7 @@ public class Brush {
         miter = 1
         shape = CGLineCap.round
         joinStyle = CGLineJoin.round
+        super.init()
     }
     
     
@@ -95,14 +96,18 @@ public class Brush {
      *                      *
      ************************/
     
-    
-    
-    
-    /************************
-     *                      *
-     *        LAYOUT        *
-     *                      *
-     ************************/
+    public override func copy() -> Any {
+        let b = Brush()
+        b.color = color
+        b.thickness = thickness
+        b.opacity = opacity
+        b.flatness = flatness
+        b.miter = miter
+        b.shape = shape
+        b.joinStyle = joinStyle
+        
+        return b
+    }
     
     
 }

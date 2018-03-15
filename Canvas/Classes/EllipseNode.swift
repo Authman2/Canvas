@@ -95,12 +95,47 @@ class EllipseNode: Node {
     
     
     
-    
     /************************
      *                      *
-     *        LAYOUT        *
+     *         OTHER        *
      *                      *
      ************************/
+    
+    public override func copy() -> Any {
+        let n = EllipseNode(shouldFill: shouldFill)
+        n.path = path
+        n.brush = brush.copy() as! Brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
+    
+    public override func mutableCopy() -> Any {
+        let n = EllipseNode(shouldFill: shouldFill)
+        n.path = path
+        n.brush = brush.copy() as! Brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
+    
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let n = EllipseNode(shouldFill: shouldFill)
+        n.path = path
+        n.brush = brush.copy() as! Brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
     
     
 }

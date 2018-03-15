@@ -199,6 +199,11 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
+    func didCopyNode(on canvas: Canvas, copiedNode: Node?) {
+        
+    }
+    
+    
     
     
     

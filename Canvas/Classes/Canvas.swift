@@ -51,6 +51,8 @@ public class Canvas: UIView {
     /** Whether or not the canvas should create a default layer. */
     internal var createDefaultLayer: Bool = true
     
+    /** The node that was last copied using the selection tool. */
+    internal var copiedNode: Node?
     
     
     // -- PUBLIC VARS --
@@ -107,6 +109,8 @@ public class Canvas: UIView {
         if self.currentTool == .selection { return layer.selectNode }
         return nil
     }
+    
+    
     
     
     
@@ -289,15 +293,26 @@ public class Canvas: UIView {
     
     
     
-    public var temp: [Node] = {
-        let n = LineNode()
-        n.firstPoint = CGPoint(x: 20, y: 20)
-        n.lastPoint = CGPoint(x: 50, y: 50)
-        let n2 = LineNode()
-        n2.firstPoint = CGPoint(x: 100, y: 120)
-        n2.lastPoint = CGPoint(x: 150, y: 150)
-        return [n,n2]
-    }()
+    // -- COPY / PASTE --
+    
+    /** Copies a node so that it can be pasted later on. */
+    public func copy(node: Node) {
+        self.copiedNode = node.copy() as? Node
+        delegate?.didCopyNode(on: self, copiedNode: self.copiedNode)
+    }
+    
+    
+    /** Pastes the copied node onto the specified layer (the current layer by default). */
+    public func paste(on: Int? = nil) {
+        guard let copy = copiedNode else { return }
+        let onLayer = on ?? currentLayerIndex
+        if onLayer >= layers.count { return }
+        if onLayer < 0 { return }
+
+        layers[onLayer].drawFromAppending(nodes: [copy])
+    }
+    
+    
     
     
     

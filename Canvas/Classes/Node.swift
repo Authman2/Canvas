@@ -115,7 +115,7 @@ public class Node: UIBezierPath {
     public override func copy() -> Any {
         let n = Node()
         n.path = path
-        n.brush = brush
+        n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -127,7 +127,7 @@ public class Node: UIBezierPath {
     public override func mutableCopy() -> Any {
         let n = Node()
         n.path = path
-        n.brush = brush
+        n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -136,7 +136,17 @@ public class Node: UIBezierPath {
         return n
     }
     
-    
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let n = Node()
+        n.path = path
+        n.brush = brush.copy() as! Brush
+        n.firstPoint = firstPoint
+        n.lastPoint = lastPoint
+        n.id = id
+        n.points = points
+        n.boundingBox = boundingBox
+        return n
+    }
     
     
     
@@ -154,6 +164,4 @@ public enum CanvasTool {
     case ellipseFill
     case selection
 }
-
-
 
