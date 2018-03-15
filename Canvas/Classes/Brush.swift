@@ -9,7 +9,7 @@ import Foundation
 
 
 /** A Brush defines the styling for how things should be drawn on the canvas. */
-public class Brush: NSObject  {
+public class Brush: NSObject, NSCoding  {
     
     /************************
      *                      *
@@ -75,6 +75,16 @@ public class Brush: NSObject  {
      *                      *
      ************************/
     
+    public required init?(coder aDecoder: NSCoder) {
+        color = aDecoder.decodeObject(forKey: "canvas_brush_color") as! UIColor
+        thickness = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_thickness"))
+        opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_opacity"))
+        flatness = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_flatness"))
+        miter = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_miter"))
+        shape = aDecoder.decodeObject(forKey: "canvas_brush_shape") as! CGLineCap
+        joinStyle = aDecoder.decodeObject(forKey: "canvas_brush_joinStyle") as! CGLineJoin
+    }
+    
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public override init() {
         color = UIColor.black
@@ -109,5 +119,14 @@ public class Brush: NSObject  {
         return b
     }
     
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(color, forKey: "canvas_brush_color")
+        aCoder.encode(thickness, forKey: "canvas_brush_thickness")
+        aCoder.encode(opacity, forKey: "canvas_brush_opacity")
+        aCoder.encode(flatness, forKey: "canvas_brush_flatness")
+        aCoder.encode(miter, forKey: "canvas_brush_miter")
+        aCoder.encode(shape, forKey: "canvas_brush_shape")
+        aCoder.encode(joinStyle, forKey: "canvas_brush_joinStyle")
+    }
     
 }

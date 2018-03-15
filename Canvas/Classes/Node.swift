@@ -51,13 +51,13 @@ public class Node: UIBezierPath {
      ************************/
     
     public required init?(coder aDecoder: NSCoder) {
-        path = CGMutablePath()
-        brush = Brush.Default
-        firstPoint = CGPoint()
-        lastPoint = CGPoint()
-        points = []
-        boundingBox = CGRect()
-        id = 0
+        path = aDecoder.decodeObject(forKey: "canvas_path") as! CGMutablePath
+        brush = aDecoder.decodeObject(forKey: "canvas_brush") as! Brush
+        firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint")
+        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
+        points = aDecoder.decodeObject(forKey: "canvas_points") as! [CGPoint]
+        boundingBox = aDecoder.decodeCGRect(forKey: "canvas_boundingBox")
+        id = aDecoder.decodeInteger(forKey: "canvas_id")
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
@@ -148,6 +148,16 @@ public class Node: UIBezierPath {
         return n
     }
     
+    public override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(path, forKey: "canvas_path")
+        aCoder.encode(brush, forKey: "canvas_brush")
+        aCoder.encode(firstPoint, forKey: "canvas_firstPoint")
+        aCoder.encode(lastPoint, forKey: "canvas_lastPoint")
+        aCoder.encode(id, forKey: "canvas_id")
+        aCoder.encode(points, forKey: "canvas_points")
+        aCoder.encode(boundingBox, forKey: "canvas_boundingBox")
+    }
     
     
 }

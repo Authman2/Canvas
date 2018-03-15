@@ -8,7 +8,7 @@
 import Foundation
 
 /** A single layer that can be drawn on. The Canvas can have multiple layers which can be rearranged to have different drawings appear on top of or below others. */
-public class CanvasLayer: NSObject {
+public class CanvasLayer: NSObject, NSCoding {
     
     /************************
      *                      *
@@ -73,6 +73,17 @@ public class CanvasLayer: NSObject {
      *         INIT         *
      *                      *
      ************************/
+    
+    public required init?(coder aDecoder: NSCoder) {
+        canvas = aDecoder.decodeObject(forKey: "canvas_canvasLayer_canvas") as! Canvas
+        nextNode = aDecoder.decodeObject(forKey: "canvas_canvasLayer_nextNode") as? Node
+        drawImage = aDecoder.decodeObject(forKey: "canvas_canvasLayer_drawImage") as? UIImage
+        backgroundImage = aDecoder.decodeObject(forKey: "canvas_canvasLayer_backgroundImage") as? UIImage
+        nodeArray = aDecoder.decodeObject(forKey: "canvas_canvasLayer_nodeArray") as! [Node]
+        isVisible = aDecoder.decodeBool(forKey: "canvas_canvasLayer_isVisible")
+        allowsDrawing = aDecoder.decodeBool(forKey: "canvas_canvasLayer_allowsDrawing")
+        opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_canvasLayer_opacity"))
+    }
     
     public init(canvas: Canvas) {
         nextNode = nil
@@ -203,9 +214,7 @@ public class CanvasLayer: NSObject {
         drawImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
-    
-    
-    
+
     
     
     
@@ -263,5 +272,28 @@ public class CanvasLayer: NSObject {
             selectNode = nil
         }
     }
+
+    
+    
+    /************************
+     *                      *
+     *         OTHER        *
+     *                      *
+     ************************/
+    
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(canvas, forKey: "canvas_canvasLayer_canvas")
+        aCoder.encode(nextNode, forKey: "canvas_canvasLayer_nextNode")
+        aCoder.encode(drawImage, forKey: "canvas_canvasLayer_drawImage")
+        aCoder.encode(backgroundImage, forKey: "canvas_canvasLayer_backgroundImage")
+        aCoder.encode(nodeArray, forKey: "canvas_canvasLayer_nodeArray")
+        aCoder.encode(isVisible, forKey: "canvas_canvasLayer_isVisible")
+        aCoder.encode(allowsDrawing, forKey: "canvas_canvasLayer_allowsDrawing")
+        aCoder.encode(opacity, forKey: "canvas_canvasLayer_opacity")
+    }
+    
+    
+    
+    
     
 }

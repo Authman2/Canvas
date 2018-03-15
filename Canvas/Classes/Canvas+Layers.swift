@@ -77,7 +77,7 @@ public extension Canvas {
         if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
         layers.remove(at: at)
         
-        layers[at].updateLayer(redraw: false)
+        for layer in layers { layer.updateLayer(redraw: false) }
         setNeedsDisplay()
     }    
     
