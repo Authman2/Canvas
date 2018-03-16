@@ -51,7 +51,7 @@ public class Node: UIBezierPath {
      ************************/
     
     public required init?(coder aDecoder: NSCoder) {
-        path = aDecoder.decodeObject(forKey: "canvas_path") as! CGMutablePath
+        path = CGMutablePath()
         brush = aDecoder.decodeObject(forKey: "canvas_brush") as! Brush
         firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint")
         lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")

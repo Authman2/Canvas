@@ -309,7 +309,7 @@ public class Canvas: UIView {
         if onLayer >= layers.count { return }
         if onLayer < 0 { return }
 
-        layers[onLayer].drawFromAppending(nodes: [copy])
+        layers[onLayer].drawFrom(nodes: [copy], appending: true)
     }
     
     

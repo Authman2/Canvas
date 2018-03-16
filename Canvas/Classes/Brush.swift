@@ -77,12 +77,12 @@ public class Brush: NSObject, NSCoding  {
     
     public required init?(coder aDecoder: NSCoder) {
         color = aDecoder.decodeObject(forKey: "canvas_brush_color") as! UIColor
-        thickness = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_thickness"))
-        opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_opacity"))
-        flatness = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_flatness"))
-        miter = CGFloat(aDecoder.decodeFloat(forKey: "canvas_brush_miter"))
-        shape = aDecoder.decodeObject(forKey: "canvas_brush_shape") as! CGLineCap
-        joinStyle = aDecoder.decodeObject(forKey: "canvas_brush_joinStyle") as! CGLineJoin
+        thickness = aDecoder.decodeObject(forKey: "canvas_brush_thickness") as! CGFloat
+        opacity = aDecoder.decodeObject(forKey: "canvas_brush_opacity") as! CGFloat
+        flatness = aDecoder.decodeObject(forKey: "canvas_brush_flatness") as! CGFloat
+        miter = aDecoder.decodeObject(forKey: "canvas_brush_miter") as! CGFloat
+        shape = CGLineCap(rawValue: aDecoder.decodeInt32(forKey: "canvas_brush_shape")) ?? CGLineCap.round
+        joinStyle = CGLineJoin(rawValue: aDecoder.decodeInt32(forKey: "canvas_brush_joinStyle")) ?? CGLineJoin.round
     }
     
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */

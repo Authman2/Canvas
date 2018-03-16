@@ -143,18 +143,9 @@ public class CanvasLayer: NSObject, NSCoding {
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
-    public func drawFrom(nodes: [Node], background: UIImage? = nil) {
-        self.nodeArray = nodes
-        self.backgroundImage = background
-        
-        updateLayer(redraw: true)
-        canvas.setNeedsDisplay()
-    }
-    
-    
-    /** Takes an array of nodes as input and draws them all on this layer. */
-    internal func drawFromAppending(nodes: [Node], background: UIImage? = nil) {
-        self.nodeArray.append(contentsOf: nodes)
+    public func drawFrom(nodes: [Node], appending: Bool = false, background: UIImage? = nil) {
+        if appending == false { self.nodeArray = nodes }
+        else { self.nodeArray.append(contentsOf: nodes) }
         self.backgroundImage = background
         
         updateLayer(redraw: true)
