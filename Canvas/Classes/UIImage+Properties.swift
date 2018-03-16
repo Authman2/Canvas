@@ -27,7 +27,7 @@ public extension UIImage {
         lhs.draw(at: CGPoint(x: lhsX, y: lhsY))
         rhs.draw(at: CGPoint(x: rhsX, y: rhsY))
         
-        let combine: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        let combine: UIImage = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
         UIGraphicsEndImageContext()
         
         return combine
