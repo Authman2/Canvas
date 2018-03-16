@@ -125,8 +125,8 @@ public class Brush: NSObject, NSCoding  {
         aCoder.encode(opacity, forKey: "canvas_brush_opacity")
         aCoder.encode(flatness, forKey: "canvas_brush_flatness")
         aCoder.encode(miter, forKey: "canvas_brush_miter")
-        aCoder.encode(shape, forKey: "canvas_brush_shape")
-        aCoder.encode(joinStyle, forKey: "canvas_brush_joinStyle")
+        aCoder.encode(shape.rawValue, forKey: "canvas_brush_shape")
+        aCoder.encode(joinStyle.rawValue, forKey: "canvas_brush_joinStyle")
     }
     
 }

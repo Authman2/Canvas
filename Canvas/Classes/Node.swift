@@ -52,12 +52,12 @@ public class Node: UIBezierPath {
     
     public required init?(coder aDecoder: NSCoder) {
         path = CGMutablePath()
-        brush = aDecoder.decodeObject(forKey: "canvas_brush") as! Brush
-        firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint")
-        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
-        points = aDecoder.decodeObject(forKey: "canvas_points") as! [CGPoint]
-        boundingBox = aDecoder.decodeCGRect(forKey: "canvas_boundingBox")
-        id = aDecoder.decodeInteger(forKey: "canvas_id")
+        brush = aDecoder.decodeObject(forKey: "canvas_brush_node") as! Brush
+        firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint_node")
+        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint_node")
+        points = aDecoder.decodeObject(forKey: "canvas_points_node") as! [CGPoint]
+        boundingBox = aDecoder.decodeCGRect(forKey: "canvas_boundingBox_node")
+        id = aDecoder.decodeInteger(forKey: "canvas_id_node")
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
@@ -150,13 +150,12 @@ public class Node: UIBezierPath {
     
     public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
-        aCoder.encode(path, forKey: "canvas_path")
-        aCoder.encode(brush, forKey: "canvas_brush")
-        aCoder.encode(firstPoint, forKey: "canvas_firstPoint")
-        aCoder.encode(lastPoint, forKey: "canvas_lastPoint")
-        aCoder.encode(id, forKey: "canvas_id")
-        aCoder.encode(points, forKey: "canvas_points")
-        aCoder.encode(boundingBox, forKey: "canvas_boundingBox")
+        aCoder.encode(brush, forKey: "canvas_brush_node")
+        aCoder.encode(firstPoint, forKey: "canvas_firstPoint_node")
+        aCoder.encode(lastPoint, forKey: "canvas_lastPoint_node")
+        aCoder.encode(id, forKey: "canvas_id_node")
+        aCoder.encode(points, forKey: "canvas_points_node")
+        aCoder.encode(boundingBox, forKey: "canvas_boundingBox_node")
     }
     
     
@@ -164,14 +163,14 @@ public class Node: UIBezierPath {
 
 
 /** The type of tool that is being used to draw. */
-public enum CanvasTool {
-    case pen
-    case eraser
-    case line
-    case rectangle
-    case rectangleFill
-    case ellipse
-    case ellipseFill
-    case selection
+public enum CanvasTool: Int32 {
+    case pen = 0
+    case eraser = 1
+    case line = 2
+    case rectangle = 3
+    case rectangleFill = 4
+    case ellipse = 5
+    case ellipseFill = 6
+    case selection = 7
 }
 

@@ -125,7 +125,18 @@ public class Canvas: UIView {
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        setupCanvas()
+        currentDrawingTool = CanvasTool(rawValue: aDecoder.decodeInt32(forKey: "canvas_currentDrawingTool")) ?? .pen
+        currentDrawingBrush = aDecoder.decodeObject(forKey: "canvas_currentDrawingBrush") as! Brush
+        currentPoint = aDecoder.decodeCGPoint(forKey: "canvas_currentPoint")
+        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
+        lastLastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastLastPoint")
+        undoRedoManager = aDecoder.decodeObject(forKey: "canvas_undoRedoManager") as! UndoRedoManger
+        layers = aDecoder.decodeObject(forKey: "canvas_layers") as! [CanvasLayer]
+        currentCanvasLayer = aDecoder.decodeInteger(forKey: "canvas_currentCanvasLayer")
+        createDefaultLayer = aDecoder.decodeBool(forKey: "canvas_createDefaultLayer")
+        copiedNode = aDecoder.decodeObject(forKey: "canvas_copiedNode") as? Node
+        allowsMultipleTouches = aDecoder.decodeBool(forKey: "canvas_allowsMultipleTouches")
+        preemptTouch = aDecoder.decodeObject(forKey: "canvas_preempTouches") as? (() -> Bool)
     }
     
     public init() {
@@ -334,6 +345,27 @@ public class Canvas: UIView {
         }
     }
     
+    
+    /************************
+     *                      *
+     *         OTHER        *
+     *                      *
+     ************************/
+    
+    public override func encode(with aCoder: NSCoder) {
+        aCoder.encode(currentDrawingTool.rawValue, forKey: "canvas_currentDrawingTool")
+        aCoder.encode(currentDrawingBrush, forKey: "canvas_currentDrawingBrush")
+        aCoder.encode(currentPoint, forKey: "canvas_currentPoint")
+        aCoder.encode(lastPoint, forKey: "canvas_lastPoint")
+        aCoder.encode(lastLastPoint, forKey: "canvas_lastLastPoint")
+        aCoder.encode(undoRedoManager, forKey: "canvas_undoRedoManager")
+        aCoder.encode(layers, forKey: "canvas_layers")
+        aCoder.encode(currentCanvasLayer, forKey: "canvas_currentCanvasLayer")
+        aCoder.encode(createDefaultLayer, forKey: "canvas_createDefaultLayer")
+        aCoder.encode(copiedNode, forKey: "canvas_copiedNode")
+        aCoder.encode(allowsMultipleTouches, forKey: "canvas_allowsMultipleTouches")
+        aCoder.encode(preemptTouch, forKey: "canvas_preempTouches")
+    }
     
     
     
