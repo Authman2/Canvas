@@ -122,6 +122,22 @@ public class CanvasLayer: NSObject, NSCoding {
     }
     
     
+    /** Sets the image that is used to display the drawing nodes. */
+    public func setDrawImage(image: UIImage) {
+        self.drawImage = image
+    }
+    
+    /** Sets the background image. */
+    public func setBackgroundImage(image: UIImage?) {
+        self.backgroundImage = image
+    }
+    
+    /** Sets the nodes on this layer. */
+    public func setNodes(nodes: [Node]) {
+        self.nodeArray = nodes
+    }
+    
+    
     /** Returns all the nodes on this layer. */
     public func getNodes() -> [Node] {
         return self.nodeArray.map { $0.copy() as! Node }
@@ -140,6 +156,7 @@ public class CanvasLayer: NSObject, NSCoding {
         if let bg = drawImage { return bg }
         else { return UIImage() }
     }
+    
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
@@ -174,12 +191,11 @@ public class CanvasLayer: NSObject, NSCoding {
     public func draw() {
         // If there is no background image, draw at CGPoint.zero, otherwise inside frame.
         if backgroundImage == nil {
-            self.drawImage?.draw(at: CGPoint.zero)
+            self.drawImage?.draw(in: canvas.frame)
             self.nextNode?.draw()
         } else {
-            let cv = self.canvas!
-            self.backgroundImage?.draw(in: cv.frame)
-            self.drawImage?.draw(in: cv.frame)
+            self.backgroundImage?.draw(in: canvas.frame)
+            self.drawImage?.draw(in: canvas.frame)
             self.nextNode?.draw()
         }
     }
@@ -197,7 +213,7 @@ public class CanvasLayer: NSObject, NSCoding {
         } else {
             
             if backgroundImage != nil { backgroundImage?.draw(in: canvas.frame) }
-            drawImage?.draw(at: CGPoint.zero)
+            drawImage?.draw(in: canvas.frame)
             nextNode?.draw()
             
         }
