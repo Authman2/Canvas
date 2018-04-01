@@ -123,18 +123,30 @@ public class CanvasLayer: NSObject, NSCoding {
     
     
     /** Sets the image that is used to display the drawing nodes. */
-    public func setDrawImage(image: UIImage) {
+    public func setDrawImage(image: UIImage, update: Bool = false) {
         self.drawImage = image
+        if update == true {
+            updateLayer(redraw: true)
+            canvas.setNeedsDisplay()
+        }
     }
     
     /** Sets the background image. */
-    public func setBackgroundImage(image: UIImage?) {
+    public func setBackgroundImage(image: UIImage?, update: Bool = false) {
         self.backgroundImage = image
+        if update == true {
+            updateLayer(redraw: true)
+            canvas.setNeedsDisplay()
+        }
     }
     
     /** Sets the nodes on this layer. */
-    public func setNodes(nodes: [Node]) {
+    public func setNodes(nodes: [Node], update: Bool = false) {
         self.nodeArray = nodes
+        if update == true {
+            updateLayer(redraw: true)
+            canvas.setNeedsDisplay()
+        }
     }
     
     

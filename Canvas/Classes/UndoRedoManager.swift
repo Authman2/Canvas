@@ -7,8 +7,12 @@
 
 import Foundation
 
+
+/** An event for the undo redo manager. */
+typealias CanvasEvent = (() -> Void, () -> Void)
+
 /** The manager that handles undoing and redoing actions while working with the canvas. The generic used here represents what should count toward the undo/redo stack. This way, users can define exactly what actions in their app should trigger undos and redos. */
-class UndoRedoManger<T> {
+public class UndoRedoManger {
     
     /************************
      *                      *
@@ -16,10 +20,8 @@ class UndoRedoManger<T> {
      *                      *
      ************************/
     
-    /** The arrays of the undos and the redos. */
-    private var undos: [(Node?, Int?, Int?, (T, T)?)]!
-    private var redos: [(Node?, Int?, Int?, (T, T)?)]!
-    
+    private var undoIndex: Int
+    private var stack: [CanvasEvent]
     
     
     
@@ -31,8 +33,8 @@ class UndoRedoManger<T> {
      ************************/
     
     init() {
-        undos = []
-        redos = []
+        stack = []
+        undoIndex = 0
     }
     
     
@@ -45,32 +47,41 @@ class UndoRedoManger<T> {
      *                      *
      ************************/
     
-    /** Adds to the undo stack. */
-    func addUndo(a: (Node?, Int?, Int?, (T, T)?)) {
-        undos.append(a)
+    /** Adds a new action to undos. */
+    public func add(undo: @escaping () -> Void, redo: @escaping () -> Void) {
+        stack.append(CanvasEvent(undo, redo))
+        undoIndex = stack.count - 1
+    }
+    
+    /** Undo the last event. */
+    public func performUndo() {
+        if undoIndex < 0 || undoIndex >= stack.count { return }
+        if stack.count == 0 { return }
+        
+        let last = stack[undoIndex].0
+        last()
+        undoIndex -= 1
+    }
+    
+    /** Redo the last event. */
+    public func performRedo() {
+        if undoIndex < -1 || undoIndex + 1 >= stack.count { return }
+        if stack.count == 0 { return }
+        
+        let last = stack[undoIndex + 1].1
+        last()
+        if undoIndex + 1 < stack.count { undoIndex += 1 }
+    }
+    
+    /** Clears the redos. */
+    public func clearRedos() {
+        for i in undoIndex+1..<stack.count {
+            stack[i].1 = {
+                print("redone")
+            }
+        }
     }
     
     
-    /** Returns the most recent object in the undo stack. In other words, the previous state of the undo redo manager. */
-    func lastUndo() -> (Node?, Int?, Int?, (T, T)?)? {
-        guard let last = undos.popLast() else { return nil }
-        redos.append(last)
-        return last
-    }
-    
-    
-    /** Returns the most recent object in the redo stack. In other words, the previous state of the undo redo manager. */
-    func lastRedo() -> (Node?, Int?, Int?, (T, T)?)? {
-        guard let last = redos.popLast() else { return nil }
-        undos.append(last)
-        return last
-    }
-    
-    
-    /** Clears the undo stack. */
-    func clearUndo() { undos = [] }
-    
-    /** Clears the redo stack. */
-    func clearRedo() { redos = [] }
     
 }

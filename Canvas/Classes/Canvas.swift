@@ -41,9 +41,6 @@ public class Canvas: UIView {
     internal var lastPoint: CGPoint = CGPoint()
     internal var lastLastPoint: CGPoint = CGPoint()
     
-    /** The undo/redo manager. The generic parameter is a function that users can define themselves. */
-    internal var undoRedoManager: UndoRedoManger<() -> Void>!
-    
     /** The different layers of the canvas. */
     internal var layers: [CanvasLayer]!
     internal var currentCanvasLayer: Int = 0
@@ -65,6 +62,9 @@ public class Canvas: UIView {
     
     /** A condition that, when true, will preempt any drawing when a touch occurs on the canvas. */
     public var preemptTouch: (() -> Bool)?
+    
+    /** The undo/redo manager. */
+    public var undoRedoManager: UndoRedoManger!
     
     
     
@@ -153,7 +153,7 @@ public class Canvas: UIView {
     
     /** Configure the Canvas. */
     private func setupCanvas() {
-        undoRedoManager = UndoRedoManger<() -> Void>()
+        undoRedoManager = UndoRedoManger()
         
         allowsMultipleTouches = false
         preemptTouch = nil
@@ -198,50 +198,48 @@ public class Canvas: UIView {
     
     /** Allows the user to define custom behavior for undo and redo. For example, a custom function to undo changing the tool. */
     public func addCustomUndoRedo(cUndo: @escaping () -> Void, cRedo: @escaping () -> Void) {
-        undoRedoManager.addUndo(a: (nil, nil, nil, (cUndo, cRedo)))
+        undoRedoManager.add(undo: cUndo, redo: cRedo)
     }
     
     
     /** Undo the last drawing stroke. */
     public func undo() {
-        // Get the last undo item.
-        guard let last = undoRedoManager.lastUndo() else { return }
+        undoRedoManager.performUndo()
         
-        // If there is a separately defined undo function, run that instead.
-        if last.3 != nil {
-            last.3!.0()
-            return
-        }
-        
-        // Remove that node from the layer that it is on.
-        if let idx = layers[last.1 ?? 0].nodeArray.index(where: { (found) -> Bool in return found.id == last.2 }) {
-            layers[last.1 ?? 0].nodeArray.remove(at: idx)
-        }
-        
-        // Update.
-        layers[last.1 ?? 0].updateLayer(redraw: true)
-        setNeedsDisplay()
+//        // If there is a separately defined undo function, run that instead.
+//        if last.3 != nil {
+//            last.3!.0()
+//            return
+//        }
+//
+//        // Remove that node from the layer that it is on.
+//        if let idx = layers[last.1 ?? 0].nodeArray.index(where: { (found) -> Bool in return found.id == last.2 }) {
+//            layers[last.1 ?? 0].nodeArray.remove(at: idx)
+//        }
+//
+//        // Update.
+//        layers[last.1 ?? 0].updateLayer(redraw: true)
+//        setNeedsDisplay()
     }
     
     
     /** Redo the last drawing stroke. */
     public func redo() {
-        // Pop the last item off the redo stack.
-        guard let last = undoRedoManager.lastRedo() else { return }
+        undoRedoManager.performRedo()
         
-        // If there is a separately defined redo function, run that instead.
-        if last.3 != nil {
-            last.3!.1()
-            return
-        }
-        
-        // Add the node back to the canvas on the layer it was on.
-        last.0?.id = last.2 ?? 0
-        layers[last.1 ?? 0].nodeArray.append(last.0!)
-        
-        // Update.
-        layers[last.1 ?? 0].updateLayer(redraw: true)
-        setNeedsDisplay()
+//        // If there is a separately defined redo function, run that instead.
+//        if last.3 != nil {
+//            last.3!.1()
+//            return
+//        }
+//
+//        // Add the node back to the canvas on the layer it was on.
+//        last.0?.id = last.2 ?? 0
+//        layers[last.1 ?? 0].nodeArray.append(last.0!)
+//
+//        // Update.
+//        layers[last.1 ?? 0].updateLayer(redraw: true)
+//        setNeedsDisplay()
     }
     
     
@@ -276,7 +274,7 @@ public class Canvas: UIView {
         newLayer.backgroundImage = image
         newLayer.allowsDrawing = false
         
-        undoRedoManager.clearRedo()
+        undoRedoManager.clearRedos()
         
         addDrawingLayer(newLayer: newLayer)
         for layer in layers { layer.updateLayer(redraw: true) }
