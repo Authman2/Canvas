@@ -204,42 +204,33 @@ public class Canvas: UIView {
     
     /** Undo the last drawing stroke. */
     public func undo() {
-        undoRedoManager.performUndo()
+        let undid = undoRedoManager.performUndo()
         
-//        // If there is a separately defined undo function, run that instead.
-//        if last.3 != nil {
-//            last.3!.0()
-//            return
-//        }
-//
-//        // Remove that node from the layer that it is on.
-//        if let idx = layers[last.1 ?? 0].nodeArray.index(where: { (found) -> Bool in return found.id == last.2 }) {
-//            layers[last.1 ?? 0].nodeArray.remove(at: idx)
-//        }
-//
-//        // Update.
-//        layers[last.1 ?? 0].updateLayer(redraw: true)
-//        setNeedsDisplay()
+        // Handle standard undo.
+        if undid is ([Node], Int) {
+            if let (nodes, index) = undid as? ([Node], Int) {
+                self.layers[index].nodeArray = nodes
+                self.layers[index].updateLayer(redraw: true)
+                self.setNeedsDisplay()
+                print(nodes.count)
+            }
+        }
     }
     
     
     /** Redo the last drawing stroke. */
     public func redo() {
-        undoRedoManager.performRedo()
+        let redid = undoRedoManager.performRedo()
         
-//        // If there is a separately defined redo function, run that instead.
-//        if last.3 != nil {
-//            last.3!.1()
-//            return
-//        }
-//
-//        // Add the node back to the canvas on the layer it was on.
-//        last.0?.id = last.2 ?? 0
-//        layers[last.1 ?? 0].nodeArray.append(last.0!)
-//
-//        // Update.
-//        layers[last.1 ?? 0].updateLayer(redraw: true)
-//        setNeedsDisplay()
+        // Handle standard redo.
+        if redid is ([Node], Int) {
+            if let (nodes, index) = redid as? ([Node], Int) {
+                self.layers[index].nodeArray = nodes
+                self.layers[index].updateLayer(redraw: true)
+                self.setNeedsDisplay()
+                print(nodes.count)
+            }
+        }
     }
     
     
@@ -274,7 +265,7 @@ public class Canvas: UIView {
         newLayer.backgroundImage = image
         newLayer.allowsDrawing = false
         
-        undoRedoManager.clearRedos()
+        undoRedoManager.clearRedos(nodes: layers[currentCanvasLayer].nodeArray, index: currentCanvasLayer)
         
         addDrawingLayer(newLayer: newLayer)
         for layer in layers { layer.updateLayer(redraw: true) }

@@ -26,20 +26,19 @@ public extension Canvas {
         let cL = self.currentCanvasLayer
         let node = currLayer.nextNode!
         
+        var ur = layers[cL].nodeArray ?? []
+        if ur.count > 0 { ur.removeLast() }
+        undoRedoManager.clearRedos(nodes: ur, index: cL)
+        
         undoRedoManager.add(undo: {
-            if self.layers[cL].nodeArray.count == 0 { return }
-            let _ = self.layers[cL].nodeArray.removeLast()
-            
-            self.layers[cL].updateLayer(redraw: true)
-            self.setNeedsDisplay()
+            var la = self.layers[cL].nodeArray ?? []
+            if la.count > 0 { la.removeLast() }
+            return (la, cL)
         }) {
-            self.layers[cL].nodeArray.append(node)
-            
-            self.layers[cL].updateLayer(redraw: true)
-            self.setNeedsDisplay()
+            var la = self.layers[cL].nodeArray
+            la?.append(node)
+            return (la, cL)
         }
-        undoRedoManager.clearRedos()
-        //        undoRedoManager.addUndo(a: (currLayer.nextNode!, currentCanvasLayer, currLayer.nextNode!.id, nil))
 
         self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         currentLayer?.nextNode = nil

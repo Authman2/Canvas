@@ -24,7 +24,9 @@ public protocol CanvasDelegate {
     
     /** Called when a node is copied. */
     func didCopyNode(on canvas: Canvas, copiedNode: Node?)    
-    
+ 
+    /** Called when the selected node is moved using the selection tool. */
+    func didMoveNode(on canvas: Canvas, movedNode: Node?)
 }
 
 

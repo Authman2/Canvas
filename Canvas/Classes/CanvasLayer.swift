@@ -152,7 +152,7 @@ public class CanvasLayer: NSObject, NSCoding {
     
     /** Returns all the nodes on this layer. */
     public func getNodes() -> [Node] {
-        return self.nodeArray.map { $0.copy() as! Node }
+        return self.nodeArray
     }
     
     
