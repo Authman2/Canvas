@@ -29,7 +29,7 @@ class EllipseNode: Node {
      ************************/
     
     required init?(coder aDecoder: NSCoder) {
-        self.shouldFill = false
+        self.shouldFill = aDecoder.decodeBool(forKey: "ellipse_node_shouldFill")
         super.init(coder: aDecoder)
     }
     
@@ -137,5 +137,9 @@ class EllipseNode: Node {
         return n
     }
     
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(shouldFill, forKey: "ellipse_node_shouldFill")
+    }
     
 }

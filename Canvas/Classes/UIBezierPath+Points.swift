@@ -7,7 +7,6 @@
 
 import Foundation
 
-typealias BezierPoints = [CGPoint]
 extension CGPath {
     
     func forEach( body: @convention(block) (CGPathElement) -> Void) {
@@ -42,8 +41,8 @@ extension CGPath {
         return arrayPoints
     }
     
-    var bezierPointsAndTypes: [(BezierPoints, CGPathElementType)] {
-        var ret: [(BezierPoints, CGPathElementType)] = []
+    var bezierPointsAndTypes: [([CGPoint], CGPathElementType)] {
+        var ret: [([CGPoint], CGPathElementType)] = []
         self.forEach { element in
             switch (element.type) {
             case .moveToPoint:

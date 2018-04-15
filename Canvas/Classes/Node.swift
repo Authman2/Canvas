@@ -20,6 +20,12 @@ public class Node: UIBezierPath {
     /** The drawing path of the tool. */
     var path: CGMutablePath
     
+    /** A copy of the bezier points. */
+    var bezierPoints: [[CGPoint]]
+    
+    /** A copy of the bezier path types. */
+    var bezierTypes: [CGPathElementType]
+    
     /** The brush that the tool should use to draw. */
     var brush: Brush
     
@@ -52,18 +58,22 @@ public class Node: UIBezierPath {
     
     public required init?(coder aDecoder: NSCoder) {
         path = CGMutablePath()
-        brush = aDecoder.decodeObject(forKey: "canvas_brush_node") as! Brush
+        brush = aDecoder.decodeObject(forKey: "canvas_brush_node") as? Brush ?? Brush.Default
         firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint_node")
         lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint_node")
-        points = aDecoder.decodeObject(forKey: "canvas_points_node") as! [CGPoint]
+        points = aDecoder.decodeObject(forKey: "canvas_points_node") as? [CGPoint] ?? []
         boundingBox = aDecoder.decodeCGRect(forKey: "canvas_boundingBox_node")
         id = aDecoder.decodeInteger(forKey: "canvas_id_node")
+        bezierPoints = aDecoder.decodeObject(forKey: "canvas_path_points_node") as? [[CGPoint]] ?? []
+        bezierTypes = (aDecoder.decodeObject(forKey: "canvas_path_types_node") as? [Int32] ?? []).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
     
     override init() {
         path = CGMutablePath()
+        bezierPoints = []
+        bezierTypes = []
         brush = Brush.Default
         firstPoint = CGPoint()
         lastPoint = CGPoint()
@@ -156,6 +166,11 @@ public class Node: UIBezierPath {
         aCoder.encode(id, forKey: "canvas_id_node")
         aCoder.encode(points, forKey: "canvas_points_node")
         aCoder.encode(boundingBox, forKey: "canvas_boundingBox_node")
+        
+        let bPoints = path.bezierPointsAndTypes.map { $0.0 }.count == 0 ? bezierPoints : path.bezierPointsAndTypes.map { $0.0 }
+        let bTypes = path.bezierPointsAndTypes.map { $0.1.rawValue }.count == 0 ? bezierTypes.map { $0.rawValue } : path.bezierPointsAndTypes.map { $0.1.rawValue }
+        aCoder.encode(bPoints, forKey: "canvas_path_points_node")
+        aCoder.encode(bTypes, forKey: "canvas_path_types_node")
     }
     
     

@@ -27,7 +27,9 @@ public extension Canvas {
         let node = currLayer.nextNode!
         
         var ur = layers[cL].nodeArray ?? []
-        if ur.count > 0 { ur.removeLast() }
+        if ur.count > 0 {
+            ur.removeLast()
+        }
         undoRedoManager.clearRedos(nodes: ur, index: cL)
         
         undoRedoManager.add(undo: {

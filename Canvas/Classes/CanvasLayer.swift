@@ -262,6 +262,8 @@ public class CanvasLayer: NSObject, NSCoding {
         
         self.updateLayer(redraw: true)
         canvas.setNeedsDisplay()
+        
+        canvas.delegate?.didMoveNode(on: canvas, movedNode: selNode)
     }
     
     /** Handles when a touch is released. */

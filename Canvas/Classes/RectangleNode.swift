@@ -29,7 +29,7 @@ class RectangleNode: Node {
      ************************/
     
     required init?(coder aDecoder: NSCoder) {
-        self.shouldFill = false
+        self.shouldFill = aDecoder.decodeBool(forKey: "rectangle_node_shouldFill")
         super.init(coder: aDecoder)
     }
     
@@ -130,6 +130,11 @@ class RectangleNode: Node {
         n.points = points
         n.boundingBox = boundingBox
         return n
+    }
+    
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(shouldFill, forKey: "rectangle_node_shouldFill")
     }
     
 }

@@ -24,6 +24,37 @@ class PenNode: Node {
      *                      *
      ************************/
     
+    override init() {
+        super.init()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        let a = self.bezierPoints
+        let b = self.bezierTypes
+        path = CGMutablePath()
+        
+        for i in 0..<b.count {
+            switch(b[i]) {
+            case .moveToPoint:
+                path.move(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
+                break
+            case .addLineToPoint:
+                path.addLine(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
+                break
+            case .addQuadCurveToPoint:
+                path.addQuadCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control: CGPoint(x: a[i][1].x, y: a[i][1].y))
+                break
+            case .addCurveToPoint:
+                path.addCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control1: CGPoint(x: a[i][1].x, y: a[i][1].y), control2: CGPoint(x: a[i][2].x, y: a[i][2].y))
+                break
+            default:
+                path.closeSubpath()
+                break
+            }
+        }
+    }
 
     
     
@@ -64,22 +95,37 @@ class PenNode: Node {
     }
     
     override func moveNode(touch: UITouch, canvas: Canvas) {
-        var instructions = path.bezierPointsAndTypes
+        var instructions = bezierTypes
+        var points = bezierPoints
         path = CGMutablePath()
         
         for i in 0..<instructions.count {
-            switch(instructions[i].1) {
+            switch(instructions[i]) {
             case .moveToPoint:
-                path.move(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY))
+                points[i][0].x += touch.deltaX
+                points[i][0].y += touch.deltaY
+                path.move(to: CGPoint(x: points[i][0].x, y: points[i][0].y))
                 break
             case .addLineToPoint:
-                path.addLine(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY))
+                points[i][0].x += touch.deltaX
+                points[i][0].y += touch.deltaY
+                path.addLine(to: CGPoint(x: points[i][0].x, y: points[i][0].y))
                 break
             case .addQuadCurveToPoint:
-                path.addQuadCurve(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY), control: CGPoint(x: instructions[i].0[1].x + touch.deltaX, y: instructions[i].0[1].y + touch.deltaY))
+                points[i][0].x += touch.deltaX
+                points[i][0].y += touch.deltaY
+                points[i][1].x += touch.deltaX
+                points[i][1].y += touch.deltaY
+                path.addQuadCurve(to: CGPoint(x: points[i][0].x, y: points[i][0].y), control: CGPoint(x: points[i][1].x, y: points[i][1].y))
                 break
             case .addCurveToPoint:
-                path.addCurve(to: CGPoint(x: instructions[i].0[0].x + touch.deltaX, y: instructions[i].0[0].y + touch.deltaY), control1: CGPoint(x: instructions[i].0[1].x + touch.deltaX, y: instructions[i].0[1].y + touch.deltaY), control2: CGPoint(x: instructions[i].0[2].x + touch.deltaX, y: instructions[i].0[2].y + touch.deltaY))
+                points[i][0].x += touch.deltaX
+                points[i][0].y += touch.deltaY
+                points[i][1].x += touch.deltaX
+                points[i][1].y += touch.deltaY
+                points[i][2].x += touch.deltaX
+                points[i][2].y += touch.deltaY
+                path.addCurve(to: CGPoint(x: points[i][0].x, y: points[i][0].y), control1: CGPoint(x: points[i][1].x, y: points[i][1].y), control2: CGPoint(x: points[i][2].x, y: points[i][2].y))
                 break
             default:
                 path.closeSubpath()
@@ -101,6 +147,9 @@ class PenNode: Node {
         context.setFlatness(brush.flatness)
         context.setAlpha(brush.opacity)
         context.strokePath()
+        
+        bezierPoints = path.bezierPointsAndTypes.map { $0.0 }
+        bezierTypes = path.bezierPointsAndTypes.map { $0.1 }
     }
     
     

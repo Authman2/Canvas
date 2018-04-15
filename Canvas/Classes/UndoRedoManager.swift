@@ -23,8 +23,8 @@ public class UndoRedoManger {
     internal var undoIndex: Int
 //    internal var redoIndex: Int
 //    private var stack: [CanvasEvent]
-    private var undos: [() -> Any?]
-    private var redos: [() -> Any?]
+    internal var undos: [() -> Any?]
+    internal var redos: [() -> Any?]
     
     
     
@@ -65,13 +65,14 @@ public class UndoRedoManger {
         
         let last = undos[undoIndex]
         undoIndex -= 1
+        if undoIndex < -1 { undoIndex = -1 }
         return last()
     }
     
     /** Redo the last event. */
     public func performRedo() -> Any? {
         if redos.count <= 0 { return nil }
-        if undoIndex < 0 || undoIndex + 1 >= redos.count { return nil }
+        if undoIndex < -1 || undoIndex + 1 >= redos.count { return nil }
         
         undoIndex += 1
         let last = redos[undoIndex]
