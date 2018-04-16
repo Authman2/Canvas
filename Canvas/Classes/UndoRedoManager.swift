@@ -8,9 +8,6 @@
 import Foundation
 
 
-/** An event for the undo redo manager. */
-typealias CanvasEvent = (() -> Any?, () -> Any?)
-
 /** The manager that handles undoing and redoing actions while working with the canvas. The generic used here represents what should count toward the undo/redo stack. This way, users can define exactly what actions in their app should trigger undos and redos. */
 public class UndoRedoManger {
     
@@ -70,8 +67,6 @@ public class UndoRedoManger {
         // Now take the redo of that function and add it to the redo stack.
         redos.insert(last, at: 0)
         
-        print(stack)
-        print(redos)
         return val
     }
     
@@ -88,8 +83,6 @@ public class UndoRedoManger {
         // Make sure you add back the redo to the undo stack.
         stack.append(last)
         
-        print(stack)
-        print(redos)
         return val
     }
     

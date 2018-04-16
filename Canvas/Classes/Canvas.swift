@@ -197,7 +197,7 @@ public class Canvas: UIView {
     // -- UNDO / REDO / CLEAR --
     
     /** Allows the user to define custom behavior for undo and redo. For example, a custom function to undo changing the tool. */
-    public func addCustomUndoRedo(cUndo: @escaping () -> Void, cRedo: @escaping () -> Void) {
+    public func addCustomUndoRedo(cUndo: @escaping () -> Any?, cRedo: @escaping () -> Any?) {
         undoRedoManager.add(undo: cUndo, redo: cRedo)
     }
     
@@ -212,7 +212,6 @@ public class Canvas: UIView {
                 self.layers[index].nodeArray = nodes
                 self.layers[index].updateLayer(redraw: true)
                 self.setNeedsDisplay()
-                print(nodes.count)
             }
         }
     }
@@ -228,7 +227,6 @@ public class Canvas: UIView {
                 self.layers[index].nodeArray = nodes
                 self.layers[index].updateLayer(redraw: true)
                 self.setNeedsDisplay()
-                print(nodes.count)
             }
         }
     }
