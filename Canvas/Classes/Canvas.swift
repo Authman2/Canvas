@@ -265,7 +265,7 @@ public class Canvas: UIView {
         newLayer.backgroundImage = image
         newLayer.allowsDrawing = false
         
-        undoRedoManager.clearRedos(nodes: layers[currentCanvasLayer].nodeArray, index: currentCanvasLayer)
+        undoRedoManager.clearRedos()
         
         addDrawingLayer(newLayer: newLayer)
         for layer in layers { layer.updateLayer(redraw: true) }

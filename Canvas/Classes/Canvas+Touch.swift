@@ -26,12 +26,6 @@ public extension Canvas {
         let cL = self.currentCanvasLayer
         let node = currLayer.nextNode!
         
-        var ur = layers[cL].nodeArray ?? []
-        if ur.count > 0 {
-            ur.removeLast()
-        }
-        undoRedoManager.clearRedos(nodes: ur, index: cL)
-        
         undoRedoManager.add(undo: {
             var la = self.layers[cL].nodeArray ?? []
             if la.count > 0 { la.removeLast() }
@@ -41,6 +35,7 @@ public extension Canvas {
             la?.append(node)
             return (la, cL)
         }
+        undoRedoManager.clearRedos()
 
         self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         currentLayer?.nextNode = nil

@@ -20,11 +20,12 @@ public class UndoRedoManger {
      *                      *
      ************************/
     
-    internal var undoIndex: Int
-//    internal var redoIndex: Int
-//    private var stack: [CanvasEvent]
-    internal var undos: [() -> Any?]
-    internal var redos: [() -> Any?]
+    /** The undo redo stack, which is an array of dictionaries of the format [undo/redo : function] */
+    var stack: [[Int : () -> Any?]]
+    
+    /** The separate redo stack to keep track of what can and should be redone next. */
+    var redos: [[Int : () -> Any?]]
+    
     
     
     
@@ -36,9 +37,8 @@ public class UndoRedoManger {
      ************************/
     
     init() {
-        undos = []
+        stack = []
         redos = []
-        undoIndex = 0
     }
     
     
@@ -53,40 +53,49 @@ public class UndoRedoManger {
     
     /** Adds a new action to undos. */
     public func add(undo: @escaping () -> Any?, redo: @escaping () -> Any?) {
-        undos.append(undo)
-        redos.append(redo)
-        undoIndex = undos.count - 1
+        // Add two entries to the dictionary, an undo and a redo with the respective indexes.
+        stack.append([0: undo, 1: redo])
     }
     
     /** Undo the last event. */
     public func performUndo() -> Any? {
-        if undos.count <= 0 { return nil }
-        if undoIndex < 0 || undoIndex >= undos.count { return nil }
+        if stack.isEmpty == true { return nil }
         
-        let last = undos[undoIndex]
-        undoIndex -= 1
-        if undoIndex < -1 { undoIndex = -1 }
-        return last()
+        // Get the last item in the stack.
+        guard let last = stack.popLast() else { return nil }
+        
+        // That last item is a function that says how something should be undone. Run the function.
+        let val = last[0]?()
+        
+        // Now take the redo of that function and add it to the redo stack.
+        redos.insert(last, at: 0)
+        
+        print(stack)
+        print(redos)
+        return val
     }
     
     /** Redo the last event. */
     public func performRedo() -> Any? {
-        if redos.count <= 0 { return nil }
-        if undoIndex < -1 || undoIndex + 1 >= redos.count { return nil }
+        if redos.isEmpty == true { return nil }
         
-        undoIndex += 1
-        let last = redos[undoIndex]
-        return last()
+        // Get the last item in the redos.
+        let last = redos.removeFirst()
+        
+        // Run that function to perform the redo.
+        let val = last[1]?()
+        
+        // Make sure you add back the redo to the undo stack.
+        stack.append(last)
+        
+        print(stack)
+        print(redos)
+        return val
     }
     
     /** Clears the redos. */
-    public func clearRedos(nodes: [Node], index: Int) {
-        if undoIndex >= redos.count - 1 { return }
-        
-        for i in undoIndex+1..<redos.count {
-            redos[i] = { return (nodes, index) }
-        }
-//        redos[undoIndex] = { return (nodes, index) }
+    public func clearRedos() {
+        redos.removeAll()
     }
     
     
