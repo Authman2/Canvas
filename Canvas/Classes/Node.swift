@@ -44,7 +44,8 @@ public class Node: UIBezierPath {
     /** The bounding area of the entire shape. */
     var boundingBox: CGRect
     
-    
+    /** Whether or not this node is selectable. */
+    var allowsSelection: Bool
     
     
     
@@ -66,6 +67,7 @@ public class Node: UIBezierPath {
         id = aDecoder.decodeInteger(forKey: "canvas_id_node")
         bezierPoints = aDecoder.decodeObject(forKey: "canvas_path_points_node") as? [[CGPoint]] ?? []
         bezierTypes = (aDecoder.decodeObject(forKey: "canvas_path_types_node") as? [Int32] ?? []).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
+        allowsSelection = aDecoder.decodeBool(forKey: "canvas_allowsSelection_node")
         super.init(coder: aDecoder)
         lineCapStyle = .round
     }
@@ -80,6 +82,7 @@ public class Node: UIBezierPath {
         points = []
         boundingBox = CGRect()
         id = 0
+        allowsSelection = true
         super.init()
         lineCapStyle = .round
     }
@@ -131,6 +134,9 @@ public class Node: UIBezierPath {
         n.id = id
         n.points = points
         n.boundingBox = boundingBox
+        n.allowsSelection = allowsSelection
+        n.bezierTypes = bezierTypes
+        n.bezierPoints = bezierPoints
         return n
     }
     
@@ -143,6 +149,9 @@ public class Node: UIBezierPath {
         n.id = id
         n.points = points
         n.boundingBox = boundingBox
+        n.allowsSelection = allowsSelection
+        n.bezierTypes = bezierTypes
+        n.bezierPoints = bezierPoints
         return n
     }
     
@@ -155,6 +164,9 @@ public class Node: UIBezierPath {
         n.id = id
         n.points = points
         n.boundingBox = boundingBox
+        n.allowsSelection = allowsSelection
+        n.bezierTypes = bezierTypes
+        n.bezierPoints = bezierPoints
         return n
     }
     
@@ -166,6 +178,7 @@ public class Node: UIBezierPath {
         aCoder.encode(id, forKey: "canvas_id_node")
         aCoder.encode(points, forKey: "canvas_points_node")
         aCoder.encode(boundingBox, forKey: "canvas_boundingBox_node")
+        aCoder.encode(allowsSelection, forKey: "canvas_allowsSelection_node")
         
         let bPoints = path.bezierPointsAndTypes.map { $0.0 }.count == 0 ? bezierPoints : path.bezierPointsAndTypes.map { $0.0 }
         let bTypes = path.bezierPointsAndTypes.map { $0.1.rawValue }.count == 0 ? bezierTypes.map { $0.rawValue } : path.bezierPointsAndTypes.map { $0.1.rawValue }

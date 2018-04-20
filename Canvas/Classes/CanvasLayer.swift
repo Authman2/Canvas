@@ -273,6 +273,7 @@ public class CanvasLayer: NSObject, NSCoding {
         // If you are not currently selecting a node, select one.
         if selectNode == nil {
             for node in nodeArray {
+                if node.allowsSelection == false { continue }
                 if node is EraserNode { continue }
                 if node.contains(point: loc) {
                     selectNode = node
@@ -284,6 +285,7 @@ public class CanvasLayer: NSObject, NSCoding {
         // If you have a node selected and no node is pressed, unselect.
         else {
             for node in nodeArray {
+                if node.allowsSelection == false { continue }
                 if node is EraserNode { continue }
                 if node.contains(point: loc) {
                     selectNode = node
