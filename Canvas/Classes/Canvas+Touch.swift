@@ -73,6 +73,9 @@ public extension Canvas {
         // Selection tool vs other tools.
         if currentTool == .selection {
             currLayer.onTouch(touch: touch)
+        }
+        else if currentTool == .eyedropper {
+            return
         } else {
             // Add the drawing stroke.
             currLayer.nodeArray.append(currLayer.nextNode!)
@@ -110,6 +113,11 @@ public extension Canvas {
         // Selection tool vs other tools.
         if currentDrawingTool == .selection {
             currLayer.onMove(touch: touch)
+            return
+        }
+        
+        // Eyedropper tool.
+        if currentDrawingTool == .eyedropper {
             return
         }
         
@@ -170,6 +178,9 @@ public extension Canvas {
         // Selection tool vs other tools
         if currentDrawingTool == .selection {
             currLayer.onRelease(point: currentPoint)
+        }
+        else if currentDrawingTool == .eyedropper {
+            handleEyedrop(point: currentPoint)
         } else {
             // Make sure the point is recorded.
             touchesMoved(touches, with: event)

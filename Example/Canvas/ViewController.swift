@@ -232,7 +232,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func newTool() {
-        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .rectangleFill, .ellipse, .ellipseFill]
+        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .rectangleFill, .ellipse, .ellipseFill, .eyedropper]
         let rand = Int(arc4random_uniform(UInt32(tools.count)))
         
         let last = canvas.currentTool

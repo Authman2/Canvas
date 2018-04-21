@@ -295,6 +295,10 @@ public class CanvasLayer: NSObject, NSCoding {
             selectNode = nil
         }
     }
+    
+    
+    
+    
 
     
     

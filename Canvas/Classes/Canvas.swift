@@ -333,6 +333,42 @@ public class Canvas: UIView {
     }
     
     
+    /** Handles grabbing a color from an area on the canvas. */
+    func handleEyedrop(point: CGPoint) {
+        var color: UIColor? = nil
+        
+        for layer in layers {
+            // Find the node that was tapped and sample its color.
+            for node in layer.nodeArray {
+                if node.contains(point: point) {
+                    color = node.brush.color
+                    currentBrush.color = node.brush.color
+                    layer.nextNode?.brush.color = node.brush.color
+                    return
+                }
+            }
+            
+            // If it's not any of those nodes, look at the next node.
+            if let next = layer.nextNode {
+                if next.contains(point: point) {
+                    color = next.brush.color
+                    currentBrush.color = next.brush.color
+                    next.brush.color = next.brush.color
+                    return
+                }
+            }
+        }
+        
+        // If no node is selected.
+        if color == nil { color = currentBrush.color }
+        currentBrush.color = color!
+        currentLayer?.nextNode?.brush.color = color!
+    }
+    
+    
+    
+    
+    
     /************************
      *                      *
      *         OTHER        *

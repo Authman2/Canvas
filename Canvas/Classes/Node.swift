@@ -200,5 +200,6 @@ public enum CanvasTool: Int32 {
     case ellipse = 5
     case ellipseFill = 6
     case selection = 7
+    case eyedropper = 8
 }
 

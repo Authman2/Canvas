@@ -23,6 +23,7 @@ public extension Canvas {
         case CanvasTool.ellipse: n = EllipseNode(shouldFill: false); break
         case CanvasTool.ellipseFill: n = EllipseNode(shouldFill: true); break
         case CanvasTool.selection: n = SelectionNode(); break
+        case CanvasTool.eyedropper: n = EyedropperNode(); break
         }
         
         n.id = totalNodeCount
