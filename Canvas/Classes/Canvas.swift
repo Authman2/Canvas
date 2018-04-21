@@ -335,34 +335,24 @@ public class Canvas: UIView {
     
     /** Handles grabbing a color from an area on the canvas. */
     func handleEyedrop(point: CGPoint) {
-        var color: UIColor? = nil
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bitmap = CGBitmapInfo.init(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        var pixels: [UInt8] = [0,0,0,0]
         
-        for layer in layers {
-            // Find the node that was tapped and sample its color.
-            for node in layer.nodeArray {
-                if node.contains(point: point) {
-                    color = node.brush.color
-                    currentBrush.color = node.brush.color
-                    layer.nextNode?.brush.color = node.brush.color
-                    return
-                }
-            }
+        if let context = CGContext(data: &pixels, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmap.rawValue) {
+        
+            context.translateBy(x: -point.x, y: -point.y)
+            self.layer.render(in: context)
+        
+            let r = CGFloat(pixels[0])/CGFloat(255)
+            let g = CGFloat(pixels[1])/CGFloat(255)
+            let b = CGFloat(pixels[2])/CGFloat(255)
+            let a = CGFloat(pixels[3])/CGFloat(255)
             
-            // If it's not any of those nodes, look at the next node.
-            if let next = layer.nextNode {
-                if next.contains(point: point) {
-                    color = next.brush.color
-                    currentBrush.color = next.brush.color
-                    next.brush.color = next.brush.color
-                    return
-                }
-            }
+            let color = UIColor(red: r, green: g, blue: b, alpha: a)
+            self.currentBrush.color = color
+            currentLayer?.nextNode?.brush.color = color
         }
-        
-        // If no node is selected.
-        if color == nil { color = currentBrush.color }
-        currentBrush.color = color!
-        currentLayer?.nextNode?.brush.color = color!
     }
     
     
