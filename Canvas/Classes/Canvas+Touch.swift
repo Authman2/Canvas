@@ -143,17 +143,7 @@ public extension Canvas {
             currLayer.nextNode?.setBoundingBox()
             setNeedsDisplay()
             break
-        case .rectangleFill:
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.setBoundingBox()
-            setNeedsDisplay()
-            break
         case .ellipse:
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.setBoundingBox()
-            setNeedsDisplay()
-            break
-        case .ellipseFill:
             currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
             currLayer.nextNode?.setBoundingBox()
             setNeedsDisplay()

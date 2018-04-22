@@ -16,9 +16,15 @@ class RectangleNode: Node {
      *                      *
      ************************/
     
-    internal var shouldFill: Bool
+    var fillColor: UIColor?
     
+    var innerRect: CGRect?
     
+    override var boundingBox: CGRect {
+        didSet {
+            innerRect = boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness)
+        }
+    }
     
     
     
@@ -29,12 +35,11 @@ class RectangleNode: Node {
      ************************/
     
     required init?(coder aDecoder: NSCoder) {
-        self.shouldFill = aDecoder.decodeBool(forKey: "rectangle_node_shouldFill")
+        fillColor = aDecoder.decodeObject(forKey: "rectangle_node_fillColor") as? UIColor
         super.init(coder: aDecoder)
     }
     
-    init(shouldFill: Bool) {
-        self.shouldFill = shouldFill
+    override init() {
         super.init()
     }
     
@@ -60,8 +65,14 @@ class RectangleNode: Node {
         return boundingBox.contains(point)
     }
     
+    func containsInner(point: CGPoint) -> Bool {
+        guard let inner = innerRect else { return false }
+        return inner.contains(point)
+    }
+    
     override func moveNode(touch: UITouch, canvas: Canvas) {
         boundingBox = boundingBox.offsetBy(dx: touch.deltaX, dy: touch.deltaY)
+        innerRect = boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness)
     }
     
     override func draw() {
@@ -74,13 +85,14 @@ class RectangleNode: Node {
         context.setFlatness(brush.flatness)
         context.setAlpha(brush.opacity)
         
-        // Create a rectangle to draw.
-        if self.shouldFill {
-            context.setFillColor(brush.color.cgColor)
-            context.fill(boundingBox)
-        } else {
-            context.setStrokeColor(brush.color.cgColor)
-            context.stroke(boundingBox)
+        // Stoke the outline of the shape.
+        context.setStrokeColor(brush.color.cgColor)
+        context.stroke(boundingBox)
+        
+        // If the shape has a fill color, color in the fill inside of the border.
+        if let fill = fillColor {
+            context.setFillColor(fill.cgColor)
+            context.fill(innerRect ?? boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness))
         }
     }
     
@@ -97,8 +109,9 @@ class RectangleNode: Node {
      ************************/
     
     public override func copy() -> Any {
-        let n = RectangleNode(shouldFill: shouldFill)
+        let n = RectangleNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -109,8 +122,9 @@ class RectangleNode: Node {
     }
     
     public override func mutableCopy() -> Any {
-        let n = RectangleNode(shouldFill: shouldFill)
+        let n = RectangleNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -121,8 +135,9 @@ class RectangleNode: Node {
     }
     
     public override func copy(with zone: NSZone? = nil) -> Any {
-        let n = RectangleNode(shouldFill: shouldFill)
+        let n = RectangleNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -134,7 +149,7 @@ class RectangleNode: Node {
     
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
-        aCoder.encode(shouldFill, forKey: "rectangle_node_shouldFill")
+        aCoder.encode(fillColor, forKey: "rectangle_node_fillColor")
     }
     
 }

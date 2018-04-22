@@ -350,8 +350,9 @@ public class Canvas: UIView {
             let a = CGFloat(pixels[3])/CGFloat(255)
             
             let color = UIColor(red: r, green: g, blue: b, alpha: a)
-            self.currentBrush.color = color
-            currentLayer?.nextNode?.brush.color = color
+            let nBrush = self.currentBrush.mutableCopy() as! Brush
+            nBrush.color = color
+            self.setBrush(brush: nBrush)
         }
     }
     
@@ -364,6 +365,10 @@ public class Canvas: UIView {
         // First, check if you click directly on a node. If so, just fill its color.
         for node in cLayer.nodeArray {
             if node.contains(point: point) {
+                // Handle painting inside of a rectangle or ellipse.
+                if node is RectangleNode { paintRect(node: node as! RectangleNode, point: point, cLayer: cLayer); return }
+                else if node is EllipseNode { paintEllipse(node: node as! EllipseNode, point: point, cLayer: cLayer); return }
+                
                 // Change the brush used on the node.
                 let cpy = node.brush.mutableCopy() as! Brush
                 cpy.color = currentBrush.color
@@ -375,8 +380,11 @@ public class Canvas: UIView {
                 return
             }
         }
-        
     }
+
+    
+    
+    
     
     
     
@@ -403,6 +411,48 @@ public class Canvas: UIView {
         aCoder.encode(preemptTouch, forKey: "canvas_preempTouches")
     }
     
+    
+    /** Helper method for painting a rectangle. */
+    private func paintRect(node: RectangleNode, point: CGPoint, cLayer: CanvasLayer) {
+        // If the point is contained, that means update the fill color.
+        if node.containsInner(point: point) {
+            // Change the node's fill color.
+            node.fillColor = currentBrush.color
+            cLayer.updateLayer(redraw: true)
+            setNeedsDisplay()
+        }
+            // Otherwise, update just the stroke color.
+        else {
+            // Change the brush used on the node.
+            let cpy = node.brush.mutableCopy() as! Brush
+            cpy.color = currentBrush.color
+            
+            node.brush = cpy
+            cLayer.updateLayer(redraw: true)
+            setNeedsDisplay()
+        }
+    }
+    
+    /** Helper method for painting an ellipse. */
+    private func paintEllipse(node: EllipseNode, point: CGPoint, cLayer: CanvasLayer) {
+        // If the point is contained, that means update the fill color.
+        if node.containsInner(point: point) {
+            // Change the node's fill color.
+            node.fillColor = currentBrush.color
+            cLayer.updateLayer(redraw: true)
+            setNeedsDisplay()
+        }
+        // Otherwise, update just the stroke color.
+        else {
+            // Change the brush used on the node.
+            let cpy = node.brush.mutableCopy() as! Brush
+            cpy.color = currentBrush.color
+            
+            node.brush = cpy
+            cLayer.updateLayer(redraw: true)
+            setNeedsDisplay()
+        }
+    }
     
     
     

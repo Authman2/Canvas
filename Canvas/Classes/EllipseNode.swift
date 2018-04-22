@@ -16,7 +16,15 @@ class EllipseNode: Node {
      *                      *
      ************************/
     
-    internal var shouldFill: Bool
+    var fillColor: UIColor?
+    
+    var innerRect: CGRect?
+    
+    override var boundingBox: CGRect {
+        didSet {
+            innerRect = boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness)
+        }
+    }
     
     
     
@@ -29,12 +37,11 @@ class EllipseNode: Node {
      ************************/
     
     required init?(coder aDecoder: NSCoder) {
-        self.shouldFill = aDecoder.decodeBool(forKey: "ellipse_node_shouldFill")
+        fillColor = aDecoder.decodeObject(forKey: "ellipse_node_fillColor") as? UIColor
         super.init(coder: aDecoder)
     }
     
-    init(shouldFill: Bool) {
-        self.shouldFill = shouldFill
+    override init() {
         super.init()
     }
     
@@ -66,8 +73,21 @@ class EllipseNode: Node {
         return dist <= radius
     }
     
+    /** Whether or not this ellispe contains the point. */
+    func containsInner(point: CGPoint) -> Bool {
+        guard let inner = innerRect else { return false }
+        let center = CGPoint(x: inner.minX + inner.width / 2, y: inner.minY + inner.height / 2)
+        let radius = inner.width / 2
+        let dx = point.x - center.x
+        let dy = point.y - center.y
+        let dist = sqrt((dx ** 2) + (dy ** 2))
+        
+        return dist <= radius
+    }
+    
     override func moveNode(touch: UITouch, canvas: Canvas) {
         boundingBox = boundingBox.offsetBy(dx: touch.deltaX, dy: touch.deltaY)
+        innerRect = boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness)
     }
     
     override func draw() {
@@ -80,13 +100,14 @@ class EllipseNode: Node {
         context.setFlatness(brush.flatness)
         context.setAlpha(brush.opacity)
         
-        // Create a ellipse to draw.
-        if self.shouldFill {
-            context.setFillColor(brush.color.cgColor)
-            context.fillEllipse(in: boundingBox)
-        } else {
-            context.setStrokeColor(brush.color.cgColor)
-            context.strokeEllipse(in: boundingBox)
+        // Color the border.
+        context.setStrokeColor(brush.color.cgColor)
+        context.strokeEllipse(in: boundingBox)
+        
+        // If the shape has a fill color, color in the fill inside of the border.
+        if let fill = fillColor {
+            context.setFillColor(fill.cgColor)
+            context.fillEllipse(in: innerRect ?? boundingBox.insetBy(dx: brush.thickness, dy: brush.thickness))
         }
     }
     
@@ -102,8 +123,9 @@ class EllipseNode: Node {
      ************************/
     
     public override func copy() -> Any {
-        let n = EllipseNode(shouldFill: shouldFill)
+        let n = EllipseNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -114,8 +136,9 @@ class EllipseNode: Node {
     }
     
     public override func mutableCopy() -> Any {
-        let n = EllipseNode(shouldFill: shouldFill)
+        let n = EllipseNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -126,8 +149,9 @@ class EllipseNode: Node {
     }
     
     public override func copy(with zone: NSZone? = nil) -> Any {
-        let n = EllipseNode(shouldFill: shouldFill)
+        let n = EllipseNode()
         n.path = path
+        n.fillColor = fillColor
         n.brush = brush.copy() as! Brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
@@ -139,7 +163,7 @@ class EllipseNode: Node {
     
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
-        aCoder.encode(shouldFill, forKey: "ellipse_node_shouldFill")
+        aCoder.encode(fillColor, forKey: "ellipse_node_fillColor")
     }
     
 }

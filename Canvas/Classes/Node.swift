@@ -196,11 +196,9 @@ public enum CanvasTool: Int32 {
     case eraser = 1
     case line = 2
     case rectangle = 3
-    case rectangleFill = 4
-    case ellipse = 5
-    case ellipseFill = 6
-    case selection = 7
-    case eyedropper = 8
-    case paint = 9
+    case ellipse = 4
+    case selection = 5
+    case eyedropper = 6
+    case paint = 7
 }
 
