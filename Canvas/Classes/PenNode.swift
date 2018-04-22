@@ -8,7 +8,7 @@
 import Foundation
 
 /** A standard pen tool for drawing on the canvas. */
-class PenNode: Node {
+public class PenNode: Node {
     
     /************************
      *                      *
@@ -24,11 +24,11 @@ class PenNode: Node {
      *                      *
      ************************/
     
-    override init() {
+    public override init() {
         super.init()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         let a = self.bezierPoints

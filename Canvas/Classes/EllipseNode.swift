@@ -8,7 +8,7 @@
 import Foundation
 
 /** A node that is used to draw ellipses on the screen. */
-class EllipseNode: Node {
+public class EllipseNode: Node {
     
     /************************
      *                      *
@@ -36,12 +36,12 @@ class EllipseNode: Node {
      *                      *
      ************************/
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fillColor = aDecoder.decodeObject(forKey: "ellipse_node_fillColor") as? UIColor
         super.init(coder: aDecoder)
     }
     
-    override init() {
+    public override init() {
         super.init()
     }
     
@@ -161,7 +161,7 @@ class EllipseNode: Node {
         return n
     }
     
-    override func encode(with aCoder: NSCoder) {
+    public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(fillColor, forKey: "ellipse_node_fillColor")
     }

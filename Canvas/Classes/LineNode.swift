@@ -8,7 +8,7 @@
 import Foundation
 
 /** A straight line node. */
-class LineNode: Node {
+public class LineNode: Node {
     
     /************************
      *                      *
@@ -26,7 +26,19 @@ class LineNode: Node {
      *                      *
      ************************/
     
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     
+    public init(first: CGPoint, last: CGPoint) {
+        super.init()
+        firstPoint = first
+        lastPoint = last
+    }
+    
+    override init() {
+        super.init()
+    }
     
     
     

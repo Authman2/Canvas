@@ -8,7 +8,7 @@
 import Foundation
 
 /** A node that is used to draw rectangles on the screen. */
-class RectangleNode: Node {
+public class RectangleNode: Node {
     
     /************************
      *                      *
@@ -34,12 +34,12 @@ class RectangleNode: Node {
      *                      *
      ************************/
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fillColor = aDecoder.decodeObject(forKey: "rectangle_node_fillColor") as? UIColor
         super.init(coder: aDecoder)
     }
     
-    override init() {
+    public override init() {
         super.init()
     }
     
@@ -147,7 +147,7 @@ class RectangleNode: Node {
         return n
     }
     
-    override func encode(with aCoder: NSCoder) {
+    public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(fillColor, forKey: "rectangle_node_fillColor")
     }
