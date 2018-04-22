@@ -74,7 +74,7 @@ public extension Canvas {
         if currentTool == .selection {
             currLayer.onTouch(touch: touch)
         }
-        else if currentTool == .eyedropper {
+        else if currentTool == .eyedropper || currentTool == .paint {
             return
         } else {
             // Add the drawing stroke.
@@ -117,7 +117,7 @@ public extension Canvas {
         }
         
         // Eyedropper tool.
-        if currentDrawingTool == .eyedropper {
+        if currentDrawingTool == .eyedropper || currentDrawingTool == .paint {
             return
         }
         
@@ -181,6 +181,9 @@ public extension Canvas {
         }
         else if currentDrawingTool == .eyedropper {
             handleEyedrop(point: currentPoint)
+        }
+        else if currentDrawingTool == .paint {
+            handlePaintBucket(point: currentPoint)
         } else {
             // Make sure the point is recorded.
             touchesMoved(touches, with: event)

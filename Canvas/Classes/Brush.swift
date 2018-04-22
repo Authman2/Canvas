@@ -119,6 +119,20 @@ public class Brush: NSObject, NSCoding  {
         return b
     }
     
+    public override func mutableCopy() -> Any {
+        let b = Brush()
+        b.color = color
+        b.thickness = thickness
+        b.opacity = opacity
+        b.flatness = flatness
+        b.miter = miter
+        b.shape = shape
+        b.joinStyle = joinStyle
+        
+        return b
+    }
+    
+    
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(color, forKey: "canvas_brush_color")
         aCoder.encode(thickness, forKey: "canvas_brush_thickness")

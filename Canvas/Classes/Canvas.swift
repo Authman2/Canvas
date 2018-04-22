@@ -356,6 +356,29 @@ public class Canvas: UIView {
     }
     
     
+    /** Handles painting on the canvas with the paint bucket tool. */
+    func handlePaintBucket(point: CGPoint) {
+        // Only paint on the current layer.
+        guard let cLayer = currentLayer else { return }
+        
+        // First, check if you click directly on a node. If so, just fill its color.
+        for node in cLayer.nodeArray {
+            if node.contains(point: point) {
+                // Change the brush used on the node.
+                let cpy = node.brush.mutableCopy() as! Brush
+                cpy.color = currentBrush.color
+                
+                node.brush = cpy
+                cLayer.updateLayer(redraw: true)
+                setNeedsDisplay()
+                
+                return
+            }
+        }
+        
+    }
+    
+    
     
     
     
