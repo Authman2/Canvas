@@ -8,7 +8,7 @@ Canvas is an iOS library that creates an area on the screen where the user can d
 
 ## Features
 - **Canvas**: A simple UIView with a clear background.
-- **CanvasTools**: Draw using different shapes (pen, eraser, line, rectangle, rectangleFill, ellipse, ellipseFill)
+- **CanvasTools**: Draw using different shapes (pen, eraser, line, rectangle, ellipse, eyedropper, and paint bucket)
 - **CanvasLayers**: Create multiple drawing layers that can be moved, swapped, hidden, locked, and more.
 - **Brushes**: Create and use different brushes to style drawings on the canvas.
 - **Protocols**: Keep track of when the user starts drawing, is drawing, and finishes drawing by using the CanvasProtocol.
