@@ -203,7 +203,15 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
+    func didPasteNode(on canvas: Canvas, pastedNode: Node) {
+        
+    }
+    
     func didMoveNode(on canvas: Canvas, movedNode: Node?) {
+        
+    }
+    
+    func didPaintNode(on canvas: Canvas, paintedNode: Node) {
         
     }
     

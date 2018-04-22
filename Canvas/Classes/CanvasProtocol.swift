@@ -23,10 +23,16 @@ public protocol CanvasDelegate {
     func didSelectNode(on canvas: Canvas, selectedNode: Node)
     
     /** Called when a node is copied. */
-    func didCopyNode(on canvas: Canvas, copiedNode: Node?)    
+    func didCopyNode(on canvas: Canvas, copiedNode: Node?)
+    
+    /** Called when a node is pasted. */
+    func didPasteNode(on canvas: Canvas, pastedNode: Node)
  
     /** Called when the selected node is moved using the selection tool. */
     func didMoveNode(on canvas: Canvas, movedNode: Node?)
+    
+    /** Called when the paint bucket tool is used. */
+    func didPaintNode(on canvas: Canvas, paintedNode: Node)
     
 }
 

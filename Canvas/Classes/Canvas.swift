@@ -308,6 +308,7 @@ public class Canvas: UIView {
         if onLayer < 0 { return }
 
         layers[onLayer].drawFrom(nodes: [copy], appending: true)
+        delegate?.didPasteNode(on: self, pastedNode: copy)
     }
     
     
@@ -335,6 +336,9 @@ public class Canvas: UIView {
     
     /** Handles grabbing a color from an area on the canvas. */
     func handleEyedrop(point: CGPoint) {
+        // Only track the eyedropper on the canvas.
+        if hitTest(point, with: nil) != self { return }
+        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmap = CGBitmapInfo.init(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
         var pixels: [UInt8] = [0,0,0,0]
@@ -376,6 +380,7 @@ public class Canvas: UIView {
                 node.brush = cpy
                 cLayer.updateLayer(redraw: true)
                 setNeedsDisplay()
+                delegate?.didPaintNode(on: self, paintedNode: node)
                 
                 return
             }
@@ -431,6 +436,7 @@ public class Canvas: UIView {
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
         }
+        delegate?.didPaintNode(on: self, paintedNode: node)
     }
     
     /** Helper method for painting an ellipse. */
@@ -452,6 +458,7 @@ public class Canvas: UIView {
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
         }
+        delegate?.didPaintNode(on: self, paintedNode: node)
     }
     
     
