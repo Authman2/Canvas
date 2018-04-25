@@ -50,10 +50,18 @@ public class CanvasLayer: NSObject, NSCoding {
         didSet {
             if backgroundImage != nil { backgroundImage = backgroundImage?.withOpacity(opacity) }
             drawImage = drawImage?.withOpacity(opacity)
+            for node in nodeArray {
+                var c = node.brush.color
+                c = c.withAlphaComponent(opacity)
+                node.brush.color = c
+            }
             self.updateLayer(redraw: false)
             canvas.setNeedsDisplay()
         }
     }
+    
+    /** A name for this layer (optional). */
+    public var name: String?
     
     
     // -- PUBLIC COMPUTED VARS --
@@ -61,8 +69,9 @@ public class CanvasLayer: NSObject, NSCoding {
     /** Returns the number of nodes on this layer. */
     public var nodeCount: Int { return self.nodeArray.count }
     
-    /** Whether or not his layer has a background image. */
-    public var hasBackgroundImage: Bool { return self.backgroundImage != nil }
+    
+    
+    
     
     
     
@@ -83,6 +92,7 @@ public class CanvasLayer: NSObject, NSCoding {
         isVisible = aDecoder.decodeBool(forKey: "canvas_canvasLayer_isVisible")
         allowsDrawing = aDecoder.decodeBool(forKey: "canvas_canvasLayer_allowsDrawing")
         opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_canvasLayer_opacity"))
+        name = aDecoder.decodeObject(forKey: "canvas_canvasLayer_name") as? String
     }
     
     public init(canvas: Canvas) {
@@ -92,6 +102,7 @@ public class CanvasLayer: NSObject, NSCoding {
         nodeArray = []
         isVisible = true
         allowsDrawing = true
+        name = nil
         self.canvas = canvas
         opacity = 1
     }
@@ -168,7 +179,6 @@ public class CanvasLayer: NSObject, NSCoding {
         if let bg = drawImage { return bg }
         else { return UIImage() }
     }
-    
     
     
     /** Takes an array of nodes as input and draws them all on this layer. */
@@ -317,6 +327,7 @@ public class CanvasLayer: NSObject, NSCoding {
         aCoder.encode(isVisible, forKey: "canvas_canvasLayer_isVisible")
         aCoder.encode(allowsDrawing, forKey: "canvas_canvasLayer_allowsDrawing")
         aCoder.encode(opacity, forKey: "canvas_canvasLayer_opacity")
+        aCoder.encode(name, forKey: "canvas_canvasLayer_name")
     }
     
     

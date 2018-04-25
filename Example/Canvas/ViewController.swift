@@ -286,7 +286,8 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     @objc func addLayer() {
         let n = CanvasLayer(canvas: canvas)
-        canvas.addDrawingLayer(newLayer: n, position: .above)
+        n.name = "Layer \(canvas.canvasLayers.count)"
+        canvas.addDrawingLayer(newLayer: n, position: .below)
         
         alert(title: "New Layer", message: "Added a new layer to the canvas.")
     }

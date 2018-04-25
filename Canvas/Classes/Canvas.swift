@@ -214,6 +214,28 @@ public class Canvas: UIView {
                 self.setNeedsDisplay()
             }
         }
+        // Handle paint undo.
+        else if undid is (Node, UIColor?, Int, Int) {
+            if let (node, color, type, layerIndex) = undid as? (Node, UIColor?, Int, Int) {
+                switch type {
+                // Brush
+                case 0:
+                    node.brush.color = color!
+                    break
+                // Fill
+                case 1:
+                    if node is RectangleNode { (node as! RectangleNode).fillColor = color }
+                    else if node is EllipseNode { (node as! EllipseNode).fillColor = color }
+                    break
+                default:
+                    break
+                }
+                
+                // Update drawing
+                self.layers[layerIndex].updateLayer(redraw: true)
+                self.setNeedsDisplay()
+            }
+        }
         
         delegate?.didUndo(on: self)
     }
@@ -228,6 +250,28 @@ public class Canvas: UIView {
             if let (nodes, index) = redid as? ([Node], Int) {
                 self.layers[index].nodeArray = nodes
                 self.layers[index].updateLayer(redraw: true)
+                self.setNeedsDisplay()
+            }
+        }
+        // Handle paint undo.
+        else if redid is (Node, UIColor?, Int, Int) {
+            if let (node, color, type, layerIndex) = redid as? (Node, UIColor?, Int, Int) {
+                switch type {
+                // Brush
+                case 0:
+                    node.brush.color = color!
+                    break
+                // Fill
+                case 1:
+                    if node is RectangleNode { (node as! RectangleNode).fillColor = color }
+                    else if node is EllipseNode { (node as! EllipseNode).fillColor = color }
+                    break
+                default:
+                    break
+                }
+                
+                // Update drawing
+                self.layers[layerIndex].updateLayer(redraw: true)
                 self.setNeedsDisplay()
             }
         }
@@ -375,16 +419,35 @@ public class Canvas: UIView {
         for node in cLayer.nodeArray {
             if node.contains(point: point) {
                 // Handle painting inside of a rectangle or ellipse.
-                if node is RectangleNode { paintRect(node: node as! RectangleNode, point: point, cLayer: cLayer); return }
-                else if node is EllipseNode { paintEllipse(node: node as! EllipseNode, point: point, cLayer: cLayer); return }
+                if node is RectangleNode {
+                    paintRect(node: node as! RectangleNode, point: point, cLayer: cLayer)
+                    return
+                }
+                else if node is EllipseNode {
+                    paintEllipse(node: node as! EllipseNode, point: point, cLayer: cLayer)
+                    return
+                }
                 
                 // Change the brush used on the node.
+                let lastColor = node.brush.color
+                let newColor = currentBrush.color
                 let cpy = node.brush.mutableCopy() as! Brush
                 cpy.color = currentBrush.color
                 
                 node.brush = cpy
                 cLayer.updateLayer(redraw: true)
                 setNeedsDisplay()
+                
+                // Undo/Redo
+                // Undoing a paint action means finding the node that was just painted and setting its brush color
+                // or fill color back to what it was previously. You must save (painted node, previous color, new color, brush or fill)
+                undoRedoManager.add(undo: {
+                    return (node, lastColor, 0, self.currentCanvasLayer)
+                }, redo: {
+                    return (node, newColor, 0, self.currentCanvasLayer)
+                })
+                undoRedoManager.clearRedos()
+                
                 delegate?.didPaintNode(on: self, paintedNode: node)
                 
                 return
@@ -426,20 +489,42 @@ public class Canvas: UIView {
     private func paintRect(node: RectangleNode, point: CGPoint, cLayer: CanvasLayer) {
         // If the point is contained, that means update the fill color.
         if node.containsInner(point: point) {
+            
             // Change the node's fill color.
+            let lastColor = node.fillColor
+            let newColor = currentBrush.color
             node.fillColor = currentBrush.color
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
+            
+            // Undo/Redo
+            undoRedoManager.add(undo: {
+                return (node, lastColor, 1, self.currentCanvasLayer)
+            }, redo: {
+                return (node, newColor, 1, self.currentCanvasLayer)
+            })
+            undoRedoManager.clearRedos()
         }
-            // Otherwise, update just the stroke color.
+            
+        // Otherwise, update just the stroke color.
         else {
             // Change the brush used on the node.
+            let lastColor = node.brush.color
+            let newColor = currentBrush.color
             let cpy = node.brush.mutableCopy() as! Brush
             cpy.color = currentBrush.color
             
             node.brush = cpy
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
+            
+            // Undo/Redo
+            undoRedoManager.add(undo: {
+                return (node, lastColor, 0, self.currentCanvasLayer)
+            }, redo: {
+                return (node, newColor, 0, self.currentCanvasLayer)
+            })
+            undoRedoManager.clearRedos()
         }
         delegate?.didPaintNode(on: self, paintedNode: node)
     }
@@ -448,20 +533,41 @@ public class Canvas: UIView {
     private func paintEllipse(node: EllipseNode, point: CGPoint, cLayer: CanvasLayer) {
         // If the point is contained, that means update the fill color.
         if node.containsInner(point: point) {
+            
             // Change the node's fill color.
+            let lastColor = node.fillColor
+            let newColor = currentBrush.color
             node.fillColor = currentBrush.color
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
+            
+            // Undo/Redo
+            undoRedoManager.add(undo: {
+                return (node, lastColor, 1, self.currentCanvasLayer)
+            }, redo: {
+                return (node, newColor, 1, self.currentCanvasLayer)
+            })
+            undoRedoManager.clearRedos()
         }
         // Otherwise, update just the stroke color.
         else {
             // Change the brush used on the node.
+            let lastColor = node.brush.color
+            let newColor = currentBrush.color
             let cpy = node.brush.mutableCopy() as! Brush
             cpy.color = currentBrush.color
             
             node.brush = cpy
             cLayer.updateLayer(redraw: true)
             setNeedsDisplay()
+            
+            // Undo/Redo
+            undoRedoManager.add(undo: {
+                return (node, lastColor, 0, self.currentCanvasLayer)
+            }, redo: {
+                return (node, newColor, 0, self.currentCanvasLayer)
+            })
+            undoRedoManager.clearRedos()
         }
         delegate?.didPaintNode(on: self, paintedNode: node)
     }

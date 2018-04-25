@@ -8,18 +8,44 @@
 import Foundation
 
 
+/** This extension handles interacting with the layers of the canvas.
+ 
+ Add Layer:
+ - When adding a layer you can choose to add it either above or below the current layer.
+ - Adding above looks like this:
+    [* LAYER 1] ----> [LAYER 2]
+                    [* LAYER 1]
+    So you see that the array of layers inserts the new layer before the one at the current position.
+ 
+ - Adding below looks like this:
+    [* LAYER 1] ----> [* LAYER 1]
+    [LAYER 2]         [LAYER 2]
+                      [LAYER 3]
+    And you can see here that layer 2 gets inserted directly after the current layer.
+ - Adding layers like this makes it very easy to understand what is going on visually. Looking at an array
+   representation as a vertical line, we see that the first element (the top) is clearly the top layer of the
+   canvas, while the last item (the bottom) is clearly the bottom layer of the canvas.
+ - Also, don't forget to update the current layer variable whenever you add a layer.
+ 
+ 
+ */
 public extension Canvas {
     
     /** Adds a new drawing layer to the canvas. By default the layer is added above the current layer. */
-    public func addDrawingLayer(newLayer: CanvasLayer, position: LayerPosition = .above) {
-        if position == .above {
-            layers.append(newLayer)
-        } else {
-            if layers.count > 0 {
-                layers.insert(newLayer, at: self.currentCanvasLayer)
-            } else {
-                layers = [newLayer]
-            }
+    public func addDrawingLayer(newLayer nl: CanvasLayer, position: LayerPosition = .above) {
+        
+        // If there are no layers yet, just make the array of one object.
+        if layers.count == 0 { layers = [nl]; return }
+        
+        switch position {
+        case .above:
+            let insertIndex = currentLayerIndex == 0 ? 0 : (currentLayerIndex)
+            layers.insert(nl, at: insertIndex)
+            currentCanvasLayer += 1
+            break
+        case .below:
+            layers.insert(nl, at: currentLayerIndex+1)
+            break
         }
     }
     
