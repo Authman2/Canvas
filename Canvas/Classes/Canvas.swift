@@ -339,7 +339,7 @@ public class Canvas: UIView {
     
     
     
-    // -- COPY / PASTE --
+    // -- COPY / PASTE / DELETE --
     
     /** Copies a node so that it can be pasted later on. */
     public func copy(node: Node) {
@@ -360,6 +360,17 @@ public class Canvas: UIView {
     }
     
     
+    /** Removes the selected node from the layer it is on. */
+    public func delete() {
+        guard let sel = selectedNode else { return }
+        guard let curLayer = currentLayer else { return }
+        
+        if let idx = curLayer.nodeArray.index(of: sel) {
+            curLayer.nodeArray.remove(at: idx)
+            curLayer.updateLayer(redraw: false)
+            self.setNeedsDisplay()
+        }
+    }
     
     
     
