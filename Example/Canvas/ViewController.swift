@@ -215,6 +215,17 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
+    func didSampleColor(on canvas: Canvas, color: UIColor) {
+        
+    }
+    
+    func didUndo(on canvas: Canvas) {
+        
+    }
+    
+    func didRedo(on canvas: Canvas) {
+        
+    }
     
     
     

@@ -34,6 +34,15 @@ public protocol CanvasDelegate {
     /** Called when the paint bucket tool is used. */
     func didPaintNode(on canvas: Canvas, paintedNode: Node)
     
+    /** Called when the eyedropper is used to sample a color. */
+    func didSampleColor(on canvas: Canvas, color: UIColor)
+    
+    /** Called whenever an undo occurs. */
+    func didUndo(on canvas: Canvas)
+    
+    /** Called whenever a redo occurs. */
+    func didRedo(on canvas: Canvas)
+    
 }
 
 

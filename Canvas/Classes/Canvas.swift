@@ -64,7 +64,7 @@ public class Canvas: UIView {
     public var preemptTouch: (() -> Bool)?
     
     /** The undo/redo manager. */
-    public var undoRedoManager: UndoRedoManger!
+    public var undoRedoManager: UndoRedoManager!
     
     
     
@@ -130,7 +130,7 @@ public class Canvas: UIView {
         currentPoint = aDecoder.decodeCGPoint(forKey: "canvas_currentPoint")
         lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
         lastLastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastLastPoint")
-        undoRedoManager = aDecoder.decodeObject(forKey: "canvas_undoRedoManager") as! UndoRedoManger
+        undoRedoManager = aDecoder.decodeObject(forKey: "canvas_undoRedoManager") as! UndoRedoManager
         layers = aDecoder.decodeObject(forKey: "canvas_layers") as! [CanvasLayer]
         currentCanvasLayer = aDecoder.decodeInteger(forKey: "canvas_currentCanvasLayer")
         createDefaultLayer = aDecoder.decodeBool(forKey: "canvas_createDefaultLayer")
@@ -153,7 +153,7 @@ public class Canvas: UIView {
     
     /** Configure the Canvas. */
     private func setupCanvas() {
-        undoRedoManager = UndoRedoManger()
+        undoRedoManager = UndoRedoManager()
         
         allowsMultipleTouches = false
         preemptTouch = nil
@@ -214,6 +214,8 @@ public class Canvas: UIView {
                 self.setNeedsDisplay()
             }
         }
+        
+        delegate?.didUndo(on: self)
     }
     
     
@@ -229,6 +231,8 @@ public class Canvas: UIView {
                 self.setNeedsDisplay()
             }
         }
+        
+        delegate?.didRedo(on: self)
     }
     
     
@@ -357,6 +361,7 @@ public class Canvas: UIView {
             let nBrush = self.currentBrush.mutableCopy() as! Brush
             nBrush.color = color
             self.setBrush(brush: nBrush)
+            self.delegate?.didSampleColor(on: self, color: color)
         }
     }
     
