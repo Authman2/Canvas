@@ -18,13 +18,13 @@ public extension Canvas {
     /** Cleans up the line when you finish drawing a line. */
     private func finishDrawingNode() {
         guard let currLayer = currentLayer else { return }
+        guard let node = currLayer.nextNode else { return }
         
         // Update the drawing.
         currLayer.updateLayer(redraw: false)
         
         // Undo/redo
         let cL = self.currentCanvasLayer
-        let node = currLayer.nextNode!
         
         undoRedoManager.add(undo: {
             var la = self.layers[cL].nodeArray ?? []
