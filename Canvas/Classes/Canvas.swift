@@ -383,7 +383,8 @@ public class Canvas: UIView {
      ************************/
     
     public override func draw(_ rect: CGRect) {
-        for layer in layers {
+        for i in (0..<layers.count).reversed() {
+            let layer = layers[i]
             if layer.isVisible == false { continue }
             else {
                 layer.draw()
