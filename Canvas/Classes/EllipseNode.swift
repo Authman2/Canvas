@@ -41,6 +41,13 @@ public class EllipseNode: Node {
         super.init(coder: aDecoder)
     }
     
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: NodeCodingKeys.self)
+        let colors = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeEllipseFillColor)
+        fillColor = UIColor(red: colors[0], green: colors[1], blue: colors[2], alpha: colors[3])
+    }
+    
     public override init() {
         super.init()
     }
@@ -164,6 +171,12 @@ public class EllipseNode: Node {
     public override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(fillColor, forKey: "ellipse_node_fillColor")
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        var container = encoder.container(keyedBy: NodeCodingKeys.self)
+        try container.encode(fillColor?.rgba ?? [], forKey: NodeCodingKeys.nodeEllipseFillColor)
     }
     
 }

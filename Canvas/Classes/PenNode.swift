@@ -56,6 +56,33 @@ public class PenNode: Node {
         }
     }
 
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let a = self.bezierPoints
+        let b = self.bezierTypes
+        path = CGMutablePath()
+        
+        for i in 0..<b.count {
+            switch(b[i]) {
+            case .moveToPoint:
+                path.move(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
+                break
+            case .addLineToPoint:
+                path.addLine(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
+                break
+            case .addQuadCurveToPoint:
+                path.addQuadCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control: CGPoint(x: a[i][1].x, y: a[i][1].y))
+                break
+            case .addCurveToPoint:
+                path.addCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control1: CGPoint(x: a[i][1].x, y: a[i][1].y), control2: CGPoint(x: a[i][2].x, y: a[i][2].y))
+                break
+            default:
+                path.closeSubpath()
+                break
+            }
+        }
+    }
     
     
     

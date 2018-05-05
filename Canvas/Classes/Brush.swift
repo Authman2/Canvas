@@ -9,7 +9,7 @@ import Foundation
 
 
 /** A Brush defines the styling for how things should be drawn on the canvas. */
-public class Brush: NSObject, NSCoding  {
+public class Brush: NSObject, Codable  {
     
     /************************
      *                      *
@@ -85,6 +85,20 @@ public class Brush: NSObject, NSCoding  {
         joinStyle = CGLineJoin(rawValue: aDecoder.decodeInt32(forKey: "canvas_brush_joinStyle")) ?? CGLineJoin.round
     }
     
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: BrushCodingKeys.self)
+        let colors = try container.decode([CGFloat].self, forKey: BrushCodingKeys.brushColor)
+        color = UIColor(red: colors[0], green: colors[1], blue: colors[2], alpha: colors[3])
+        thickness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
+        opacity = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
+        flatness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
+        miter = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
+        let s = try container.decode(Int32.self, forKey: BrushCodingKeys.brushThickness)
+        let j = try container.decode(Int32.self, forKey: BrushCodingKeys.brushThickness)
+        shape = CGLineCap(rawValue: s) ?? .round
+        joinStyle = CGLineJoin(rawValue: j) ?? .round
+    }
+    
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public override init() {
         color = UIColor.black
@@ -141,6 +155,17 @@ public class Brush: NSObject, NSCoding  {
         aCoder.encode(miter, forKey: "canvas_brush_miter")
         aCoder.encode(shape.rawValue, forKey: "canvas_brush_shape")
         aCoder.encode(joinStyle.rawValue, forKey: "canvas_brush_joinStyle")
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: BrushCodingKeys.self)
+        try container.encode(color.rgba, forKey: BrushCodingKeys.brushColor)
+        try container.encode(thickness, forKey: BrushCodingKeys.brushThickness)
+        try container.encode(opacity, forKey: BrushCodingKeys.brushOpacity)
+        try container.encode(flatness, forKey: BrushCodingKeys.brushFlatness)
+        try container.encode(miter, forKey: BrushCodingKeys.brushMiter)
+        try container.encode(shape.rawValue, forKey: BrushCodingKeys.brushShape)
+        try container.encode(joinStyle.rawValue, forKey: BrushCodingKeys.brushJoinStyle)
     }
     
 }

@@ -30,6 +30,10 @@ public class LineNode: Node {
         super.init(coder: aDecoder)
     }
     
+    public required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
+    
     public init(first: CGPoint, last: CGPoint) {
         super.init()
         firstPoint = first

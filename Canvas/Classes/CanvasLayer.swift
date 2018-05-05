@@ -8,7 +8,7 @@
 import Foundation
 
 /** A single layer that can be drawn on. The Canvas can have multiple layers which can be rearranged to have different drawings appear on top of or below others. */
-public class CanvasLayer: NSObject, NSCoding {
+public class CanvasLayer: NSObject, Codable {
     
     /************************
      *                      *
@@ -93,6 +93,23 @@ public class CanvasLayer: NSObject, NSCoding {
         allowsDrawing = aDecoder.decodeBool(forKey: "canvas_canvasLayer_allowsDrawing")
         opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_canvasLayer_opacity"))
         name = aDecoder.decodeObject(forKey: "canvas_canvasLayer_name") as? String
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CanvasLayerCodingKeys.self)
+        canvas = try container.decode(Canvas.self, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+        nextNode = try container.decode(Node.self, forKey: CanvasLayerCodingKeys.canvasLayerNextNode)
+        
+        let data1 = try container.decode(Data.self, forKey: CanvasLayerCodingKeys.canvasLayerDrawImage)
+        let data2 = try container.decode(Data.self, forKey: CanvasLayerCodingKeys.canvasLayerBackgroundImage)
+        drawImage = UIImage(data: data1)
+        backgroundImage = UIImage(data: data2)
+        
+        nodeArray = try container.decode([Node].self, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray)
+        isVisible = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible)
+        allowsDrawing = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
+        opacity = CGFloat(try container.decode(Float.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity))
+        name = try container.decode(String.self, forKey: CanvasLayerCodingKeys.canvasLayerName)
     }
     
     public init(canvas: Canvas) {
@@ -330,7 +347,22 @@ public class CanvasLayer: NSObject, NSCoding {
         aCoder.encode(name, forKey: "canvas_canvasLayer_name")
     }
     
-    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CanvasLayerCodingKeys.self)
+        try container.encode(canvas, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+        try container.encode(nextNode, forKey: CanvasLayerCodingKeys.canvasLayerNextNode)
+        if let data = UIImagePNGRepresentation(drawImage ?? UIImage()) {
+            try container.encode(data, forKey: CanvasLayerCodingKeys.canvasLayerDrawImage)
+        }
+        if let data = UIImagePNGRepresentation(backgroundImage ?? UIImage()) {
+            try container.encode(data, forKey: CanvasLayerCodingKeys.canvasLayerBackgroundImage)
+        }
+        try container.encode(nodeArray, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray)
+        try container.encode(isVisible, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible)
+        try container.encode(allowsDrawing, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
+        try container.encode(opacity, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
+        try container.encode(name, forKey: CanvasLayerCodingKeys.canvasLayerName)
+    }
     
     
     

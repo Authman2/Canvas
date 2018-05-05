@@ -58,10 +58,12 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         
         // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch?() == true { return }
+        if currLayer.allowsDrawing == false || preemptTouch == true { return }
         
         // Don't continue if there is more than one touch.
-        if touches.count > 1 { return }
+        if let evT = event?.touches(for: self) {
+            if evT.count > 1 { return }
+        }
         
         // Get the first touch point.
         lastPoint = touch.previousLocation(in: self)
@@ -96,10 +98,12 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         
         // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
+        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
         
         // Don't continue if there is more than one touch.
-        if touches.count > 1 { return }
+        if let evT = event?.touches(for: self) {
+            if evT.count > 1 { return }
+        }
         
         // Collect touches.
         lastLastPoint = lastPoint
@@ -160,10 +164,12 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         
         // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
+        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
         
         // Don't continue if there is more than one touch.
-        if touches.count > 1 { return }
+        if let evT = event?.touches(for: self) {
+            if evT.count > 1 { return }
+        }
         
         // Selection tool vs other tools
         if currentDrawingTool == .selection {
@@ -189,10 +195,12 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         
         // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch?() == true  { return }
+        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
         
         // Don't continue if there is more than one touch.
-        if touches.count > 1 { return }
+        if let evT = event?.touches(for: self) {
+            if evT.count > 1 { return }
+        }
         
         // Make sure the point is recorded.
         touchesEnded(touches, with: event)

@@ -14,7 +14,7 @@ public enum LayerPosition {
 }
 
 /** A component that the user can draw on. */
-public class Canvas: UIView {
+public class Canvas: UIView, Codable {
     
     /************************
      *                      *
@@ -61,7 +61,7 @@ public class Canvas: UIView {
     public var allowsMultipleTouches: Bool!
     
     /** A condition that, when true, will preempt any drawing when a touch occurs on the canvas. */
-    public var preemptTouch: (() -> Bool)?
+    public var preemptTouch: Bool!
     
     /** The undo/redo manager. */
     public var undoRedoManager: UndoRedoManager!
@@ -136,7 +136,22 @@ public class Canvas: UIView {
         createDefaultLayer = aDecoder.decodeBool(forKey: "canvas_createDefaultLayer")
         copiedNode = aDecoder.decodeObject(forKey: "canvas_copiedNode") as? Node
         allowsMultipleTouches = aDecoder.decodeBool(forKey: "canvas_allowsMultipleTouches")
-        preemptTouch = aDecoder.decodeObject(forKey: "canvas_preempTouches") as? (() -> Bool)
+        preemptTouch = aDecoder.decodeObject(forKey: "canvas_preempTouches") as? Bool ?? false
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        super.init(frame: CGRect.zero)
+        let container = try decoder.container(keyedBy: CanvasCodingKeys.self)
+        currentDrawingTool = CanvasTool(rawValue: try container.decode(Int32.self, forKey: CanvasCodingKeys.canvasDrawingTool))
+        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
+        currentPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint)
+        lastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint)
+        lastLastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint)
+        layers = try container.decode([CanvasLayer].self, forKey: CanvasCodingKeys.canvasLayers)
+        currentCanvasLayer = try container.decode(Int.self, forKey: CanvasCodingKeys.canvasCurrentLayer)
+        createDefaultLayer = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
+        allowsMultipleTouches = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
+        preemptTouch = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasPreemptTouches)
     }
     
     public init() {
@@ -156,7 +171,7 @@ public class Canvas: UIView {
         undoRedoManager = UndoRedoManager()
         
         allowsMultipleTouches = false
-        preemptTouch = nil
+        preemptTouch = false
         
         backgroundColor = .clear
         contentMode = UIViewContentMode.scaleAspectFit
@@ -494,6 +509,22 @@ public class Canvas: UIView {
         aCoder.encode(copiedNode, forKey: "canvas_copiedNode")
         aCoder.encode(allowsMultipleTouches, forKey: "canvas_allowsMultipleTouches")
         aCoder.encode(preemptTouch, forKey: "canvas_preempTouches")
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CanvasCodingKeys.self)
+        try container.encode(currentDrawingTool.rawValue, forKey: .canvasDrawingTool)
+        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
+        try container.encode(currentPoint, forKey: CanvasCodingKeys.canvasCurrentPoint)
+        try container.encode(lastPoint, forKey: CanvasCodingKeys.canvasLastPoint)
+        try container.encode(lastLastPoint, forKey: CanvasCodingKeys.canvasLastLastPoint)
+//        try container.encode(undoRedoManager, forKey: CanvasCodingKeys.canvasUndoRedoManager)
+        try container.encode(layers, forKey: CanvasCodingKeys.canvasLayers)
+        try container.encode(currentCanvasLayer, forKey: CanvasCodingKeys.canvasCurrentLayer)
+        try container.encode(createDefaultLayer, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
+        try container.encode(copiedNode, forKey: CanvasCodingKeys.canvasCopiedNode)
+        try container.encode(allowsMultipleTouches, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
+        try container.encode(preemptTouch, forKey: CanvasCodingKeys.canvasPreemptTouches)
     }
     
     

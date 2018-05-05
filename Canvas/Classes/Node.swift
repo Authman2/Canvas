@@ -9,7 +9,7 @@ import Foundation
 
 /** A Node on the canvas. A node is basically just any curve, line, or shape that appears on the canvas
  and is selectable. */
-public class Node: UIBezierPath {
+public class Node: UIBezierPath, Codable {
     
     /************************
      *                      *
@@ -69,6 +69,22 @@ public class Node: UIBezierPath {
         bezierTypes = (aDecoder.decodeObject(forKey: "canvas_path_types_node") as? [Int32] ?? []).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
         allowsSelection = aDecoder.decodeBool(forKey: "canvas_allowsSelection_node")
         super.init(coder: aDecoder)
+        lineCapStyle = .round
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: NodeCodingKeys.self)
+        path = CGMutablePath()
+        brush = try container.decode(Brush.self, forKey: NodeCodingKeys.nodeBrush)
+        firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeBrush)
+        lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeBrush)
+        points = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodeBrush)
+        boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBrush)
+        id = try container.decode(Int.self, forKey: NodeCodingKeys.nodeBrush)
+        bezierPoints = try container.decode([[CGPoint]].self, forKey: NodeCodingKeys.nodeBrush)
+        bezierTypes = try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBrush).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
+        allowsSelection = try container.decode(Bool.self, forKey: NodeCodingKeys.nodeBrush)
+        super.init()
         lineCapStyle = .round
     }
     
@@ -186,7 +202,21 @@ public class Node: UIBezierPath {
         aCoder.encode(bTypes, forKey: "canvas_path_types_node")
     }
     
-    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeCodingKeys.self)
+        try container.encode(brush, forKey: NodeCodingKeys.nodeBrush)
+        try container.encode(firstPoint, forKey: NodeCodingKeys.nodeFirstPoint)
+        try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
+        try container.encode(id, forKey: NodeCodingKeys.nodeID)
+        try container.encode(points, forKey: NodeCodingKeys.nodePoints)
+        try container.encode(boundingBox, forKey: NodeCodingKeys.nodeBoundingBox)
+        try container.encode(allowsSelection, forKey: NodeCodingKeys.nodeAllowsSelection)
+        
+        let bPoints = path.bezierPointsAndTypes.map { $0.0 }.count == 0 ? bezierPoints : path.bezierPointsAndTypes.map { $0.0 }
+        let bTypes = path.bezierPointsAndTypes.map { $0.1.rawValue }.count == 0 ? bezierTypes.map { $0.rawValue } : path.bezierPointsAndTypes.map { $0.1.rawValue }
+        try container.encode(bPoints, forKey: NodeCodingKeys.nodeBezPoints)
+        try container.encode(bTypes, forKey: NodeCodingKeys.nodeBesTypes)
+    }
 }
 
 
