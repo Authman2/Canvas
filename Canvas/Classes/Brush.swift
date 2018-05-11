@@ -90,11 +90,11 @@ public class Brush: NSObject, Codable  {
         let colors = try container.decode([CGFloat].self, forKey: BrushCodingKeys.brushColor)
         color = UIColor(red: colors[0], green: colors[1], blue: colors[2], alpha: colors[3])
         thickness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
-        opacity = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
-        flatness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
-        miter = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
-        let s = try container.decode(Int32.self, forKey: BrushCodingKeys.brushThickness)
-        let j = try container.decode(Int32.self, forKey: BrushCodingKeys.brushThickness)
+        opacity = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushOpacity)
+        flatness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushFlatness)
+        miter = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushMiter)
+        let s = try container.decode(Int32.self, forKey: BrushCodingKeys.brushShape)
+        let j = try container.decode(Int32.self, forKey: BrushCodingKeys.brushJoinStyle)
         shape = CGLineCap(rawValue: s) ?? .round
         joinStyle = CGLineJoin(rawValue: j) ?? .round
     }
