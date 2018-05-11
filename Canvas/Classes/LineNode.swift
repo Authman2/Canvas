@@ -26,10 +26,6 @@ public class LineNode: Node {
      *                      *
      ************************/
     
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
     }

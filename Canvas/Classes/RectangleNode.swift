@@ -34,11 +34,6 @@ public class RectangleNode: Node {
      *                      *
      ************************/
     
-    public required init?(coder aDecoder: NSCoder) {
-        fillColor = aDecoder.decodeObject(forKey: "rectangle_node_fillColor") as? UIColor
-        super.init(coder: aDecoder)
-    }
-    
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
         let container = try decoder.container(keyedBy: NodeCodingKeys.self)
@@ -152,11 +147,6 @@ public class RectangleNode: Node {
         n.points = points
         n.boundingBox = boundingBox
         return n
-    }
-    
-    public override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(fillColor, forKey: "rectangle_node_fillColor")
     }
     
     public override func encode(to encoder: Encoder) throws {

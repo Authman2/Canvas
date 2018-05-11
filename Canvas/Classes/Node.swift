@@ -9,7 +9,7 @@ import Foundation
 
 /** A Node on the canvas. A node is basically just any curve, line, or shape that appears on the canvas
  and is selectable. */
-public class Node: UIBezierPath, Codable {
+public class Node: NSObject, Codable {
     
     /************************
      *                      *
@@ -57,35 +57,18 @@ public class Node: UIBezierPath, Codable {
      *                      *
      ************************/
     
-    public required init?(coder aDecoder: NSCoder) {
-        path = CGMutablePath()
-        brush = aDecoder.decodeObject(forKey: "canvas_brush_node") as? Brush ?? Brush.Default
-        firstPoint = aDecoder.decodeCGPoint(forKey: "canvas_firstPoint_node")
-        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint_node")
-        points = aDecoder.decodeObject(forKey: "canvas_points_node") as? [CGPoint] ?? []
-        boundingBox = aDecoder.decodeCGRect(forKey: "canvas_boundingBox_node")
-        id = aDecoder.decodeInteger(forKey: "canvas_id_node")
-        bezierPoints = aDecoder.decodeObject(forKey: "canvas_path_points_node") as? [[CGPoint]] ?? []
-        bezierTypes = (aDecoder.decodeObject(forKey: "canvas_path_types_node") as? [Int32] ?? []).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
-        allowsSelection = aDecoder.decodeBool(forKey: "canvas_allowsSelection_node")
-        super.init(coder: aDecoder)
-        lineCapStyle = .round
-    }
-    
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: NodeCodingKeys.self)
         path = CGMutablePath()
         brush = try container.decode(Brush.self, forKey: NodeCodingKeys.nodeBrush)
-        firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeBrush)
-        lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeBrush)
-        points = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodeBrush)
-        boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBrush)
-        id = try container.decode(Int.self, forKey: NodeCodingKeys.nodeBrush)
-        bezierPoints = try container.decode([[CGPoint]].self, forKey: NodeCodingKeys.nodeBrush)
-        bezierTypes = try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBrush).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
-        allowsSelection = try container.decode(Bool.self, forKey: NodeCodingKeys.nodeBrush)
-        super.init()
-        lineCapStyle = .round
+        firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint)
+        lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint)
+        points = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodePoints)
+        boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox)
+        id = try container.decode(Int.self, forKey: NodeCodingKeys.nodeID)
+        bezierPoints = try container.decode([[CGPoint]].self, forKey: NodeCodingKeys.nodeBezPoints)
+        bezierTypes = try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBezTypes).map { CGPathElementType(rawValue: $0) ?? .moveToPoint }
+        allowsSelection = try container.decode(Bool.self, forKey: NodeCodingKeys.nodeAllowsSelection)
     }
     
     override init() {
@@ -100,7 +83,6 @@ public class Node: UIBezierPath, Codable {
         id = 0
         allowsSelection = true
         super.init()
-        lineCapStyle = .round
     }
     
     
@@ -171,7 +153,7 @@ public class Node: UIBezierPath, Codable {
         return n
     }
     
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    public func copy(with zone: NSZone? = nil) -> Any {
         let n = Node()
         n.path = path
         n.brush = brush.copy() as! Brush
@@ -184,22 +166,6 @@ public class Node: UIBezierPath, Codable {
         n.bezierTypes = bezierTypes
         n.bezierPoints = bezierPoints
         return n
-    }
-    
-    public override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(brush, forKey: "canvas_brush_node")
-        aCoder.encode(firstPoint, forKey: "canvas_firstPoint_node")
-        aCoder.encode(lastPoint, forKey: "canvas_lastPoint_node")
-        aCoder.encode(id, forKey: "canvas_id_node")
-        aCoder.encode(points, forKey: "canvas_points_node")
-        aCoder.encode(boundingBox, forKey: "canvas_boundingBox_node")
-        aCoder.encode(allowsSelection, forKey: "canvas_allowsSelection_node")
-        
-        let bPoints = path.bezierPointsAndTypes.map { $0.0 }.count == 0 ? bezierPoints : path.bezierPointsAndTypes.map { $0.0 }
-        let bTypes = path.bezierPointsAndTypes.map { $0.1.rawValue }.count == 0 ? bezierTypes.map { $0.rawValue } : path.bezierPointsAndTypes.map { $0.1.rawValue }
-        aCoder.encode(bPoints, forKey: "canvas_path_points_node")
-        aCoder.encode(bTypes, forKey: "canvas_path_types_node")
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -215,7 +181,7 @@ public class Node: UIBezierPath, Codable {
         let bPoints = path.bezierPointsAndTypes.map { $0.0 }.count == 0 ? bezierPoints : path.bezierPointsAndTypes.map { $0.0 }
         let bTypes = path.bezierPointsAndTypes.map { $0.1.rawValue }.count == 0 ? bezierTypes.map { $0.rawValue } : path.bezierPointsAndTypes.map { $0.1.rawValue }
         try container.encode(bPoints, forKey: NodeCodingKeys.nodeBezPoints)
-        try container.encode(bTypes, forKey: NodeCodingKeys.nodeBesTypes)
+        try container.encode(bTypes, forKey: NodeCodingKeys.nodeBezTypes)
     }
 }
 

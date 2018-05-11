@@ -28,34 +28,6 @@ public class PenNode: Node {
         super.init()
     }
     
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        let a = self.bezierPoints
-        let b = self.bezierTypes
-        path = CGMutablePath()
-        
-        for i in 0..<b.count {
-            switch(b[i]) {
-            case .moveToPoint:
-                path.move(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
-                break
-            case .addLineToPoint:
-                path.addLine(to: CGPoint(x: a[i][0].x, y: a[i][0].y))
-                break
-            case .addQuadCurveToPoint:
-                path.addQuadCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control: CGPoint(x: a[i][1].x, y: a[i][1].y))
-                break
-            case .addCurveToPoint:
-                path.addCurve(to: CGPoint(x: a[i][0].x, y: a[i][0].y), control1: CGPoint(x: a[i][1].x, y: a[i][1].y), control2: CGPoint(x: a[i][2].x, y: a[i][2].y))
-                break
-            default:
-                path.closeSubpath()
-                break
-            }
-        }
-    }
-
     public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
         
@@ -95,12 +67,12 @@ public class PenNode: Node {
     
     override func setInitialPoint(point: CGPoint) {
         self.firstPoint = point
-        move(to: point)
+        path.move(to: point)
     }
     
     override func move(from: CGPoint, to: CGPoint) {
         self.lastPoint = to
-        addQuadCurve(to: midpoint(a: from, b: to), controlPoint: from)
+        path.addQuadCurve(to: midpoint(a: from, b: to), control: from)
     }
     
     override func addPathLastLastPoint(p1: CGPoint, p2: CGPoint, currentPoint: CGPoint) -> CGRect {

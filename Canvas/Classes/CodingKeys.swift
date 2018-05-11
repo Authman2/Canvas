@@ -45,6 +45,7 @@ enum BrushCodingKeys: CodingKey {
 }
 
 enum NodeCodingKeys: CodingKey {
+    case nodePath
     case nodeBrush
     case nodeFirstPoint
     case nodeLastPoint
@@ -53,7 +54,7 @@ enum NodeCodingKeys: CodingKey {
     case nodeBoundingBox
     case nodeAllowsSelection
     case nodeBezPoints
-    case nodeBesTypes
+    case nodeBezTypes
     
     case nodeRectFillColor
     case nodeEllipseFillColor
