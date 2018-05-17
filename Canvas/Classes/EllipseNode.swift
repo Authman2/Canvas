@@ -128,7 +128,7 @@ public class EllipseNode: Node {
         let n = EllipseNode()
         n.path = path
         n.fillColor = fillColor
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -141,7 +141,7 @@ public class EllipseNode: Node {
         let n = EllipseNode()
         n.path = path
         n.fillColor = fillColor
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -154,7 +154,7 @@ public class EllipseNode: Node {
         let n = EllipseNode()
         n.path = path
         n.fillColor = fillColor
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id

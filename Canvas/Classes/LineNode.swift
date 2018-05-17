@@ -137,7 +137,7 @@ public class LineNode: Node {
     public override func copy() -> Any {
         let n = LineNode()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -149,7 +149,7 @@ public class LineNode: Node {
     public override func mutableCopy() -> Any {
         let n = LineNode()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -161,7 +161,7 @@ public class LineNode: Node {
     public override func copy(with zone: NSZone? = nil) -> Any {
         let n = LineNode()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id

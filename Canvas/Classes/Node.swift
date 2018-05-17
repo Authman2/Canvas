@@ -60,7 +60,8 @@ public class Node: NSObject, Codable {
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: NodeCodingKeys.self)
         path = CGMutablePath()
-        brush = try container.decode(Brush.self, forKey: NodeCodingKeys.nodeBrush)
+//        brush = try container.decode(Brush.self, forKey: NodeCodingKeys.nodeBrush)
+        brush = Brush.Default
         firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint)
         lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint)
         points = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodePoints)
@@ -126,7 +127,7 @@ public class Node: NSObject, Codable {
     public override func copy() -> Any {
         let n = Node()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -141,7 +142,7 @@ public class Node: NSObject, Codable {
     public override func mutableCopy() -> Any {
         let n = Node()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -156,7 +157,7 @@ public class Node: NSObject, Codable {
     public func copy(with zone: NSZone? = nil) -> Any {
         let n = Node()
         n.path = path
-        n.brush = brush.copy() as! Brush
+        n.brush = brush
         n.firstPoint = firstPoint
         n.lastPoint = lastPoint
         n.id = id
@@ -170,7 +171,7 @@ public class Node: NSObject, Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: NodeCodingKeys.self)
-        try container.encode(brush, forKey: NodeCodingKeys.nodeBrush)
+//        try container.encode(brush, forKey: NodeCodingKeys.nodeBrush)
         try container.encode(firstPoint, forKey: NodeCodingKeys.nodeFirstPoint)
         try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
         try container.encode(id, forKey: NodeCodingKeys.nodeID)

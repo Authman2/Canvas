@@ -143,7 +143,8 @@ public class Canvas: UIView, Codable {
         super.init(frame: CGRect.zero)
         let container = try decoder.container(keyedBy: CanvasCodingKeys.self)
         currentDrawingTool = CanvasTool(rawValue: try container.decode(Int32.self, forKey: CanvasCodingKeys.canvasDrawingTool))
-        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
+//        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
+        currentDrawingBrush = Brush.Default
         currentPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint)
         lastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint)
         lastLastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint)
@@ -398,11 +399,13 @@ public class Canvas: UIView, Codable {
      ************************/
     
     public override func draw(_ rect: CGRect) {
+        layer.sublayers = []
         for i in (0..<layers.count).reversed() {
             let layer = layers[i]
             if layer.isVisible == false { continue }
             else {
-                layer.draw()
+//                layer.draw()
+                for n in layer.shapeLayers { self.layer.addSublayer(n) }
                 layer.nextNode?.draw()
             }
         }
@@ -429,7 +432,7 @@ public class Canvas: UIView, Codable {
             let a = CGFloat(pixels[3])/CGFloat(255)
             
             let color = UIColor(red: r, green: g, blue: b, alpha: a)
-            let nBrush = self.currentBrush.mutableCopy() as! Brush
+            var nBrush = self.currentBrush
             nBrush.color = color
             self.setBrush(brush: nBrush)
             self.delegate?.didSampleColor(on: self, color: color)
@@ -458,7 +461,7 @@ public class Canvas: UIView, Codable {
                 // Change the brush used on the node.
                 let lastColor = node.brush.color
                 let newColor = currentBrush.color
-                let cpy = node.brush.mutableCopy() as! Brush
+                var cpy = node.brush
                 cpy.color = currentBrush.color
                 
                 node.brush = cpy
@@ -514,7 +517,7 @@ public class Canvas: UIView, Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CanvasCodingKeys.self)
         try container.encode(currentDrawingTool.rawValue, forKey: .canvasDrawingTool)
-        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
+//        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
         try container.encode(currentPoint, forKey: CanvasCodingKeys.canvasCurrentPoint)
         try container.encode(lastPoint, forKey: CanvasCodingKeys.canvasLastPoint)
         try container.encode(lastLastPoint, forKey: CanvasCodingKeys.canvasLastLastPoint)
@@ -554,7 +557,7 @@ public class Canvas: UIView, Codable {
             // Change the brush used on the node.
             let lastColor = node.brush.color
             let newColor = currentBrush.color
-            let cpy = node.brush.mutableCopy() as! Brush
+            var cpy = node.brush
             cpy.color = currentBrush.color
             
             node.brush = cpy
@@ -597,7 +600,7 @@ public class Canvas: UIView, Codable {
             // Change the brush used on the node.
             let lastColor = node.brush.color
             let newColor = currentBrush.color
-            let cpy = node.brush.mutableCopy() as! Brush
+            var cpy = node.brush
             cpy.color = currentBrush.color
             
             node.brush = cpy

@@ -20,8 +20,33 @@ public extension Canvas {
         guard let currLayer = currentLayer else { return }
         guard let node = currLayer.nextNode else { return }
         
+        // Finish with a certain tool.
+        switch currentDrawingTool {
+        case .pen:
+            break
+        case .line:
+            node.path.move(to: node.firstPoint)
+            node.path.addLine(to: node.lastPoint)
+            break
+        case .rectangle:
+            let w = node.lastPoint.x - node.firstPoint.x
+            let h = node.lastPoint.y - node.firstPoint.y
+            let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
+            node.path.addRect(rect)
+            break
+        case .ellipse:
+            let w = node.lastPoint.x - node.firstPoint.x
+            let h = node.lastPoint.y - node.firstPoint.y
+            let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
+            node.path.addEllipse(in: rect)
+            break
+        default:
+            break
+        }
+        
         // Update the drawing.
-        currLayer.updateLayer(redraw: false)
+        currLayer.drawSVG(node: node)
+//        currLayer.updateLayer(redraw: false)
         
         // Undo/redo
         let cL = self.currentCanvasLayer

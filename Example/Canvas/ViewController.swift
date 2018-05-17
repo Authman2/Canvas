@@ -172,6 +172,9 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(selectBtn)
         
         setupLayout()
+        
+        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(zoom(sender:)))
+        view.addGestureRecognizer(pinch)
     }
     
     
@@ -240,7 +243,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         let rand = Int(arc4random_uniform(UInt32(c.count)))
         
         let nBrush: Brush = {
-            let a = Brush()
+            var a = Brush()
             a.color = c[rand]
             a.thickness = canvas.currentBrush.thickness == 10 ? 5 : 10
             return a
@@ -344,6 +347,13 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
      *        LAYOUT        *
      *                      *
      ************************/
+    
+    @objc func zoom(sender: UIPinchGestureRecognizer) {
+        let transform = canvas.transform.scaledBy(x: sender.scale, y: sender.scale)
+        canvas.transform = transform
+        sender.scale = 1.0
+    }
+    
     
     func setupLayout() {
         canvasView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

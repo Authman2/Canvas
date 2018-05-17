@@ -36,6 +36,9 @@ public class CanvasLayer: NSObject, Codable {
     /** All of the nodes on this layer. */
     var nodeArray: [Node]!
     
+    /** The array of shape layers (drawings). */
+    var shapeLayers: [CAShapeLayer]!
+    
     
     // -- PUBLIC VARS --
     
@@ -93,6 +96,7 @@ public class CanvasLayer: NSObject, Codable {
         allowsDrawing = aDecoder.decodeBool(forKey: "canvas_canvasLayer_allowsDrawing")
         opacity = CGFloat(aDecoder.decodeFloat(forKey: "canvas_canvasLayer_opacity"))
         name = aDecoder.decodeObject(forKey: "canvas_canvasLayer_name") as? String
+        shapeLayers = []
     }
     
     public required init(from decoder: Decoder) throws {
@@ -110,6 +114,7 @@ public class CanvasLayer: NSObject, Codable {
         allowsDrawing = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
         opacity = CGFloat(try container.decode(Float.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity))
         name = try container.decode(String.self, forKey: CanvasLayerCodingKeys.canvasLayerName)
+        shapeLayers = []
     }
     
     public init(canvas: Canvas) {
@@ -120,6 +125,7 @@ public class CanvasLayer: NSObject, Codable {
         isVisible = true
         allowsDrawing = true
         name = nil
+        shapeLayers = []
         self.canvas = canvas
         opacity = 1
     }
@@ -226,6 +232,22 @@ public class CanvasLayer: NSObject, Codable {
      *        DRAWING       *
      *                      *
      ************************/
+    
+    public func drawSVG(node: Node) {
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = node.path
+        shapeLayer.strokeColor = canvas.currentBrush.color.cgColor
+        shapeLayer.fillColor = nil
+        shapeLayer.fillRule = kCAFillRuleEvenOdd
+        shapeLayer.lineWidth = canvas.currentBrush.thickness
+        shapeLayer.lineCap = kCALineCapRound
+        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.miterLimit = canvas.currentBrush.miter
+        shapeLayers.append(shapeLayer)
+    
+        canvas.setNeedsDisplay()
+    }
+    
     
     public func draw() {
         // If there is no background image, draw at CGPoint.zero, otherwise inside frame.
