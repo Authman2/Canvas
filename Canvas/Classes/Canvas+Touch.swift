@@ -18,52 +18,54 @@ public extension Canvas {
     /** Cleans up the line when you finish drawing a line. */
     private func finishDrawingNode() {
         guard let currLayer = currentLayer else { return }
-        guard let node = currLayer.nextNode else { return }
+        guard var node = nextNode else { return }
+        node.lastPoint = currentPoint
         
         // Finish with a certain tool.
         switch currentDrawingTool {
         case .pen:
             break
         case .line:
-            node.path.move(to: node.firstPoint)
-            node.path.addLine(to: node.lastPoint)
+            node.mutablePath.move(to: node.firstPoint)
+            node.mutablePath.addLine(to: node.lastPoint)
             break
         case .rectangle:
             let w = node.lastPoint.x - node.firstPoint.x
             let h = node.lastPoint.y - node.firstPoint.y
             let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
-            node.path.addRect(rect)
+            node.mutablePath.move(to: node.firstPoint)
+            node.mutablePath.addRect(rect)
             break
         case .ellipse:
             let w = node.lastPoint.x - node.firstPoint.x
             let h = node.lastPoint.y - node.firstPoint.y
             let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
-            node.path.addEllipse(in: rect)
+            node.mutablePath.move(to: node.firstPoint)
+            node.mutablePath.addEllipse(in: rect)
             break
         default:
             break
         }
         
         // Update the drawing.
-        currLayer.drawSVG(node: node)
-//        currLayer.updateLayer(redraw: false)
+        currLayer.makeNewShapeLayer(node: node)
         
         // Undo/redo
-        let cL = self.currentCanvasLayer
-        
-        undoRedoManager.add(undo: {
-            var la = self.layers[cL].nodeArray ?? []
-            if la.count > 0 { la.removeLast() }
-            return (la, cL)
-        }) {
-            var la = self.layers[cL].nodeArray
-            la?.append(node)
-            return (la, cL)
-        }
-        undoRedoManager.clearRedos()
+//        let cL = self.currentCanvasLayer
+//
+//        undoRedoManager.add(undo: {
+//            var la = self.layers[cL].nodeArray ?? []
+//            if la.count > 0 { la.removeLast() }
+//            return (la, cL)
+//        }) {
+//            var la = self.layers[cL].nodeArray
+//            la?.append(node)
+//            return (la, cL)
+//        }
+//        undoRedoManager.clearRedos()
 
         self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
-        currentLayer?.nextNode = nil
+        nextNode = nil
     }
     
     
@@ -95,23 +97,20 @@ public extension Canvas {
         currentPoint = touch.location(in: self)
         
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
-        currLayer.nextNode = createNodeWithCurrentBrush()
+        nextNode = Node()
         
-        // Selection tool vs other tools.
-        if currentTool == .selection {
-            currLayer.onTouch(touch: touch)
-        }
-        else if currentTool == .eyedropper || currentTool == .paint {
-            return
-        } else {
-            // Add the drawing stroke.
-            currLayer.nodeArray.append(currLayer.nextNode!)
-        
-            // Set initial point.
-            currLayer.nextNode!.setInitialPoint(point: currentPoint)
-        
-            // Call delegate.
+        // Work with each tool.
+        switch currentDrawingTool {
+        case .pen, .eraser, .line, .rectangle, .ellipse:
+            currLayer.makeNewShapeLayer(node: nextNode!)
+            nextNode?.setInitialPoint(point: currentPoint)
             delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
+        case .selection:
+            break
+        case .eyedropper, .paint:
+            break
+        default:
+            break
         }
     }
     
@@ -121,6 +120,7 @@ public extension Canvas {
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         guard let currLayer = currentLayer else { return }
+        guard var next = nextNode else { return }
         
         // Don't continue if the layer does not allow drawing or should be preempted.
         if currLayer.allowsDrawing == false || preemptTouch == true  { return }
@@ -139,45 +139,38 @@ public extension Canvas {
         touch.deltaX = currentPoint.x - lastPoint.x
         touch.deltaY = currentPoint.y - lastPoint.y
         
-        // Selection tool vs other tools.
-        if currentDrawingTool == .selection {
-            currLayer.onMove(touch: touch)
-            return
-        }
-        
-        // Eyedropper tool.
-        if currentDrawingTool == .eyedropper || currentDrawingTool == .paint {
-            return
-        }
-        
         // Draw based on the current tool.
-        switch(currentDrawingTool) {
+        switch currentDrawingTool {
+        case .selection:
+            break
+        case .eyedropper, .paint:
+            return
         case .pen, .eraser:
-            var boundingBox = currLayer.nextNode?.addPathLastLastPoint(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint) ?? CGRect()
-            boundingBox.origin.x -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.origin.y -= (currLayer.nextNode?.brush.thickness ?? 5) * 2.0;
-            boundingBox.size.width += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
-            boundingBox.size.height += (currLayer.nextNode?.brush.thickness ?? 5) * 4.0;
+            var boundingBox = next.addPath(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint, tool: currentDrawingTool)
+            boundingBox.origin.x -= currentBrush.thickness * 2.0;
+            boundingBox.origin.y -= currentBrush.thickness * 2.0;
+            boundingBox.size.width += currentBrush.thickness * 4.0;
+            boundingBox.size.height += currentBrush.thickness * 4.0;
             
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.addPoint(point: currentPoint)
+            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
             setNeedsDisplay(boundingBox)
             break
         case .line:
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
+            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
             setNeedsDisplay()
             break
         case .rectangle:
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.setBoundingBox()
+            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
+            next.setBoundingBox()
             setNeedsDisplay()
             break
         case .ellipse:
-            currLayer.nextNode?.move(from: lastPoint, to: currentPoint)
-            currLayer.nextNode?.setBoundingBox()
+            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
+            next.setBoundingBox()
             setNeedsDisplay()
             break
-        default: break
+        default:
+            break
         }
         
         self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
@@ -197,20 +190,18 @@ public extension Canvas {
         }
         
         // Selection tool vs other tools
-        if currentDrawingTool == .selection {
-            currLayer.onRelease(point: currentPoint)
-        }
-        else if currentDrawingTool == .eyedropper {
+        switch currentDrawingTool {
+        case .selection:
+            break
+        case .eyedropper:
             handleEyedrop(point: currentPoint)
-        }
-        else if currentDrawingTool == .paint {
-            handlePaintBucket(point: currentPoint)
-        } else {
-            // Make sure the point is recorded.
+            break
+        case .paint:
+            break
+        default:
             touchesMoved(touches, with: event)
-        
-            // Finish drawing.
             self.finishDrawingNode()
+            break
         }
     }
     

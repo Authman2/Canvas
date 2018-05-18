@@ -52,10 +52,7 @@ enum NodeCodingKeys: CodingKey {
     case nodeID
     case nodePoints
     case nodeBoundingBox
+    case nodeInnerRect
     case nodeAllowsSelection
-    case nodeBezPoints
-    case nodeBezTypes
-    
-    case nodeRectFillColor
-    case nodeEllipseFillColor
+    case nodeShapeLayer
 }

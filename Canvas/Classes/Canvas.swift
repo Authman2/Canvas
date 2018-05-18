@@ -25,13 +25,7 @@ public class Canvas: UIView, Codable {
     // -- PRIVATE VARS --
     
     /** The type of tool that is currently being used. */
-    internal var currentDrawingTool: CanvasTool! {
-        didSet {
-            if currentDrawingTool != .selection {
-                currentLayer?.selectNode = nil
-            }
-        }
-    }
+    internal var currentDrawingTool: CanvasTool!
     
     /** The brush to use when drawing. */
     internal var currentDrawingBrush: Brush!
@@ -48,8 +42,9 @@ public class Canvas: UIView, Codable {
     /** Whether or not the canvas should create a default layer. */
     internal var createDefaultLayer: Bool = true
     
-    /** The node that was last copied using the selection tool. */
-    internal var copiedNode: Node?
+    /** The next node to draw. */
+    internal var nextNode: Node?
+    
     
     
     // -- PUBLIC VARS --
@@ -96,21 +91,6 @@ public class Canvas: UIView, Codable {
         return currentCanvasLayer
     }
     
-    /** The total number of nodes on the canvas (all layers). */
-    public var totalNodeCount: Int {
-        var i = 0
-        for layer in layers { i += layer.nodeCount }
-        return i
-    }
-    
-    /** Returns the selected node if there is one (assuming the current tool is the selection tool). */
-    public var selectedNode: Node? {
-        guard let layer = self.currentLayer else { return nil }
-        if self.currentTool == .selection { return layer.selectNode }
-        return nil
-    }
-    
-    
     
     
     
@@ -125,7 +105,6 @@ public class Canvas: UIView, Codable {
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        currentDrawingTool = CanvasTool(rawValue: aDecoder.decodeInt32(forKey: "canvas_currentDrawingTool")) ?? .pen
         currentDrawingBrush = aDecoder.decodeObject(forKey: "canvas_currentDrawingBrush") as! Brush
         currentPoint = aDecoder.decodeCGPoint(forKey: "canvas_currentPoint")
         lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
@@ -134,7 +113,6 @@ public class Canvas: UIView, Codable {
         layers = aDecoder.decodeObject(forKey: "canvas_layers") as! [CanvasLayer]
         currentCanvasLayer = aDecoder.decodeInteger(forKey: "canvas_currentCanvasLayer")
         createDefaultLayer = aDecoder.decodeBool(forKey: "canvas_createDefaultLayer")
-        copiedNode = aDecoder.decodeObject(forKey: "canvas_copiedNode") as? Node
         allowsMultipleTouches = aDecoder.decodeBool(forKey: "canvas_allowsMultipleTouches")
         preemptTouch = aDecoder.decodeObject(forKey: "canvas_preempTouches") as? Bool ?? false
     }
@@ -142,13 +120,11 @@ public class Canvas: UIView, Codable {
     public required init(from decoder: Decoder) throws {
         super.init(frame: CGRect.zero)
         let container = try decoder.container(keyedBy: CanvasCodingKeys.self)
-        currentDrawingTool = CanvasTool(rawValue: try container.decode(Int32.self, forKey: CanvasCodingKeys.canvasDrawingTool))
-//        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
+        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
         currentDrawingBrush = Brush.Default
         currentPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint)
         lastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint)
         lastLastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint)
-        layers = try container.decode([CanvasLayer].self, forKey: CanvasCodingKeys.canvasLayers)
         currentCanvasLayer = try container.decode(Int.self, forKey: CanvasCodingKeys.canvasCurrentLayer)
         createDefaultLayer = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
         allowsMultipleTouches = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
@@ -220,38 +196,7 @@ public class Canvas: UIView, Codable {
     
     /** Undo the last drawing stroke. */
     public func undo() {
-        let undid = undoRedoManager.performUndo()
         
-        // Handle standard undo.
-        if undid is ([Node], Int) {
-            if let (nodes, index) = undid as? ([Node], Int) {
-                self.layers[index].nodeArray = nodes
-                self.layers[index].updateLayer(redraw: true)
-                self.setNeedsDisplay()
-            }
-        }
-        // Handle paint undo.
-        else if undid is (Node, UIColor?, Int, Int) {
-            if let (node, color, type, layerIndex) = undid as? (Node, UIColor?, Int, Int) {
-                switch type {
-                // Brush
-                case 0:
-                    node.brush.color = color!
-                    break
-                // Fill
-                case 1:
-                    if node is RectangleNode { (node as! RectangleNode).fillColor = color }
-                    else if node is EllipseNode { (node as! EllipseNode).fillColor = color }
-                    break
-                default:
-                    break
-                }
-                
-                // Update drawing
-                self.layers[layerIndex].updateLayer(redraw: true)
-                self.setNeedsDisplay()
-            }
-        }
         
         delegate?.didUndo(on: self)
     }
@@ -259,38 +204,6 @@ public class Canvas: UIView, Codable {
     
     /** Redo the last drawing stroke. */
     public func redo() {
-        let redid = undoRedoManager.performRedo()
-        
-        // Handle standard redo.
-        if redid is ([Node], Int) {
-            if let (nodes, index) = redid as? ([Node], Int) {
-                self.layers[index].nodeArray = nodes
-                self.layers[index].updateLayer(redraw: true)
-                self.setNeedsDisplay()
-            }
-        }
-        // Handle paint undo.
-        else if redid is (Node, UIColor?, Int, Int) {
-            if let (node, color, type, layerIndex) = redid as? (Node, UIColor?, Int, Int) {
-                switch type {
-                // Brush
-                case 0:
-                    node.brush.color = color!
-                    break
-                // Fill
-                case 1:
-                    if node is RectangleNode { (node as! RectangleNode).fillColor = color }
-                    else if node is EllipseNode { (node as! EllipseNode).fillColor = color }
-                    break
-                default:
-                    break
-                }
-                
-                // Update drawing
-                self.layers[layerIndex].updateLayer(redraw: true)
-                self.setNeedsDisplay()
-            }
-        }
         
         delegate?.didRedo(on: self)
     }
@@ -300,7 +213,6 @@ public class Canvas: UIView, Codable {
     public func clear() {
         for layer in layers {
             layer.clear()
-            layer.updateLayer(redraw: true)
         }
         setNeedsDisplay()
     }
@@ -310,7 +222,6 @@ public class Canvas: UIView, Codable {
     public func clearLayer(at: Int) {
         if at < 0 || at >= layers.count { return }
         layers[at].clear()
-        layers[at].updateLayer(redraw: true)
         setNeedsDisplay()
     }
     
@@ -319,74 +230,7 @@ public class Canvas: UIView, Codable {
     
     // -- IMPORT / EXPORT --
     
-    /** Takes a UIImage as input and adds it to the canvas as a separate layer. Returns the newly added layer. */
-    public func importImage(image: UIImage) -> CanvasLayer {
-        // Adding the canvas as a parameter to this layer lets it know how to draw
-        // the background image.
-        let newLayer = CanvasLayer(canvas: self)
-        newLayer.backgroundImage = image
-        newLayer.allowsDrawing = false
-        
-        undoRedoManager.clearRedos()
-        
-        addDrawingLayer(newLayer: newLayer)
-        for layer in layers { layer.updateLayer(redraw: true) }
-        setNeedsDisplay()
-        
-        return newLayer
-    }
     
-    
-    /** Exports the image from the entire canvas to a UIImage. The output image will look as the canvas does
-     at the time of export.*/
-    public func export() -> UIImage {
-        // Merge the images on each layer.
-        var merged = UIImage()
-        for i in 0..<layers.count { merged = merged + exportLayer(at: i) }
-        return merged
-    }
-    
-    
-    /** Exports only the layer at the specified index. */
-    public func exportLayer(at: Int) -> UIImage {
-        let merged = layers[at].mergedWithBackground()
-        return merged
-    }
-    
-    
-    
-    // -- COPY / PASTE / DELETE --
-    
-    /** Copies a node so that it can be pasted later on. */
-    public func copy(node: Node) {
-        self.copiedNode = node.copy() as? Node
-        delegate?.didCopyNode(on: self, copiedNode: self.copiedNode)
-    }
-    
-    
-    /** Pastes the copied node onto the specified layer (the current layer by default). */
-    public func paste(on: Int? = nil) {
-        guard let copy = copiedNode else { return }
-        let onLayer = on ?? currentLayerIndex
-        if onLayer >= layers.count { return }
-        if onLayer < 0 { return }
-
-        layers[onLayer].drawFrom(nodes: [copy], appending: true)
-        delegate?.didPasteNode(on: self, pastedNode: copy)
-    }
-    
-    
-    /** Removes the selected node from the layer it is on. */
-    public func delete() {
-        guard let sel = selectedNode else { return }
-        guard let curLayer = currentLayer else { return }
-        
-        if let idx = curLayer.nodeArray.index(of: sel) {
-            curLayer.nodeArray.remove(at: idx)
-            curLayer.updateLayer(redraw: false)
-            self.setNeedsDisplay()
-        }
-    }
     
     
     
@@ -404,9 +248,28 @@ public class Canvas: UIView, Codable {
             let layer = layers[i]
             if layer.isVisible == false { continue }
             else {
-//                layer.draw()
-                for n in layer.shapeLayers { self.layer.addSublayer(n) }
-                layer.nextNode?.draw()
+                for n in layer.drawingArray { self.layer.addSublayer(n) }
+                
+                // Draw the temporary stroke before it converts to svg.
+                switch currentDrawingTool {
+                case .pen:
+                    drawTemporaryPen()
+                    break
+                case .eraser:
+                    drawTemporaryEraser()
+                    break
+                case .line:
+                    drawTemporaryLine()
+                    break
+                case .rectangle:
+                    drawTemporaryRectangle()
+                    break
+                case .ellipse:
+                    drawTemporaryEllipse()
+                    break
+                default:
+                    break
+                }
             }
         }
     }
@@ -440,55 +303,6 @@ public class Canvas: UIView, Codable {
     }
     
     
-    /** Handles painting on the canvas with the paint bucket tool. */
-    func handlePaintBucket(point: CGPoint) {
-        // Only paint on the current layer.
-        guard let cLayer = currentLayer else { return }
-        
-        // First, check if you click directly on a node. If so, just fill its color.
-        for node in cLayer.nodeArray {
-            if node.contains(point: point) {
-                // Handle painting inside of a rectangle or ellipse.
-                if node is RectangleNode {
-                    paintRect(node: node as! RectangleNode, point: point, cLayer: cLayer)
-                    return
-                }
-                else if node is EllipseNode {
-                    paintEllipse(node: node as! EllipseNode, point: point, cLayer: cLayer)
-                    return
-                }
-                
-                // Change the brush used on the node.
-                let lastColor = node.brush.color
-                let newColor = currentBrush.color
-                var cpy = node.brush
-                cpy.color = currentBrush.color
-                
-                node.brush = cpy
-                cLayer.updateLayer(redraw: true)
-                setNeedsDisplay()
-                
-                // Undo/Redo
-                // Undoing a paint action means finding the node that was just painted and setting its brush color
-                // or fill color back to what it was previously. You must save (painted node, previous color, new color, brush or fill)
-                undoRedoManager.add(undo: {
-                    return (node, lastColor, 0, self.currentCanvasLayer)
-                }, redo: {
-                    return (node, newColor, 0, self.currentCanvasLayer)
-                })
-                undoRedoManager.clearRedos()
-                
-                delegate?.didPaintNode(on: self, paintedNode: node)
-                
-                return
-            }
-        }
-    }
-
-    
-    
-    
-    
     
     
     
@@ -500,7 +314,6 @@ public class Canvas: UIView, Codable {
      ************************/
     
     public override func encode(with aCoder: NSCoder) {
-        aCoder.encode(currentDrawingTool.rawValue, forKey: "canvas_currentDrawingTool")
         aCoder.encode(currentDrawingBrush, forKey: "canvas_currentDrawingBrush")
         aCoder.encode(currentPoint, forKey: "canvas_currentPoint")
         aCoder.encode(lastPoint, forKey: "canvas_lastPoint")
@@ -509,116 +322,22 @@ public class Canvas: UIView, Codable {
         aCoder.encode(layers, forKey: "canvas_layers")
         aCoder.encode(currentCanvasLayer, forKey: "canvas_currentCanvasLayer")
         aCoder.encode(createDefaultLayer, forKey: "canvas_createDefaultLayer")
-        aCoder.encode(copiedNode, forKey: "canvas_copiedNode")
         aCoder.encode(allowsMultipleTouches, forKey: "canvas_allowsMultipleTouches")
         aCoder.encode(preemptTouch, forKey: "canvas_preempTouches")
     }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CanvasCodingKeys.self)
-        try container.encode(currentDrawingTool.rawValue, forKey: .canvasDrawingTool)
-//        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
+        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
         try container.encode(currentPoint, forKey: CanvasCodingKeys.canvasCurrentPoint)
         try container.encode(lastPoint, forKey: CanvasCodingKeys.canvasLastPoint)
         try container.encode(lastLastPoint, forKey: CanvasCodingKeys.canvasLastLastPoint)
 //        try container.encode(undoRedoManager, forKey: CanvasCodingKeys.canvasUndoRedoManager)
-        try container.encode(layers, forKey: CanvasCodingKeys.canvasLayers)
         try container.encode(currentCanvasLayer, forKey: CanvasCodingKeys.canvasCurrentLayer)
         try container.encode(createDefaultLayer, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
-        try container.encode(copiedNode, forKey: CanvasCodingKeys.canvasCopiedNode)
         try container.encode(allowsMultipleTouches, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
         try container.encode(preemptTouch, forKey: CanvasCodingKeys.canvasPreemptTouches)
     }
-    
-    
-    /** Helper method for painting a rectangle. */
-    private func paintRect(node: RectangleNode, point: CGPoint, cLayer: CanvasLayer) {
-        // If the point is contained, that means update the fill color.
-        if node.containsInner(point: point) {
-            
-            // Change the node's fill color.
-            let lastColor = node.fillColor
-            let newColor = currentBrush.color
-            node.fillColor = currentBrush.color
-            cLayer.updateLayer(redraw: true)
-            setNeedsDisplay()
-            
-            // Undo/Redo
-            undoRedoManager.add(undo: {
-                return (node, lastColor, 1, self.currentCanvasLayer)
-            }, redo: {
-                return (node, newColor, 1, self.currentCanvasLayer)
-            })
-            undoRedoManager.clearRedos()
-        }
-            
-        // Otherwise, update just the stroke color.
-        else {
-            // Change the brush used on the node.
-            let lastColor = node.brush.color
-            let newColor = currentBrush.color
-            var cpy = node.brush
-            cpy.color = currentBrush.color
-            
-            node.brush = cpy
-            cLayer.updateLayer(redraw: true)
-            setNeedsDisplay()
-            
-            // Undo/Redo
-            undoRedoManager.add(undo: {
-                return (node, lastColor, 0, self.currentCanvasLayer)
-            }, redo: {
-                return (node, newColor, 0, self.currentCanvasLayer)
-            })
-            undoRedoManager.clearRedos()
-        }
-        delegate?.didPaintNode(on: self, paintedNode: node)
-    }
-    
-    /** Helper method for painting an ellipse. */
-    private func paintEllipse(node: EllipseNode, point: CGPoint, cLayer: CanvasLayer) {
-        // If the point is contained, that means update the fill color.
-        if node.containsInner(point: point) {
-            
-            // Change the node's fill color.
-            let lastColor = node.fillColor
-            let newColor = currentBrush.color
-            node.fillColor = currentBrush.color
-            cLayer.updateLayer(redraw: true)
-            setNeedsDisplay()
-            
-            // Undo/Redo
-            undoRedoManager.add(undo: {
-                return (node, lastColor, 1, self.currentCanvasLayer)
-            }, redo: {
-                return (node, newColor, 1, self.currentCanvasLayer)
-            })
-            undoRedoManager.clearRedos()
-        }
-        // Otherwise, update just the stroke color.
-        else {
-            // Change the brush used on the node.
-            let lastColor = node.brush.color
-            let newColor = currentBrush.color
-            var cpy = node.brush
-            cpy.color = currentBrush.color
-            
-            node.brush = cpy
-            cLayer.updateLayer(redraw: true)
-            setNeedsDisplay()
-            
-            // Undo/Redo
-            undoRedoManager.add(undo: {
-                return (node, lastColor, 0, self.currentCanvasLayer)
-            }, redo: {
-                return (node, newColor, 0, self.currentCanvasLayer)
-            })
-            undoRedoManager.clearRedos()
-        }
-        delegate?.didPaintNode(on: self, paintedNode: node)
-    }
-    
-    
     
 }
 

@@ -317,20 +317,20 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        let exported = canvas.export()
-        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
-
-        // Alert export success.
-        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
+//        let exported = canvas.export()
+//        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
+//
+//        // Alert export success.
+//        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
     }
     
     
     
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
-        let _ = canvas.importImage(image: image)
-        self.dismiss(animated: true, completion: nil)
+//        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
+//        let _ = canvas.importImage(image: image)
+//        self.dismiss(animated: true, completion: nil)
     }
     
     

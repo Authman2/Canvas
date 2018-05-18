@@ -7,6 +7,18 @@
 
 import Foundation
 
+/** Canvas tools. */
+public enum CanvasTool {
+    case pen
+    case eraser
+    case line
+    case rectangle
+    case ellipse
+    case eyedropper
+    case paint
+    case selection
+}
+
 
 /** Returns the midpoint between two points. */
 func midpoint(a: CGPoint, b: CGPoint) -> CGPoint {

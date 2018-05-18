@@ -72,7 +72,6 @@ public extension Canvas {
         
         let before = currentCanvasLayer
         currentCanvasLayer = at
-        layers[at].updateLayer(redraw: false)
         setNeedsDisplay()
         currentCanvasLayer = before
     }
@@ -88,8 +87,6 @@ public extension Canvas {
         
         let before = currentCanvasLayer
         currentCanvasLayer = second
-        layers[first].updateLayer(redraw: false)
-        layers[second].updateLayer(redraw: false)
         setNeedsDisplay()
         currentCanvasLayer = before
     }
@@ -103,7 +100,6 @@ public extension Canvas {
         if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
         layers.remove(at: at)
         
-        for layer in layers { layer.updateLayer(redraw: false) }
         setNeedsDisplay()
     }    
     
