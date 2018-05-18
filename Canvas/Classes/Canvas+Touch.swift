@@ -48,7 +48,7 @@ public extension Canvas {
         }
         
         // Update the drawing.
-        currLayer.makeNewShapeLayer(node: node)
+        currLayer.makeNewShapeLayer(node: &node)
         
         // Undo/redo
 //        let cL = self.currentCanvasLayer
@@ -102,10 +102,18 @@ public extension Canvas {
         // Work with each tool.
         switch currentDrawingTool {
         case .pen, .eraser, .line, .rectangle, .ellipse:
-            currLayer.makeNewShapeLayer(node: nextNode!)
+//            currLayer.makeNewShapeLayer(node: nextNode!)
             nextNode?.setInitialPoint(point: currentPoint)
             delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
         case .selection:
+            for node in currLayer.drawingArray {
+                print(node.boundingBox)
+//                if node.contains(point: currentPoint, tool: currentDrawingTool, canvas: self) {
+//                    print("Contains!")
+//                } else {
+//                    print("Nope")
+//                }
+            }
             break
         case .eyedropper, .paint:
             break

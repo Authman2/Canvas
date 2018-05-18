@@ -22,7 +22,7 @@ public class CanvasLayer {
     internal var canvas: Canvas!
     
     /** All of the nodes on this layer. */
-    var drawingArray: [CAShapeLayer]!
+    var drawingArray: [Node]!
     
     
     // -- PUBLIC VARS --
@@ -90,9 +90,11 @@ public class CanvasLayer {
      ************************/
     
     /** Makes a new shape layer that can be rendered on screen. */
-    func makeNewShapeLayer(node: Node) {
+    func makeNewShapeLayer(node: inout Node) {
         let sl = CAShapeLayer()
+        sl.bounds = node.mutablePath.boundingBox
         sl.path = node.mutablePath
+        sl.backgroundColor = UIColor.orange.cgColor
         sl.strokeColor = canvas.currentBrush.color.cgColor
         sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd
@@ -100,7 +102,17 @@ public class CanvasLayer {
         sl.lineCap = kCALineCapRound
         sl.lineJoin = kCALineJoinRound
         sl.miterLimit = canvas.currentBrush.miter
-        drawingArray.append(sl)
+        
+        var nPos = node.mutablePath.boundingBox.origin
+        nPos.x += node.mutablePath.boundingBox.width / 2
+        nPos.y += node.mutablePath.boundingBox.height / 2
+        sl.position = nPos
+        
+        print(sl.position)
+        print(sl.bounds)
+        print(node.mutablePath.boundingBox)
+        node.shapeLayer = sl
+        drawingArray.append(node)
     
         canvas.setNeedsDisplay()
     }

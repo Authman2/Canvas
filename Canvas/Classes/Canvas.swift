@@ -248,7 +248,7 @@ public class Canvas: UIView, Codable {
             let layer = layers[i]
             if layer.isVisible == false { continue }
             else {
-                for n in layer.drawingArray { self.layer.addSublayer(n) }
+                for n in layer.drawingArray { self.layer.addSublayer(n.shapeLayer) }
                 
                 // Draw the temporary stroke before it converts to svg.
                 switch currentDrawingTool {
