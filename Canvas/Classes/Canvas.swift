@@ -267,6 +267,9 @@ public class Canvas: UIView, Codable {
                 case .ellipse:
                     drawTemporaryEllipse()
                     break
+                case .selection:
+                    drawTemporaryRectangle()
+                    break
                 default:
                     break
                 }

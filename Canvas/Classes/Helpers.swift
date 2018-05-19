@@ -45,3 +45,38 @@ func **(lhs: CGFloat, rhs: CGFloat) -> CGFloat {
 func **(lhs: Int, rhs: Int) -> Int {
     return Int(pow(CGFloat(lhs), CGFloat(rhs)))
 }
+
+/** Returns an array of points that lie on this line. */
+func pointsOnLine(startPoint : CGPoint, endPoint : CGPoint) -> [CGPoint] {
+    var allPoints: [CGPoint] = [CGPoint]()
+    
+    let deltaX = fabs(endPoint.x - startPoint.x)
+    let deltaY = fabs(endPoint.y - startPoint.y)
+    
+    var x = startPoint.x
+    var y = startPoint.y
+    var err = deltaX - deltaY
+    
+    var sx = -0.5
+    var sy = -0.5
+    if(startPoint.x < endPoint.x){ sx = 0.5 }
+    if(startPoint.y < endPoint.y){ sy = 0.5; }
+    
+    repeat {
+        let pointObj = CGPoint(x: x, y: y)
+        allPoints.append(pointObj)
+        
+        let e = 2*err
+        if(e > -deltaY) {
+            err -= deltaY
+            x += CGFloat(sx)
+        }
+        if(e < deltaX) {
+            err += deltaX
+            y += CGFloat(sy)
+        }
+    } while (round(x) != round(endPoint.x) && round(y) != round(endPoint.y));
+    
+    allPoints.append(endPoint)
+    return allPoints
+}

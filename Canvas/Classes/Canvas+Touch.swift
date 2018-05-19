@@ -24,6 +24,7 @@ public extension Canvas {
         // Finish with a certain tool.
         switch currentDrawingTool {
         case .pen:
+            node.mutablePath.closeSubpath()
             break
         case .line:
             node.mutablePath.move(to: node.firstPoint)
@@ -102,20 +103,14 @@ public extension Canvas {
         // Work with each tool.
         switch currentDrawingTool {
         case .pen, .eraser, .line, .rectangle, .ellipse:
-//            currLayer.makeNewShapeLayer(node: nextNode!)
             nextNode?.setInitialPoint(point: currentPoint)
             delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
         case .selection:
-            for node in currLayer.drawingArray {
-                print(node.boundingBox)
-//                if node.contains(point: currentPoint, tool: currentDrawingTool, canvas: self) {
-//                    print("Contains!")
-//                } else {
-//                    print("Nope")
-//                }
-            }
+            nextNode?.setInitialPoint(point: currentPoint)
             break
-        case .eyedropper, .paint:
+        case .eyedropper:
+            break
+        case .paint:
             break
         default:
             break
@@ -149,8 +144,6 @@ public extension Canvas {
         
         // Draw based on the current tool.
         switch currentDrawingTool {
-        case .selection:
-            break
         case .eyedropper, .paint:
             return
         case .pen, .eraser:
@@ -167,7 +160,7 @@ public extension Canvas {
             next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
             setNeedsDisplay()
             break
-        case .rectangle:
+        case .rectangle, .selection:
             next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
             next.setBoundingBox()
             setNeedsDisplay()
@@ -200,6 +193,55 @@ public extension Canvas {
         // Selection tool vs other tools
         switch currentDrawingTool {
         case .selection:
+            nextNode?.lastPoint = currentPoint
+            nextNode!.setBoundingBox()
+            var x: CGFloat = 0
+            var y: CGFloat = 0
+            var w: CGFloat = 0
+            var h: CGFloat = 0
+            var selectionBox: CGRect
+            
+            // Get the bounding box of the selection.
+            switch nextNode!.lastPoint.location(relative: nextNode!.firstPoint) {
+            case .behindX:
+                x = nextNode!.lastPoint.x
+                y = nextNode!.lastPoint.y
+                w = nextNode!.firstPoint.x - x
+                h = nextNode!.firstPoint.y - y
+                selectionBox = CGRect(x: x, y: y, width: w, height: h)
+                break
+            case .behindY:
+                x = nextNode!.lastPoint.x
+                y = nextNode!.lastPoint.y
+                w = nextNode!.firstPoint.x - x
+                h = nextNode!.firstPoint.y - y
+                selectionBox = CGRect(x: x, y: y, width: w, height: h)
+                break
+            case .behindBoth:
+                x = nextNode!.lastPoint.x
+                y = nextNode!.lastPoint.y
+                w = nextNode!.firstPoint.x - x
+                h = nextNode!.firstPoint.y - y
+                selectionBox = CGRect(x: x, y: y, width: w, height: h)
+                break
+            case .inFront:
+                selectionBox = nextNode!.boundingBox
+                break
+            }
+            
+            // Get the nodes inside the rectangle.
+            for node in currLayer.drawingArray {
+                if selectionBox.contains(node.mutablePath.boundingBox) {
+                    currLayer.selectedNodes.append(node)
+                }
+            }
+            
+            // Surround everything with a transform box.
+            
+            
+            // Clear the rect.
+            nextNode = nil
+            setNeedsDisplay()
             break
         case .eyedropper:
             handleEyedrop(point: currentPoint)

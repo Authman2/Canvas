@@ -24,6 +24,10 @@ public class CanvasLayer {
     /** All of the nodes on this layer. */
     var drawingArray: [Node]!
     
+    /** The nodes that have been selected. */
+    var selectedNodes: [Node]!
+    
+    
     
     // -- PUBLIC VARS --
     
@@ -58,6 +62,7 @@ public class CanvasLayer {
         isVisible = true
         allowsDrawing = true
         name = nil
+        selectedNodes = []
         self.canvas = canvas
         opacity = 1
     }
@@ -75,6 +80,7 @@ public class CanvasLayer {
     /** Clears the drawing on this layer. */
     public func clear() {
         drawingArray = []
+        selectedNodes = []
         canvas.setNeedsDisplay()
     }
     
@@ -94,23 +100,23 @@ public class CanvasLayer {
         let sl = CAShapeLayer()
         sl.bounds = node.mutablePath.boundingBox
         sl.path = node.mutablePath
-        sl.backgroundColor = UIColor.orange.cgColor
+//        sl.backgroundColor = UIColor.orange.cgColor
         sl.strokeColor = canvas.currentBrush.color.cgColor
         sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd
         sl.lineWidth = canvas.currentBrush.thickness
+        sl.miterLimit = canvas.currentBrush.miter
         sl.lineCap = kCALineCapRound
         sl.lineJoin = kCALineJoinRound
-        sl.miterLimit = canvas.currentBrush.miter
         
         var nPos = node.mutablePath.boundingBox.origin
         nPos.x += node.mutablePath.boundingBox.width / 2
         nPos.y += node.mutablePath.boundingBox.height / 2
         sl.position = nPos
         
-        print(sl.position)
-        print(sl.bounds)
-        print(node.mutablePath.boundingBox)
+//        print(sl.position)
+//        print(sl.bounds)
+//        print(node.mutablePath.boundingBox)
         node.shapeLayer = sl
         drawingArray.append(node)
     

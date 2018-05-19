@@ -110,9 +110,12 @@ public struct Node {
     func contains(point: CGPoint, tool: CanvasTool, canvas: Canvas) -> Bool {
         switch tool {
         case .pen:
-            return false
+            return mutablePath.bezierPoints.contains(where: { p -> Bool in
+                return abs(point.x - p.x) <= canvas.currentBrush.thickness && abs(point.y - p.y) <= canvas.currentBrush.thickness
+            })
         case .line:
-            return false
+            let points = pointsOnLine(startPoint: firstPoint, endPoint: lastPoint)
+            return points.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= canvas.currentBrush.thickness && abs(point.y - p.y) <= canvas.currentBrush.thickness }) || (mutablePath.bezierPoints.contains(where: { (p) -> Bool in return abs(point.x - p.x) <= canvas.currentBrush.thickness && abs(point.y - p.y) <= canvas.currentBrush.thickness }))
         case .rectangle:
             return false
         case .ellipse:
@@ -144,9 +147,13 @@ public struct Node {
      ************************/
     
     /** Sets the rectangular bounding box of a curve. */
-    mutating func setBoundingBox(rect: CGRect? = nil) {
+    mutating func setBoundingBox(rect: CGRect? = nil, absolute: Bool = false) {
         if rect != nil { boundingBox = rect!; return }
-        boundingBox = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
+        if absolute == true {
+            boundingBox = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: abs(self.lastPoint.x - self.firstPoint.x), height: abs(self.lastPoint.y - self.firstPoint.y))
+        } else {
+            boundingBox = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
+        }
     }
     
     

@@ -116,8 +116,6 @@ public extension Canvas {
     
     
     
-    
-    
     /** Creates the node that you are going to use to draw, with the current brush settings. */
     internal func createNodeWithCurrentBrush() -> CAShapeLayer {
         let n: CAShapeLayer = CAShapeLayer()
