@@ -196,7 +196,15 @@ public class Canvas: UIView, Codable {
     
     /** Undo the last drawing stroke. */
     public func undo() {
+        let undid = undoRedoManager.performUndo()
         
+        // Handle standard undo.
+        if undid is ([Node], Int) {
+            if let (nodes, index) = undid as? ([Node], Int) {
+                self.layers[index].drawingArray = nodes
+                self.setNeedsDisplay()
+            }
+        }
         
         delegate?.didUndo(on: self)
     }
@@ -204,6 +212,15 @@ public class Canvas: UIView, Codable {
     
     /** Redo the last drawing stroke. */
     public func redo() {
+        let redid = undoRedoManager.performRedo()
+        
+        // Handle standard redo.
+        if redid is ([Node], Int) {
+            if let (nodes, index) = redid as? ([Node], Int) {
+                self.layers[index].drawingArray = nodes
+                self.setNeedsDisplay()
+            }
+        }
         
         delegate?.didRedo(on: self)
     }
@@ -268,7 +285,7 @@ public class Canvas: UIView, Codable {
                     drawTemporaryEllipse()
                     break
                 case .selection:
-                    drawTemporaryRectangle()
+                    drawTemporarySelection()
                     break
                 default:
                     break
@@ -277,33 +294,6 @@ public class Canvas: UIView, Codable {
         }
     }
     
-    
-    /** Handles grabbing a color from an area on the canvas. */
-    func handleEyedrop(point: CGPoint) {
-        // Only track the eyedropper on the canvas.
-        if hitTest(point, with: nil) != self { return }
-        
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmap = CGBitmapInfo.init(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
-        var pixels: [UInt8] = [0,0,0,0]
-        
-        if let context = CGContext(data: &pixels, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmap.rawValue) {
-        
-            context.translateBy(x: -point.x, y: -point.y)
-            self.layer.render(in: context)
-        
-            let r = CGFloat(pixels[0])/CGFloat(255)
-            let g = CGFloat(pixels[1])/CGFloat(255)
-            let b = CGFloat(pixels[2])/CGFloat(255)
-            let a = CGFloat(pixels[3])/CGFloat(255)
-            
-            let color = UIColor(red: r, green: g, blue: b, alpha: a)
-            var nBrush = self.currentBrush
-            nBrush.color = color
-            self.setBrush(brush: nBrush)
-            self.delegate?.didSampleColor(on: self, color: color)
-        }
-    }
     
     
     

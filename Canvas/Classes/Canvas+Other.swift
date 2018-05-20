@@ -114,12 +114,24 @@ public extension Canvas {
     }
     
     
-    
-    
-    /** Creates the node that you are going to use to draw, with the current brush settings. */
-    internal func createNodeWithCurrentBrush() -> CAShapeLayer {
-        let n: CAShapeLayer = CAShapeLayer()
-        return n
+    /** Draws the currently executing drawing path before it gets converted to svg. */
+    func drawTemporarySelection() {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        guard var node = nextNode else { return }
+        
+        context.setLineCap(.square)
+        context.setLineJoin(.miter)
+        context.setLineWidth(1)
+        context.setMiterLimit(1)
+        context.setFlatness(1)
+        context.setAlpha(1)
+        context.setLineDash(phase: 0, lengths: [10, 10])
+        
+        // Stoke the outline of the shape.
+        node.lastPoint = currentPoint
+        node.setBoundingBox()
+        context.setStrokeColor(currentBrush.color.cgColor)
+        context.stroke(node.boundingBox)
     }
     
     

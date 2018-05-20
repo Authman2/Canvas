@@ -15,7 +15,6 @@ public enum CanvasTool {
     case rectangle
     case ellipse
     case eyedropper
-    case paint
     case selection
 }
 

@@ -214,7 +214,16 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
-    func didPaintNode(on canvas: Canvas, paintedNode: Node) {
+    func didSelectNodes(on canvas: Canvas, selectedNodes: [Node]) {
+        canvas.fillSelectedNodes(with: .green)
+//        canvas.strokeSelectedNodes(with: .orange)
+    }
+    
+    func didChangeFill(on canvas: Canvas, filledNodes: [Node], fillColor: UIColor) {
+        
+    }
+    
+    func didChangeStroke(on canvas: Canvas, paintedNodes: [Node], strokeColor: UIColor) {
         
     }
     
@@ -254,7 +263,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func newTool() {
-        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .ellipse, .eyedropper, .paint]
+        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .ellipse, .eyedropper]
         let rand = Int(arc4random_uniform(UInt32(tools.count)))
         
         let last = canvas.currentTool

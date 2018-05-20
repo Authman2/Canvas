@@ -52,18 +52,18 @@ public extension Canvas {
         currLayer.makeNewShapeLayer(node: &node)
         
         // Undo/redo
-//        let cL = self.currentCanvasLayer
-//
-//        undoRedoManager.add(undo: {
-//            var la = self.layers[cL].nodeArray ?? []
-//            if la.count > 0 { la.removeLast() }
-//            return (la, cL)
-//        }) {
-//            var la = self.layers[cL].nodeArray
-//            la?.append(node)
-//            return (la, cL)
-//        }
-//        undoRedoManager.clearRedos()
+        let cL = self.currentCanvasLayer
+
+        undoRedoManager.add(undo: {
+            var la = self.layers[cL].drawingArray ?? []
+            if la.count > 0 { la.removeLast() }
+            return (la, cL)
+        }) {
+            var la = self.layers[cL].drawingArray
+            la?.append(node)
+            return (la, cL)
+        }
+        undoRedoManager.clearRedos()
 
         self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         nextNode = nil
@@ -110,8 +110,6 @@ public extension Canvas {
             break
         case .eyedropper:
             break
-        case .paint:
-            break
         default:
             break
         }
@@ -144,7 +142,7 @@ public extension Canvas {
         
         // Draw based on the current tool.
         switch currentDrawingTool {
-        case .eyedropper, .paint:
+        case .eyedropper:
             return
         case .pen, .eraser:
             var boundingBox = next.addPath(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint, tool: currentDrawingTool)
@@ -230,14 +228,13 @@ public extension Canvas {
             }
             
             // Get the nodes inside the rectangle.
+            currLayer.selectedNodes = []
             for node in currLayer.drawingArray {
-                if selectionBox.contains(node.mutablePath.boundingBox) {
+                if selectionBox.intersects(node.mutablePath.boundingBox) || selectionBox.contains(node.mutablePath.boundingBox) {
                     currLayer.selectedNodes.append(node)
                 }
             }
-            
-            // Surround everything with a transform box.
-            
+            delegate?.didSelectNodes(on: self, selectedNodes: currLayer.selectedNodes)
             
             // Clear the rect.
             nextNode = nil
@@ -245,8 +242,6 @@ public extension Canvas {
             break
         case .eyedropper:
             handleEyedrop(point: currentPoint)
-            break
-        case .paint:
             break
         default:
             touchesMoved(touches, with: event)

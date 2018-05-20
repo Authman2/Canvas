@@ -20,7 +20,7 @@ public protocol CanvasDelegate {
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool)
     
     /** Called when a node on the canvas is selected using the selection tool. */
-    func didSelectNode(on canvas: Canvas, selectedNode: Node)
+    func didSelectNodes(on canvas: Canvas, selectedNodes: [Node])
     
     /** Called when a node is copied. */
     func didCopyNode(on canvas: Canvas, copiedNode: Node?)
@@ -31,8 +31,11 @@ public protocol CanvasDelegate {
     /** Called when the selected node is moved using the selection tool. */
     func didMoveNode(on canvas: Canvas, movedNode: Node?)
     
-    /** Called when the paint bucket tool is used. */
-    func didPaintNode(on canvas: Canvas, paintedNode: Node)
+    /** Called when nodes have their fill color changed. */
+    func didChangeFill(on canvas: Canvas, filledNodes: [Node], fillColor: UIColor)
+    
+    /** Called when nodes have their stroke color changed. */
+    func didChangeStroke(on canvas: Canvas, paintedNodes: [Node], strokeColor: UIColor)
     
     /** Called when the eyedropper is used to sample a color. */
     func didSampleColor(on canvas: Canvas, color: UIColor)

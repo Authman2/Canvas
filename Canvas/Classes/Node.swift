@@ -40,13 +40,25 @@ public struct Node {
      *                      *
      ************************/
     
-    init() {
+    public init() {
         mutablePath = CGMutablePath()
         firstPoint = CGPoint()
         lastPoint = CGPoint()
         boundingBox = CGRect()
         shapeLayer = CAShapeLayer()
     }
+    
+    
+    
+    
+    
+    
+    /************************
+     *                      *
+     *       FUNCTIONS      *
+     *                      *
+     ************************/
+    
     
     
     
@@ -155,6 +167,10 @@ public struct Node {
             boundingBox = CGRect(x: self.firstPoint.x, y: self.firstPoint.y, width: self.lastPoint.x - self.firstPoint.x, height: self.lastPoint.y - self.firstPoint.y)
         }
     }
+    
+    
+    
+    
     
     
 }
