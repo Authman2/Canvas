@@ -130,7 +130,7 @@ public class CanvasLayer {
         let sl = CAShapeLayer()
         sl.bounds = node.mutablePath.boundingBox
         sl.path = node.mutablePath
-        sl.backgroundColor = UIColor.orange.cgColor
+//        sl.backgroundColor = UIColor.orange.cgColor
         sl.strokeColor = canvas.currentBrush.color.cgColor
         sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd

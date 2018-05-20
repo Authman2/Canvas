@@ -25,7 +25,13 @@ public class Canvas: UIView, Codable {
     // -- PRIVATE VARS --
     
     /** The type of tool that is currently being used. */
-    internal var currentDrawingTool: CanvasTool!
+    internal var currentDrawingTool: CanvasTool! {
+        didSet {
+            if currentDrawingTool != .selection {
+                currentLayer?.selectedNodes = []
+            }
+        }
+    }
     
     /** The brush to use when drawing. */
     internal var currentDrawingBrush: Brush!
