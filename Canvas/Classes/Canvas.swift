@@ -234,9 +234,7 @@ public class Canvas: UIView, Codable {
     
     /** Clears the entire canvas. */
     public func clear() {
-        for layer in layers {
-            layer.clear()
-        }
+        for i in 0..<layers.count { clearLayer(at: i) }
         setNeedsDisplay()
     }
     
@@ -245,6 +243,7 @@ public class Canvas: UIView, Codable {
     public func clearLayer(at: Int) {
         if at < 0 || at >= layers.count { return }
         layers[at].clear()
+        undoRedoManager.clearRedos()
         setNeedsDisplay()
     }
     
@@ -252,6 +251,48 @@ public class Canvas: UIView, Codable {
     
     
     // -- IMPORT / EXPORT --
+    
+    /** Import an image onto the canvas. */
+    public func importImage(image: UIImage) {
+        
+    }
+    
+    
+    /** Imports a drawing from an SVG string. */
+    // todo
+    func importSVG(svgString: String) {
+        
+    }
+    
+    
+    /** Exports the canvas drawing. */
+    public func export(exported: (_ img: UIImage) -> Void) {
+        UIGraphicsBeginImageContext(frame.size)
+        layer.render(in: UIGraphicsGetCurrentContext()!)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        exported(img ?? UIImage())
+        UIGraphicsEndImageContext()
+    }
+    
+    
+    /** Exports the drawing on a specific layer. */
+    public func exportLayer(at: Int, exported: (_ img: UIImage) -> Void) {
+        if at < 0 || at >= layers.count { exported(UIImage()); return }
+        if layers[at].drawingArray.isEmpty { exported(UIImage()); return }
+        
+        UIGraphicsBeginImageContext(frame.size)
+
+        for node in layers[at].drawingArray {
+            node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
+        }
+
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        exported(img ?? UIImage())
+    }
+
+    
     
     
     

@@ -22,16 +22,16 @@ public class CanvasLayer {
     internal var canvas: Canvas!
     
     /** All of the nodes on this layer. */
-    var drawingArray: [Node]!
+    internal var drawingArray: [Node]!
     
     /** The nodes that have been selected. */
-    var selectedNodes: [Node]!
+    internal var selectedNodes: [Node]!
     
     /** Whether or not the selected nodes are being dragged. */
-    var isDragging: Bool!
+    internal var isDragging: Bool!
     
     /** The transform box that contains all of the selected nodes' bounds. */
-    var transformBox: CGRect!
+    internal var transformBox: CGRect!
     
     
     

@@ -59,6 +59,43 @@ public struct Node {
      *                      *
      ************************/
     
+    /** Returns the d-component of the SVG string version of this node. */
+    public func toSVG() -> String {
+        guard let path = shapeLayer.path else { return "" }
+        var result: String = ""
+        
+        let types = path.bezierPointsAndTypes
+        
+        for i in 0..<types.count {
+            switch types[i].1 {
+            case .moveToPoint:
+                let newPoint = types[i].0[0]
+                result += String(format: " M%.1lf %.1lf", newPoint.x, newPoint.y)
+                break
+            case .addLineToPoint:
+                let newPoint = types[i].0[0]
+                result += String(format: " L%.1lf %.1lf", newPoint.x, newPoint.y)
+                break
+            case .addQuadCurveToPoint:
+                let controlPoint = types[i].0[0]
+                let newPoint = types[i].0[1]
+                result += String(format: " Q%.1lf %.1lf %.1lf %.1lf", controlPoint.x, controlPoint.y, newPoint.x, newPoint.y)
+                break
+            case .addCurveToPoint:
+                let control1 = types[i].0[0]
+                let control2 = types[i].0[1]
+                let newPoint = types[i].0[2]
+                result += String(format: " C%.1lf %.1lf %.1lf %.1lf %.1lf %.1lf", control1.x, control1.y, control2.x, control2.y, newPoint.x, newPoint.y)
+                break
+            case .closeSubpath:
+                result += " Z"
+                break
+            }
+        }
+            
+        return result
+    }
+    
     
     
     

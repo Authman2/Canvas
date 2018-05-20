@@ -215,7 +215,10 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     func didSelectNodes(on canvas: Canvas, selectedNodes: [Node]) {
-        canvas.fillSelectedNodes(with: .green)
+        if selectedNodes.count > 0 {
+            print(selectedNodes[0].toSVG())
+        }
+//        canvas.fillSelectedNodes(with: .green)
 //        canvas.strokeSelectedNodes(with: .orange)
     }
     
@@ -326,11 +329,12 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-//        let exported = canvas.export()
-//        UIImageWriteToSavedPhotosAlbum(exported, self, nil, nil)
-//
-//        // Alert export success.
-//        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
+        canvas.export { (img: UIImage) in
+            UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
+        }
+        
+        // Alert export success.
+        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
     }
     
     
