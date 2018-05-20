@@ -210,7 +210,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
-    func didMoveNode(on canvas: Canvas, movedNode: Node?) {
+    func didMoveNode(on canvas: Canvas, movedNodes: [Node]) {
         
     }
     

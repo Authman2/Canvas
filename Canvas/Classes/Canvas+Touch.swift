@@ -140,6 +140,23 @@ public extension Canvas {
         touch.deltaX = currentPoint.x - lastPoint.x
         touch.deltaY = currentPoint.y - lastPoint.y
         
+        if currentDrawingTool == .selection {
+            if !currLayer.selectedNodes.isEmpty {
+                let selection = currLayer.getTransformBox()
+                if selection.contains(currentPoint) {
+                    
+                    // Move the node(s) to the new touch location.
+                    for selNode in currLayer.selectedNodes {
+                        selNode.shapeLayer.bounds = selNode.shapeLayer.bounds.offsetBy(dx: -touch.deltaX, dy: -touch.deltaY)
+                    }
+                    
+                    setNeedsDisplay()
+                    delegate?.didMoveNode(on: self, movedNodes: currLayer.selectedNodes)
+                }
+                return
+            }
+        }
+        
         // Draw based on the current tool.
         switch currentDrawingTool {
         case .eyedropper:
@@ -191,6 +208,17 @@ public extension Canvas {
         // Selection tool vs other tools
         switch currentDrawingTool {
         case .selection:
+            if currentDrawingTool == .selection {
+                if !currLayer.selectedNodes.isEmpty {
+                    let selection = currLayer.getTransformBox()
+                    if selection.contains(currentPoint) {}
+                    else {
+                        currLayer.selectedNodes = []
+                    }
+                    return
+                }
+            }
+            
             nextNode?.lastPoint = currentPoint
             nextNode!.setBoundingBox()
             var x: CGFloat = 0

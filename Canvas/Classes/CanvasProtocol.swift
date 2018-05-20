@@ -29,7 +29,7 @@ public protocol CanvasDelegate {
     func didPasteNode(on canvas: Canvas, pastedNode: Node)
  
     /** Called when the selected node is moved using the selection tool. */
-    func didMoveNode(on canvas: Canvas, movedNode: Node?)
+    func didMoveNode(on canvas: Canvas, movedNodes: [Node])
     
     /** Called when nodes have their fill color changed. */
     func didChangeFill(on canvas: Canvas, filledNodes: [Node], fillColor: UIColor)

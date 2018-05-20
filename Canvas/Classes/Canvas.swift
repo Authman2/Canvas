@@ -269,6 +269,11 @@ public class Canvas: UIView, Codable {
                 
                 // Draw the temporary stroke before it converts to svg.
                 switch currentDrawingTool {
+                case .selection:
+                    if layer.selectedNodes.isEmpty {
+                        drawTemporarySelection()
+                    }
+                    break
                 case .pen:
                     drawTemporaryPen()
                     break
@@ -283,9 +288,6 @@ public class Canvas: UIView, Codable {
                     break
                 case .ellipse:
                     drawTemporaryEllipse()
-                    break
-                case .selection:
-                    drawTemporarySelection()
                     break
                 default:
                     break

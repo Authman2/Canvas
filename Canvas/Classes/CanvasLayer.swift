@@ -75,7 +75,6 @@ public class CanvasLayer {
      *       FUNCTIONS      *
      *                      *
      ************************/
-
     
     /** Clears the drawing on this layer. */
     public func clear() {
@@ -83,6 +82,23 @@ public class CanvasLayer {
         selectedNodes = []
         canvas.setNeedsDisplay()
     }
+    
+    
+    /** Returns the bounding box of all the selected nodes. */
+    func getTransformBox() -> CGRect {
+        if selectedNodes.isEmpty { return CGRect() }
+        
+        var rect = selectedNodes[0].mutablePath.boundingBox
+        for i in 0..<selectedNodes.count {
+            rect = rect.union(selectedNodes[i].mutablePath.boundingBox)
+        }
+        
+        return rect
+    }
+    
+    
+    
+    
     
     
     
@@ -106,8 +122,28 @@ public class CanvasLayer {
         sl.fillRule = kCAFillRuleEvenOdd
         sl.lineWidth = canvas.currentBrush.thickness
         sl.miterLimit = canvas.currentBrush.miter
-        sl.lineCap = kCALineCapRound
-        sl.lineJoin = kCALineJoinRound
+        switch canvas.currentBrush.shape {
+        case .butt:
+            sl.lineCap = kCALineCapButt
+            break
+        case .round:
+            sl.lineCap = kCALineCapRound
+            break
+        case .square:
+            sl.lineCap = kCALineCapSquare
+            break
+        }
+        switch canvas.currentBrush.joinStyle {
+        case .bevel:
+            sl.lineJoin = kCALineJoinBevel
+            break
+        case .miter:
+            sl.lineJoin = kCALineJoinMiter
+            break
+        case .round:
+            sl.lineJoin = kCALineJoinRound
+            break
+        }
         
         var nPos = node.mutablePath.boundingBox.origin
         nPos.x += node.mutablePath.boundingBox.width / 2
@@ -133,32 +169,20 @@ public class CanvasLayer {
      *                      *
      ************************/
     
-//    /** Handles a touch on this layer when it comes to selecting nodes. */
-//    func onTouch(touch: UITouch) {
-//        guard let selNode = selectNode else { return }
-//        let loc = touch.location(in: canvas)
-//        if !selNode.contains(point: loc) {
-//            selectNode = nil
-//            return
-//        }
-//    }
-//    
-//    /** Handles movement events on a node. */
-//    func onMove(touch: UITouch) {
-//        guard let selNode = selectNode else { return }
-//        
-//        selNode.moveNode(touch: touch, canvas: canvas)
-//        
-//        self.updateLayer(redraw: true)
-//        canvas.setNeedsDisplay()
-//        
-//        canvas.delegate?.didMoveNode(on: canvas, movedNode: selNode)
-//    }
-//    
+    /** Handles movement events on a node. */
+    func onMove(touch: UITouch) {
+        for selNode in selectedNodes {
+            selNode.shapeLayer.bounds = selNode.shapeLayer.bounds.offsetBy(dx: -touch.deltaX, dy: -touch.deltaY)
+        }
+        
+        canvas.setNeedsDisplay()
+        canvas.delegate?.didMoveNode(on: canvas, movedNodes: selectedNodes)
+    }
+    
 //    /** Handles when a touch is released. */
 //    func onRelease(point: CGPoint) {
 //        let loc = point
-//        
+//
 //        // If you are not currently selecting a node, select one.
 //        if selectNode == nil {
 //            for node in nodeArray {
