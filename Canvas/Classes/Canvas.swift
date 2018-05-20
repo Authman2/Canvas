@@ -270,7 +270,7 @@ public class Canvas: UIView, Codable {
                 // Draw the temporary stroke before it converts to svg.
                 switch currentDrawingTool {
                 case .selection:
-                    if layer.selectedNodes.isEmpty {
+                    if layer.isDragging == false {
                         drawTemporarySelection()
                     }
                     break

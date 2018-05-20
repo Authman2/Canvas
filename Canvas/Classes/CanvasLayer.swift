@@ -27,6 +27,12 @@ public class CanvasLayer {
     /** The nodes that have been selected. */
     var selectedNodes: [Node]!
     
+    /** Whether or not the selected nodes are being dragged. */
+    var isDragging: Bool!
+    
+    /** The transform box that contains all of the selected nodes' bounds. */
+    var transformBox: CGRect!
+    
     
     
     // -- PUBLIC VARS --
@@ -63,6 +69,8 @@ public class CanvasLayer {
         allowsDrawing = true
         name = nil
         selectedNodes = []
+        isDragging = false
+        transformBox = CGRect()
         self.canvas = canvas
         opacity = 1
     }
@@ -82,19 +90,25 @@ public class CanvasLayer {
         selectedNodes = []
         canvas.setNeedsDisplay()
     }
-    
-    
-    /** Returns the bounding box of all the selected nodes. */
-    func getTransformBox() -> CGRect {
-        if selectedNodes.isEmpty { return CGRect() }
-        
-        var rect = selectedNodes[0].mutablePath.boundingBox
-        for i in 0..<selectedNodes.count {
-            rect = rect.union(selectedNodes[i].mutablePath.boundingBox)
+
+
+    /** Calculates the transform box of the selected nodes. */
+    func calculateTransformBox() {
+        if selectedNodes.isEmpty {
+            transformBox = CGRect()
+            return
         }
         
-        return rect
+        let sel = selectedNodes[0]
+        var rect = sel.shapeLayer.frame
+        for i in 0..<selectedNodes.count {
+            let sell = selectedNodes[i]
+            rect = rect.union(sell.shapeLayer.frame)
+        }
+        
+        transformBox = rect
     }
+    
     
     
     
@@ -116,7 +130,7 @@ public class CanvasLayer {
         let sl = CAShapeLayer()
         sl.bounds = node.mutablePath.boundingBox
         sl.path = node.mutablePath
-//        sl.backgroundColor = UIColor.orange.cgColor
+        sl.backgroundColor = UIColor.orange.cgColor
         sl.strokeColor = canvas.currentBrush.color.cgColor
         sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd

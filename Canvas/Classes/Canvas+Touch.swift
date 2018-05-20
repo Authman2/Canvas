@@ -107,6 +107,10 @@ public extension Canvas {
             delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
         case .selection:
             nextNode?.setInitialPoint(point: currentPoint)
+            
+            // Initial click of selection.
+            if currLayer.transformBox.contains(currentPoint) { currLayer.isDragging = true }
+            else { currLayer.isDragging = false }
             break
         case .eyedropper:
             break
@@ -140,20 +144,15 @@ public extension Canvas {
         touch.deltaX = currentPoint.x - lastPoint.x
         touch.deltaY = currentPoint.y - lastPoint.y
         
-        if currentDrawingTool == .selection {
-            if !currLayer.selectedNodes.isEmpty {
-                let selection = currLayer.getTransformBox()
-                if selection.contains(currentPoint) {
-                    
-                    // Move the node(s) to the new touch location.
-                    for selNode in currLayer.selectedNodes {
-                        selNode.shapeLayer.bounds = selNode.shapeLayer.bounds.offsetBy(dx: -touch.deltaX, dy: -touch.deltaY)
-                    }
-                    
-                    setNeedsDisplay()
-                    delegate?.didMoveNode(on: self, movedNodes: currLayer.selectedNodes)
-                }
-                return
+        // Is nodes are selected, drag them.
+        if !currLayer.selectedNodes.isEmpty && currLayer.isDragging {
+            for node in currLayer.selectedNodes {
+                var pos = node.shapeLayer.position
+                pos.x += touch.deltaX
+                pos.y += touch.deltaY
+                node.shapeLayer.position = pos
+                
+                setNeedsDisplay()
             }
         }
         
@@ -208,17 +207,6 @@ public extension Canvas {
         // Selection tool vs other tools
         switch currentDrawingTool {
         case .selection:
-            if currentDrawingTool == .selection {
-                if !currLayer.selectedNodes.isEmpty {
-                    let selection = currLayer.getTransformBox()
-                    if selection.contains(currentPoint) {}
-                    else {
-                        currLayer.selectedNodes = []
-                    }
-                    return
-                }
-            }
-            
             nextNode?.lastPoint = currentPoint
             nextNode!.setBoundingBox()
             var x: CGFloat = 0
@@ -258,10 +246,11 @@ public extension Canvas {
             // Get the nodes inside the rectangle.
             currLayer.selectedNodes = []
             for node in currLayer.drawingArray {
-                if selectionBox.intersects(node.mutablePath.boundingBox) || selectionBox.contains(node.mutablePath.boundingBox) {
+                if selectionBox.intersects(node.shapeLayer.frame) || selectionBox.contains(node.shapeLayer.frame) {
                     currLayer.selectedNodes.append(node)
                 }
             }
+            currLayer.calculateTransformBox()
             delegate?.didSelectNodes(on: self, selectedNodes: currLayer.selectedNodes)
             
             // Clear the rect.
