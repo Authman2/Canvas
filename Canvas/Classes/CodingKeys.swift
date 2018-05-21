@@ -24,14 +24,13 @@ enum CanvasCodingKeys: CodingKey {
 
 enum CanvasLayerCodingKeys: CodingKey {
     case canvasLayerCanvas
-    case canvasLayerNextNode
-    case canvasLayerDrawImage
-    case canvasLayerBackgroundImage
+    case canvasLayerImportedImage
     case canvasLayerNodeArray
     case canvasLayerIsVisible
     case canvasLayerAllowsDrawing
     case canvasLayerOpacity
     case canvasLayerName
+    case canvasLayerTransformBox
 }
 
 enum BrushCodingKeys: CodingKey {
@@ -45,14 +44,20 @@ enum BrushCodingKeys: CodingKey {
 }
 
 enum NodeCodingKeys: CodingKey {
-    case nodePath
-    case nodeBrush
     case nodeFirstPoint
     case nodeLastPoint
-    case nodeID
-    case nodePoints
     case nodeBoundingBox
-    case nodeInnerRect
-    case nodeAllowsSelection
-    case nodeShapeLayer
+    case nodeBezPoints
+    case nodeBezTypes
+    case nodeFill
+    case nodeStroke
+    case nodeLineCap
+    case nodeLineJoin
+    case nodeLineWidth
+    case nodeMiter
+    case nodeBounds
+    case nodePosition
 }
+
+
+

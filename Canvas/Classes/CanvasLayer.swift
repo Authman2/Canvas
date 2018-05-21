@@ -8,7 +8,7 @@
 import Foundation
 
 /** A single layer that can be drawn on. The Canvas can have multiple layers which can be rearranged to have different drawings appear on top of or below others. */
-public class CanvasLayer {
+public class CanvasLayer: Codable {
     
     /************************
      *                      *
@@ -23,6 +23,9 @@ public class CanvasLayer {
     
     /** All of the nodes on this layer. */
     internal var drawingArray: [Node]!
+    
+    /** An image that gets imported onto this layer. */
+    internal var importedImage: UIImage?
     
     /** The nodes that have been selected. */
     internal var selectedNodes: [Node]!
@@ -49,6 +52,8 @@ public class CanvasLayer {
     /** A name for this layer (optional). */
     public var name: String?
     
+    /** Returns the nodes on this layer. */
+    public var nodes: [Node] { return drawingArray }
     
     
     
@@ -63,8 +68,22 @@ public class CanvasLayer {
      *                      *
      ************************/
     
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CanvasLayerCodingKeys.self)
+        drawingArray = try container.decode([Node].self, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray)
+        canvas = try container.decode(Canvas.self, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+        isVisible = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible)
+        allowsDrawing = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
+        name = try container.decode(String.self, forKey: CanvasLayerCodingKeys.canvasLayerName)
+        selectedNodes = []
+        isDragging = false
+        transformBox = try container.decode(CGRect.self, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox)
+        opacity = try container.decode(CGFloat.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
+    }
+    
     public init(canvas: Canvas) {
         drawingArray = []
+        importedImage = nil
         isVisible = true
         allowsDrawing = true
         name = nil
@@ -88,6 +107,7 @@ public class CanvasLayer {
     public func clear() {
         drawingArray = []
         selectedNodes = []
+        importedImage = nil
         canvas.setNeedsDisplay()
     }
 
@@ -176,56 +196,6 @@ public class CanvasLayer {
     
     
     
-    
-    /************************
-     *                      *
-     *        TOUCHES       *
-     *                      *
-     ************************/
-    
-    /** Handles movement events on a node. */
-    func onMove(touch: UITouch) {
-        for selNode in selectedNodes {
-            selNode.shapeLayer.bounds = selNode.shapeLayer.bounds.offsetBy(dx: -touch.deltaX, dy: -touch.deltaY)
-        }
-        
-        canvas.setNeedsDisplay()
-        canvas.delegate?.didMoveNode(on: canvas, movedNodes: selectedNodes)
-    }
-    
-//    /** Handles when a touch is released. */
-//    func onRelease(point: CGPoint) {
-//        let loc = point
-//
-//        // If you are not currently selecting a node, select one.
-//        if selectNode == nil {
-//            for node in nodeArray {
-//                if node.allowsSelection == false { continue }
-//                if node is EraserNode { continue }
-//                if node.contains(point: loc) {
-//                    selectNode = node
-//                    canvas.delegate?.didSelectNode(on: canvas, selectedNode: node)
-//                    break
-//                }
-//            }
-//        }
-//        // If you have a node selected and no node is pressed, unselect.
-//        else {
-//            for node in nodeArray {
-//                if node.allowsSelection == false { continue }
-//                if node is EraserNode { continue }
-//                if node.contains(point: loc) {
-//                    selectNode = node
-//                    return
-//                }
-//            }
-//            selectNode = nil
-//        }
-//    }
-    
-    
-    
-    
 
     
     
@@ -234,5 +204,22 @@ public class CanvasLayer {
      *         OTHER        *
      *                      *
      ************************/
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CanvasLayerCodingKeys.self)
+        try container.encode(canvas, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+        try container.encode(isVisible, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible)
+        try container.encode(allowsDrawing, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
+        try container.encode(name ?? "", forKey: CanvasLayerCodingKeys.canvasLayerName)
+        try container.encode(transformBox, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox)
+        try container.encode(opacity, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
+        try container.encode(canvas, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+    }
+    
+    
+    
+    
+    
+    
     
 }

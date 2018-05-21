@@ -8,7 +8,7 @@
 import Foundation
 
 /** A Node on the canvas. A node is basically just any curve, line, or shape that appears on the canvas and is selectable. */
-public struct Node {
+public struct Node: Codable {
     
     /************************
      *                      *
@@ -39,6 +39,56 @@ public struct Node {
      *         INIT         *
      *                      *
      ************************/
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: NodeCodingKeys.self)
+        firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint)
+        lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint)
+        boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox)
+        
+        let fill = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeFill)
+        let stroke = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeStroke)
+        let cap = try container.decode(String.self, forKey: NodeCodingKeys.nodeLineCap)
+        let join = try container.decode(String.self, forKey: NodeCodingKeys.nodeLineJoin)
+        let width = try container.decode(CGFloat.self, forKey: NodeCodingKeys.nodeLineWidth)
+        let miter = try container.decode(CGFloat.self, forKey: NodeCodingKeys.nodeMiter)
+        let bounds = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBounds)
+        let pos = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodePosition)
+        let bPoints = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodeBezPoints)
+        let bTypes = try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBezTypes)
+        
+        shapeLayer = CAShapeLayer()
+        shapeLayer.fillColor = fill == [-1,-1,-1,-1] ? nil : UIColor(red: fill[0], green: fill[1], blue: fill[2], alpha: fill[3]).cgColor
+        shapeLayer.strokeColor = stroke == [-1,-1,-1,-1] ? nil : UIColor(red: stroke[0], green: stroke[1], blue: stroke[2], alpha: stroke[3]).cgColor
+        shapeLayer.lineCap = cap
+        shapeLayer.lineJoin = join
+        shapeLayer.lineWidth = width
+        shapeLayer.miterLimit = miter
+        shapeLayer.bounds = bounds
+        shapeLayer.position = pos
+        
+        mutablePath = CGMutablePath()
+        for i in 0..<bTypes.count {
+            switch CGPathElementType(rawValue: bTypes[i]) ?? .moveToPoint {
+            case .moveToPoint:
+                mutablePath.move(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y))
+                break
+            case .addLineToPoint:
+                mutablePath.addLine(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y))
+                break
+            case .addQuadCurveToPoint:
+                mutablePath.addQuadCurve(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y), control: CGPoint(x: bPoints[1].x, y: bPoints[1].y))
+                break
+            case .addCurveToPoint:
+                mutablePath.addCurve(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y), control1: CGPoint(x: bPoints[1].x, y: bPoints[1].y), control2: CGPoint(x: bPoints[2].x, y: bPoints[2].y))
+                break
+            default:
+                mutablePath.closeSubpath()
+                break
+            }
+        }
+        shapeLayer.path = mutablePath
+    }
     
     public init() {
         mutablePath = CGMutablePath()
@@ -191,7 +241,7 @@ public struct Node {
     
     /************************
      *                      *
-     *        LAYOUT        *
+     *         OTHER        *
      *                      *
      ************************/
     
@@ -206,6 +256,36 @@ public struct Node {
     }
     
     
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeCodingKeys.self)
+        try container.encode(firstPoint, forKey: NodeCodingKeys.nodeFirstPoint)
+        try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
+        try container.encode(boundingBox, forKey: NodeCodingKeys.nodeBoundingBox)
+        
+        let bezPoints = shapeLayer.path!.bezierPoints
+        let bezTypes = shapeLayer.path!.bezierPointsAndTypes.map { group in
+            return group.1.rawValue
+        }
+        
+        try container.encode(bezPoints, forKey: NodeCodingKeys.nodeBezPoints)
+        try container.encode(bezTypes, forKey: NodeCodingKeys.nodeBezTypes)
+        if shapeLayer.fillColor == nil {
+            try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeFill)
+        } else {
+            try container.encode(UIColor(cgColor: shapeLayer.fillColor!).rgba, forKey: NodeCodingKeys.nodeFill)
+        }
+        if shapeLayer.strokeColor == nil {
+            try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeStroke)
+        } else {
+            try container.encode(UIColor(cgColor: shapeLayer.strokeColor!).rgba, forKey: NodeCodingKeys.nodeStroke)
+        }
+        try container.encode(shapeLayer.lineCap, forKey: NodeCodingKeys.nodeLineCap)
+        try container.encode(shapeLayer.lineJoin, forKey: NodeCodingKeys.nodeLineJoin)
+        try container.encode(shapeLayer.lineWidth, forKey: NodeCodingKeys.nodeLineWidth)
+        try container.encode(shapeLayer.miterLimit, forKey: NodeCodingKeys.nodeMiter)
+        try container.encode(shapeLayer.bounds, forKey: NodeCodingKeys.nodeBounds)
+        try container.encode(shapeLayer.position, forKey: NodeCodingKeys.nodePosition)
+    }
     
     
     

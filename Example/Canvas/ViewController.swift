@@ -341,9 +341,9 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-//        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
-//        let _ = canvas.importImage(image: image)
-//        self.dismiss(animated: true, completion: nil)
+        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
+        canvas.importImage(image: image)
+        self.dismiss(animated: true, completion: nil)
     }
     
     

@@ -254,7 +254,19 @@ public class Canvas: UIView, Codable {
     
     /** Import an image onto the canvas. */
     public func importImage(image: UIImage) {
+        guard let cL = currentLayer else { return }
+        cL.importedImage = image
+        setNeedsDisplay()
         
+        undoRedoManager.add(undo: {
+            cL.importedImage = nil
+            self.setNeedsDisplay()
+            return nil
+        }, redo: {
+            cL.importedImage = image
+            self.setNeedsDisplay()
+            return nil
+        })
     }
     
     
@@ -298,8 +310,6 @@ public class Canvas: UIView, Codable {
     
     
     
-    
-    
     /************************
      *                      *
      *        DRAWING       *
@@ -312,6 +322,12 @@ public class Canvas: UIView, Codable {
             let layer = layers[i]
             if layer.isVisible == false { continue }
             else {
+                // Draw the imported image.
+                if layer.importedImage != nil {
+                    layer.importedImage!.draw(in: frame)
+                }
+                
+                // Draw the nodes.
                 for n in layer.drawingArray { self.layer.addSublayer(n.shapeLayer) }
                 
                 // Draw the temporary stroke before it converts to svg.
