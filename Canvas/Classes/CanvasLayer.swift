@@ -55,7 +55,8 @@ public class CanvasLayer: Codable {
     /** Returns the nodes on this layer. */
     public var nodes: [Node] { return drawingArray }
     
-    
+    /** Returns the imported image on this layer or nil. */
+    public var image: UIImage? { return importedImage }
     
     
     
@@ -110,6 +111,20 @@ public class CanvasLayer: Codable {
         importedImage = nil
         canvas.setNeedsDisplay()
     }
+    
+    
+    /** Sets the nodes on this layer. */
+    public func setNodes(nodes: [Node]) {
+        drawingArray = nodes
+        canvas.setNeedsDisplay()
+    }
+    
+    
+    
+    
+    
+    
+    
 
 
     /** Calculates the transform box of the selected nodes. */
@@ -128,10 +143,6 @@ public class CanvasLayer: Codable {
         
         transformBox = rect
     }
-    
-    
-    
-    
     
     
     

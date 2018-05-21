@@ -17,7 +17,7 @@ public struct Node: Codable {
      ************************/
     
     /** The mutable path to draw. */
-    internal var mutablePath: CGMutablePath
+    public var mutablePath: CGMutablePath
     
     /** The first point of the node. */
     internal var firstPoint: CGPoint
