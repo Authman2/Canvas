@@ -51,6 +51,9 @@ public class Canvas: UIView, Codable {
     /** The next node to draw. */
     internal var nextNode: Node?
     
+    /** The last copied node. */
+    internal var copiedNode: Node?
+    
     
     
     // -- PUBLIC VARS --
@@ -273,7 +276,9 @@ public class Canvas: UIView, Codable {
     /** Imports a drawing from an SVG string. */
     // todo
     func importSVG(svgString: String) {
-        
+        // 1.) Convert SVG to CMutableGPath
+        // 2.) Create new node with that path.
+        // 3.) Go to the current layer and add that node.
     }
     
     
@@ -304,6 +309,34 @@ public class Canvas: UIView, Codable {
         exported(img ?? UIImage())
     }
 
+    
+    
+    // -- COPY / PASTE --
+    
+    /** Copies a particular node so that it can be pasted later. */
+    public func copy(node: Node) {
+        copiedNode = node
+        delegate?.didCopyNode(on: self, copiedNode: node)
+    }
+    
+    
+    /** Pastes the copied node on to the current layer. */
+    public func paste() {
+        guard let cl = currentLayer else { return }
+        guard let cp = copiedNode else { return }
+        cl.drawingArray.append(cp)
+        setNeedsDisplay()
+        
+        undoRedoManager.add(undo: {
+            cl.drawingArray.removeLast()
+            return nil
+        }, redo: {
+            cl.drawingArray.append(cp)
+            return nil
+        })
+        
+        delegate?.didPasteNode(on: self, pastedNode: cp)
+    }
     
     
     

@@ -47,7 +47,12 @@ public class CanvasLayer: Codable {
     public var allowsDrawing: Bool
     
     /** The opacity of everything on this layer. */
-    public var opacity: CGFloat
+    public var opacity: CGFloat {
+        didSet {
+            for node in drawingArray { node.shapeLayer.opacity = Float(opacity) }
+            importedImage = importedImage?.withOpacity(opacity)
+        }
+    }
     
     /** A name for this layer (optional). */
     public var name: String?
