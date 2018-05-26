@@ -126,10 +126,6 @@ public class CanvasLayer: Codable {
     
     
     
-    
-    
-    
-    
 
 
     /** Calculates the transform box of the selected nodes. */

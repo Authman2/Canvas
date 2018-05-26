@@ -6,6 +6,8 @@
 //
 
 import Foundation
+// 1.) Remove eraser tool, and replace it with scissor tool
+// 2.)
 
 /** The position to add a new layer on: above or below. */
 public enum LayerPosition {
@@ -285,9 +287,13 @@ public class Canvas: UIView, Codable {
     /** Exports the canvas drawing. */
     public func export(exported: (_ img: UIImage) -> Void) {
         UIGraphicsBeginImageContext(frame.size)
-        layer.render(in: UIGraphicsGetCurrentContext()!)
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        exported(img ?? UIImage())
+        if let ctx = UIGraphicsGetCurrentContext() {
+            layer.render(in: ctx)
+            let img = UIGraphicsGetImageFromCurrentImageContext()
+            exported(img ?? UIImage())
+        } else {
+            exported(UIImage())
+        }
         UIGraphicsEndImageContext()
     }
     
@@ -308,6 +314,23 @@ public class Canvas: UIView, Codable {
 
         exported(img ?? UIImage())
     }
+    
+    
+    /** Exports the given nodes to a UIImage. */
+    public func export(nodes: [Node], exported: (_ img: UIImage) -> Void) {
+        UIGraphicsBeginImageContext(frame.size)
+        
+        for node in nodes {
+            node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
+        }
+        
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        exported(img ?? UIImage())
+    }
+    
+    
 
     
     
