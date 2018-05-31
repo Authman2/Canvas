@@ -54,33 +54,46 @@ public struct Node: Codable {
         let miter = try container.decode(CGFloat.self, forKey: NodeCodingKeys.nodeMiter)
         let bounds = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBounds)
         let pos = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodePosition)
-        let bPoints = try container.decode([CGPoint].self, forKey: NodeCodingKeys.nodeBezPoints)
-        let bTypes = try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBezTypes)
+        let bPoints = try container.decode([[CGPoint]].self, forKey: NodeCodingKeys.nodeBezPoints)
+        let bTypes = (try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBezTypes)).map {
+            return CGPathElementType(rawValue: $0) ?? .moveToPoint
+        }
         
         shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = fill == [-1,-1,-1,-1] ? nil : UIColor(red: fill[0], green: fill[1], blue: fill[2], alpha: fill[3]).cgColor
-        shapeLayer.strokeColor = stroke == [-1,-1,-1,-1] ? nil : UIColor(red: stroke[0], green: stroke[1], blue: stroke[2], alpha: stroke[3]).cgColor
         shapeLayer.lineCap = cap
         shapeLayer.lineJoin = join
         shapeLayer.lineWidth = width
         shapeLayer.miterLimit = miter
         shapeLayer.bounds = bounds
         shapeLayer.position = pos
+        let fillIsBW = fill == [0, 1, 1, 1] ? true : false
+        let strokeIsBW = stroke == [0, 1, 1, 1] ? true : false
+        if fillIsBW {
+            shapeLayer.fillColor = fill == [-1,-1,-1,-1] ? nil : CGColor(colorSpace: CGColorSpaceCreateDeviceGray(), components: fill)
+        } else {
+            shapeLayer.fillColor = fill == [-1,-1,-1,-1] ? nil : CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: fill)
+        }
+        if strokeIsBW {
+            shapeLayer.strokeColor = stroke == [-1,-1,-1,-1] ? nil : CGColor(colorSpace: CGColorSpaceCreateDeviceGray(), components: stroke)
+        } else {
+            shapeLayer.strokeColor = stroke == [-1,-1,-1,-1] ? nil : CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: stroke)
+        }
         
+        // Re-build the cgpath.
         mutablePath = CGMutablePath()
         for i in 0..<bTypes.count {
-            switch CGPathElementType(rawValue: bTypes[i]) ?? .moveToPoint {
+            switch bTypes[i] {
             case .moveToPoint:
-                mutablePath.move(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y))
+                mutablePath.move(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
                 break
             case .addLineToPoint:
-                mutablePath.addLine(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y))
+                mutablePath.addLine(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
                 break
             case .addQuadCurveToPoint:
-                mutablePath.addQuadCurve(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y), control: CGPoint(x: bPoints[1].x, y: bPoints[1].y))
+                mutablePath.addQuadCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y))
                 break
             case .addCurveToPoint:
-                mutablePath.addCurve(to: CGPoint(x: bPoints[0].x, y: bPoints[0].y), control1: CGPoint(x: bPoints[1].x, y: bPoints[1].y), control2: CGPoint(x: bPoints[2].x, y: bPoints[2].y))
+                mutablePath.addCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control1: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y), control2: CGPoint(x: bPoints[i][2].x, y: bPoints[i][2].y))
                 break
             default:
                 mutablePath.closeSubpath()
@@ -88,6 +101,7 @@ public struct Node: Codable {
             }
         }
         shapeLayer.path = mutablePath
+        setBoundingBox()
     }
     
     public init() {
@@ -262,23 +276,24 @@ public struct Node: Codable {
         try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
         try container.encode(boundingBox, forKey: NodeCodingKeys.nodeBoundingBox)
         
-        let bezPoints = shapeLayer.path!.bezierPoints
+        // Encode the bezier points and bezier types separately.
+        let bezPoints = shapeLayer.path!.bezierPointsAndTypes.map { group in
+            return group.0
+        }
         let bezTypes = shapeLayer.path!.bezierPointsAndTypes.map { group in
             return group.1.rawValue
         }
         
+        // Encode the rgba color values for the shape layer.
+        if shapeLayer.fillColor == nil { try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeFill) }
+        else { try container.encode(shapeLayer.fillColor?.rgba, forKey: NodeCodingKeys.nodeFill) }
+        
+        if shapeLayer.strokeColor == nil { try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeStroke) }
+        else { try container.encode(shapeLayer.strokeColor?.rgba, forKey: NodeCodingKeys.nodeStroke) }
+        
+        
         try container.encode(bezPoints, forKey: NodeCodingKeys.nodeBezPoints)
         try container.encode(bezTypes, forKey: NodeCodingKeys.nodeBezTypes)
-        if shapeLayer.fillColor == nil {
-            try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeFill)
-        } else {
-            try container.encode(UIColor(cgColor: shapeLayer.fillColor!).rgba, forKey: NodeCodingKeys.nodeFill)
-        }
-        if shapeLayer.strokeColor == nil {
-            try container.encode([-1,-1,-1,-1], forKey: NodeCodingKeys.nodeStroke)
-        } else {
-            try container.encode(UIColor(cgColor: shapeLayer.strokeColor!).rgba, forKey: NodeCodingKeys.nodeStroke)
-        }
         try container.encode(shapeLayer.lineCap, forKey: NodeCodingKeys.nodeLineCap)
         try container.encode(shapeLayer.lineJoin, forKey: NodeCodingKeys.nodeLineJoin)
         try container.encode(shapeLayer.lineWidth, forKey: NodeCodingKeys.nodeLineWidth)

@@ -57,6 +57,10 @@ public class CanvasLayer: Codable {
     /** A name for this layer (optional). */
     public var name: String?
     
+    
+    
+    // -- PUBLIC COMPUTED PROPERTIES --
+    
     /** Returns the nodes on this layer. */
     public var nodes: [Node] { return drawingArray }
     

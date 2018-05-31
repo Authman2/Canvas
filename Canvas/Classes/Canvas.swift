@@ -53,8 +53,8 @@ public class Canvas: UIView, Codable {
     /** The next node to draw. */
     internal var nextNode: Node?
     
-    /** The last copied node. */
-    internal var copiedNode: Node?
+    /** The copied nodes. */
+    internal var copiedNodes: [Node]?
     
     
     
@@ -337,28 +337,28 @@ public class Canvas: UIView, Codable {
     // -- COPY / PASTE --
     
     /** Copies a particular node so that it can be pasted later. */
-    public func copy(node: Node) {
-        copiedNode = node
-        delegate?.didCopyNode(on: self, copiedNode: node)
+    public func copy(nodes: [Node]) {
+        copiedNodes = nodes
+        delegate?.didCopyNodes(on: self, copiedNodes: nodes)
     }
     
     
     /** Pastes the copied node on to the current layer. */
     public func paste() {
         guard let cl = currentLayer else { return }
-        guard let cp = copiedNode else { return }
-        cl.drawingArray.append(cp)
+        guard let cp = copiedNodes else { return }
+        cl.drawingArray.append(contentsOf: cp)
         setNeedsDisplay()
         
         undoRedoManager.add(undo: {
             cl.drawingArray.removeLast()
             return nil
         }, redo: {
-            cl.drawingArray.append(cp)
+            cl.drawingArray.append(contentsOf: cp)
             return nil
         })
         
-        delegate?.didPasteNode(on: self, pastedNode: cp)
+        delegate?.didPasteNodes(on: self, pastedNodes: cp)
     }
     
     

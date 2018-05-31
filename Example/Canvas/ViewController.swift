@@ -198,19 +198,15 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         
     }
     
-    func didSelectNode(on canvas: Canvas, selectedNode: Node) {
+    func didCopyNodes(on canvas: Canvas, copiedNodes: [Node]) {
         
     }
     
-    func didCopyNode(on canvas: Canvas, copiedNode: Node?) {
+    func didPasteNodes(on canvas: Canvas, pastedNodes: [Node]) {
         
     }
     
-    func didPasteNode(on canvas: Canvas, pastedNode: Node) {
-        
-    }
-    
-    func didMoveNode(on canvas: Canvas, movedNodes: [Node]) {
+    func didMoveNodes(on canvas: Canvas, movedNodes: [Node]) {
         
     }
     
