@@ -317,8 +317,8 @@ public class Canvas: UIView, Codable {
     
     
     /** Exports the given nodes to a UIImage. */
-    public func export(nodes: [Node], exported: (_ img: UIImage) -> Void) {
-        UIGraphicsBeginImageContext(frame.size)
+    public static func export(nodes: [Node], size: CGSize, exported: (_ img: UIImage) -> Void) {
+        UIGraphicsBeginImageContext(size)
         
         for node in nodes {
             node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
