@@ -6,7 +6,7 @@
 //
 
 import Foundation
-// 1.) Remove eraser tool, and replace it with scissor tool
+// 1.) Fix eraser tool
 // 2.)
 
 /** The position to add a new layer on: above or below. */

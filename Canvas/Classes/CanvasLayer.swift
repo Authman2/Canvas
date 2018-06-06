@@ -129,6 +129,50 @@ public class CanvasLayer: Codable {
     }
     
     
+    /** Selects the specified nodes. */
+    public func select(nodes: [Node]) {
+        selectedNodes = nodes
+    }
+    
+    
+    /** Add a line node to this layer. */
+    public func addLineNode(firstPoint: CGPoint, lastPoint: CGPoint) {
+        var node = Node()
+        node.firstPoint = firstPoint
+        node.lastPoint = lastPoint
+        node.mutablePath.move(to: firstPoint)
+        node.mutablePath.addLine(to: lastPoint)
+        makeNewShapeLayer(node: &node)
+    }
+    
+    
+    /** Add a rectangle node to this layer. */
+    public func addRectangleNode(topLeft: CGPoint, bottomRight: CGPoint) {
+        var node = Node()
+        node.firstPoint = topLeft
+        node.lastPoint = bottomRight
+        let w = node.lastPoint.x - node.firstPoint.x
+        let h = node.lastPoint.y - node.firstPoint.y
+        let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
+        node.mutablePath.move(to: node.firstPoint)
+        node.mutablePath.addRect(rect)
+        makeNewShapeLayer(node: &node)
+    }
+    
+    
+    /** Add an ellipse node to this layer. */
+    public func addEllipseeNode(topLeft: CGPoint, bottomRight: CGPoint) {
+        var node = Node()
+        node.firstPoint = topLeft
+        node.lastPoint = bottomRight
+        let w = node.lastPoint.x - node.firstPoint.x
+        let h = node.lastPoint.y - node.firstPoint.y
+        let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
+        node.mutablePath.move(to: node.firstPoint)
+        node.mutablePath.addEllipse(in: rect)
+        makeNewShapeLayer(node: &node)
+    }
+    
     
 
 

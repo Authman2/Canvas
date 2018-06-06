@@ -20,16 +20,16 @@ public struct Node: Codable {
     public var mutablePath: CGMutablePath
     
     /** The first point of the node. */
-    internal var firstPoint: CGPoint
+    public var firstPoint: CGPoint
     
     /** The last point of the node. */
-    internal var lastPoint: CGPoint
+    public var lastPoint: CGPoint
     
     /** The bounding area of the entire shape. */
-    internal var boundingBox: CGRect
+    public var boundingBox: CGRect
     
     /** The shape layer that this node draws on. */
-    internal var shapeLayer: CAShapeLayer
+    public var shapeLayer: CAShapeLayer
     
     
     
