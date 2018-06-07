@@ -52,4 +52,15 @@ public extension UIImage {
         return img
     }
     
+    
+    /** Returns this UIImage, but with a particular tint. */
+    func withTint(color: UIColor) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        withRenderingMode(.alwaysTemplate).draw(in: CGRect(origin: .zero, size: size))
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return img ?? self
+    }
+    
 }

@@ -29,6 +29,7 @@ enum CanvasLayerCodingKeys: CodingKey {
     case canvasLayerIsVisible
     case canvasLayerAllowsDrawing
     case canvasLayerOpacity
+    case canvasLayerTint
     case canvasLayerName
     case canvasLayerTransformBox
 }

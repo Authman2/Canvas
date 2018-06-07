@@ -54,6 +54,19 @@ public class CanvasLayer: Codable {
         }
     }
     
+    /** The color that all nodes should be set to and the imported image should be tinted to. */
+    public var tintColor: UIColor? {
+        didSet {
+            if let tintColor = tintColor {
+                for node in drawingArray {
+                    if let _ = node.shapeLayer.strokeColor { node.shapeLayer.strokeColor = tintColor.cgColor }
+                    if let _ = node.shapeLayer.fillColor { node.shapeLayer.fillColor = tintColor.cgColor }
+                }
+                importedImage = importedImage?.withTint(color: tintColor)
+            }
+        }
+    }
+    
     /** A name for this layer (optional). */
     public var name: String?
     
@@ -89,6 +102,9 @@ public class CanvasLayer: Codable {
         isDragging = false
         transformBox = try container.decode(CGRect.self, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox)
         opacity = try container.decode(CGFloat.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
+        if let tint = try container.decode([CGFloat]?.self, forKey: CanvasLayerCodingKeys.canvasLayerTint) {
+            tintColor = UIColor(red: tint[0], green: tint[1], blue: tint[2], alpha: tint[3])
+        }
     }
     
     public init(canvas: Canvas) {
@@ -102,6 +118,7 @@ public class CanvasLayer: Codable {
         transformBox = CGRect()
         self.canvas = canvas
         opacity = 1
+        tintColor = nil
     }
     
     
@@ -161,7 +178,7 @@ public class CanvasLayer: Codable {
     
     
     /** Add an ellipse node to this layer. */
-    public func addEllipseeNode(topLeft: CGPoint, bottomRight: CGPoint) {
+    public func addEllipseNode(topLeft: CGPoint, bottomRight: CGPoint) {
         var node = Node()
         node.firstPoint = topLeft
         node.lastPoint = bottomRight
@@ -273,6 +290,7 @@ public class CanvasLayer: Codable {
         try container.encode(name ?? "", forKey: CanvasLayerCodingKeys.canvasLayerName)
         try container.encode(transformBox, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox)
         try container.encode(opacity, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
+        try container.encode(tintColor?.rgba, forKey: CanvasLayerCodingKeys.canvasLayerTint)
         try container.encode(canvas, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
     }
     
