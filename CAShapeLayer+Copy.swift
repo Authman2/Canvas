@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension CAShapeLayer {
+public extension CAShapeLayer {
     
     open override func mutableCopy() -> Any {
         let a = CAShapeLayer()
