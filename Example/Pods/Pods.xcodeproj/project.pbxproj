@@ -13,7 +13,7 @@
 		5A024A8A20AFD11100E20A83 /* CGPoint+Behind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A024A8920AFD11100E20A83 /* CGPoint+Behind.swift */; };
 		5A0CE74320574EFD00BAC574 /* UITouch+Translation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0CE74220574EFD00BAC574 /* UITouch+Translation.swift */; };
 		5A0CE74520574F1C00BAC574 /* UIBezierPath+Points.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0CE74420574F1C00BAC574 /* UIBezierPath+Points.swift */; };
-		5A2951EA20D6E79700DAE951 /* CAShapeLayer+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2951E920D6E79700DAE951 /* CAShapeLayer+Copy.swift */; };
+		5A2951EE20D6EB3100DAE951 /* CAShapeLayer+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2951ED20D6EB3100DAE951 /* CAShapeLayer+Copy.swift */; };
 		5A34E259202F42FA00239696 /* Canvas+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A34E258202F42FA00239696 /* Canvas+Other.swift */; };
 		5A4C9DAD203B907A00B1D5D6 /* UIImage+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */; };
 		5A4C9DAF203B908900B1D5D6 /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */; };
@@ -59,7 +59,7 @@
 		5A024A8920AFD11100E20A83 /* CGPoint+Behind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CGPoint+Behind.swift"; path = "Canvas/Classes/CGPoint+Behind.swift"; sourceTree = "<group>"; };
 		5A0CE74220574EFD00BAC574 /* UITouch+Translation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UITouch+Translation.swift"; path = "Canvas/Classes/UITouch+Translation.swift"; sourceTree = "<group>"; };
 		5A0CE74420574F1C00BAC574 /* UIBezierPath+Points.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIBezierPath+Points.swift"; path = "Canvas/Classes/UIBezierPath+Points.swift"; sourceTree = "<group>"; };
-		5A2951E920D6E79700DAE951 /* CAShapeLayer+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAShapeLayer+Copy.swift"; sourceTree = "<group>"; };
+		5A2951ED20D6EB3100DAE951 /* CAShapeLayer+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CAShapeLayer+Copy.swift"; path = "Canvas/Classes/CAShapeLayer+Copy.swift"; sourceTree = "<group>"; };
 		5A34E258202F42FA00239696 /* Canvas+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Other.swift"; path = "Canvas/Classes/Canvas+Other.swift"; sourceTree = "<group>"; };
 		5A4C9DAC203B907A00B1D5D6 /* UIImage+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIImage+Properties.swift"; path = "Canvas/Classes/UIImage+Properties.swift"; sourceTree = "<group>"; };
 		5A4C9DAE203B908900B1D5D6 /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIColor+RGB.swift"; path = "Canvas/Classes/UIColor+RGB.swift"; sourceTree = "<group>"; };
@@ -198,7 +198,7 @@
 				5A0CE74420574F1C00BAC574 /* UIBezierPath+Points.swift */,
 				5A0CE74220574EFD00BAC574 /* UITouch+Translation.swift */,
 				5A024A8920AFD11100E20A83 /* CGPoint+Behind.swift */,
-				5A2951E920D6E79700DAE951 /* CAShapeLayer+Copy.swift */,
+				5A2951ED20D6EB3100DAE951 /* CAShapeLayer+Copy.swift */,
 				5A98FB82209D33E400B88A9D /* CodingKeys.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
 				4EAF8B9810D832A8FA7B2CC9547EB64D /* Support Files */,
@@ -417,7 +417,7 @@
 				5A0CE74520574F1C00BAC574 /* UIBezierPath+Points.swift in Sources */,
 				5AA0B9F5202EBFA50039D2EA /* Helpers.swift in Sources */,
 				5AA0B9FF202EC00F0039D2EA /* Canvas+Touch.swift in Sources */,
-				5A2951EA20D6E79700DAE951 /* CAShapeLayer+Copy.swift in Sources */,
+				5A2951EE20D6EB3100DAE951 /* CAShapeLayer+Copy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
