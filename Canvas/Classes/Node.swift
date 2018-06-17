@@ -31,6 +31,9 @@ public struct Node: Codable {
     /** The shape layer that this node draws on. */
     public var shapeLayer: CAShapeLayer
     
+    /** Whether or not this node is movable. */
+    public var isMovable: Bool
+    
     
     
     
@@ -45,6 +48,7 @@ public struct Node: Codable {
         firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint)
         lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint)
         boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox)
+        isMovable = try container.decode(Bool.self, forKey: NodeCodingKeys.nodeMovable)
         
         let fill = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeFill)
         let stroke = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeStroke)
@@ -80,26 +84,7 @@ public struct Node: Codable {
         }
         
         // Re-build the cgpath.
-        mutablePath = CGMutablePath()
-        for i in 0..<bTypes.count {
-            switch bTypes[i] {
-            case .moveToPoint:
-                mutablePath.move(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
-                break
-            case .addLineToPoint:
-                mutablePath.addLine(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
-                break
-            case .addQuadCurveToPoint:
-                mutablePath.addQuadCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y))
-                break
-            case .addCurveToPoint:
-                mutablePath.addCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control1: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y), control2: CGPoint(x: bPoints[i][2].x, y: bPoints[i][2].y))
-                break
-            default:
-                mutablePath.closeSubpath()
-                break
-            }
-        }
+        mutablePath = buildPath(from: bTypes, bPoints: bPoints)
         shapeLayer.path = mutablePath
         setBoundingBox()
     }
@@ -110,6 +95,7 @@ public struct Node: Codable {
         lastPoint = CGPoint()
         boundingBox = CGRect()
         shapeLayer = CAShapeLayer()
+        isMovable = true
     }
     
     
@@ -275,6 +261,7 @@ public struct Node: Codable {
         try container.encode(firstPoint, forKey: NodeCodingKeys.nodeFirstPoint)
         try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
         try container.encode(boundingBox, forKey: NodeCodingKeys.nodeBoundingBox)
+        try container.encode(isMovable, forKey: NodeCodingKeys.nodeMovable)
         
         // Encode the bezier points and bezier types separately.
         let bezPoints = shapeLayer.path!.bezierPointsAndTypes.map { group in

@@ -153,8 +153,9 @@ public class CanvasLayer: Codable {
     
     
     /** Add a line node to this layer. */
-    public func addLineNode(firstPoint: CGPoint, lastPoint: CGPoint) {
+    public func addLineNode(firstPoint: CGPoint, lastPoint: CGPoint, movable: Bool = true) {
         var node = Node()
+        node.isMovable = movable
         node.firstPoint = firstPoint
         node.lastPoint = lastPoint
         node.mutablePath.move(to: firstPoint)
@@ -164,8 +165,9 @@ public class CanvasLayer: Codable {
     
     
     /** Add a rectangle node to this layer. */
-    public func addRectangleNode(topLeft: CGPoint, bottomRight: CGPoint) {
+    public func addRectangleNode(topLeft: CGPoint, bottomRight: CGPoint, movable: Bool = true) {
         var node = Node()
+        node.isMovable = movable
         node.firstPoint = topLeft
         node.lastPoint = bottomRight
         let w = node.lastPoint.x - node.firstPoint.x
@@ -178,8 +180,9 @@ public class CanvasLayer: Codable {
     
     
     /** Add an ellipse node to this layer. */
-    public func addEllipseNode(topLeft: CGPoint, bottomRight: CGPoint) {
+    public func addEllipseNode(topLeft: CGPoint, bottomRight: CGPoint, movable: Bool = true) {
         var node = Node()
+        node.isMovable = movable
         node.firstPoint = topLeft
         node.lastPoint = bottomRight
         let w = node.lastPoint.x - node.firstPoint.x
@@ -231,6 +234,7 @@ public class CanvasLayer: Codable {
         sl.strokeColor = canvas.currentBrush.color.cgColor
         sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd
+        sl.opacity = Float(canvas.currentBrush.opacity)
         sl.lineWidth = canvas.currentBrush.thickness
         sl.miterLimit = canvas.currentBrush.miter
         switch canvas.currentBrush.shape {
@@ -292,6 +296,7 @@ public class CanvasLayer: Codable {
         try container.encode(opacity, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
         try container.encode(tintColor?.rgba, forKey: CanvasLayerCodingKeys.canvasLayerTint)
         try container.encode(canvas, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
+        try container.encode(drawingArray, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray)
     }
     
     

@@ -102,7 +102,7 @@ public extension Canvas {
         
         // Work with each tool.
         switch currentDrawingTool {
-        case .pen, .eraser, .line, .rectangle, .ellipse:
+        case .pen, .line, .rectangle, .ellipse:
             nextNode?.setInitialPoint(point: currentPoint)
             delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
         case .selection:
@@ -147,6 +147,8 @@ public extension Canvas {
         // Is nodes are selected, drag them.
         if !currLayer.selectedNodes.isEmpty && currLayer.isDragging {
             for node in currLayer.selectedNodes {
+                if !node.isMovable { continue }
+                
                 var pos = node.shapeLayer.position
                 pos.x += touch.deltaX
                 pos.y += touch.deltaY
@@ -160,7 +162,7 @@ public extension Canvas {
         switch currentDrawingTool {
         case .eyedropper:
             return
-        case .pen, .eraser:
+        case .pen:
             var boundingBox = next.addPath(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint, tool: currentDrawingTool)
             boundingBox.origin.x -= currentBrush.thickness * 2.0;
             boundingBox.origin.y -= currentBrush.thickness * 2.0;
@@ -169,6 +171,9 @@ public extension Canvas {
             
             next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
             setNeedsDisplay(boundingBox)
+            break
+        case .eraser:
+            
             break
         case .line:
             next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
@@ -283,6 +288,7 @@ public extension Canvas {
         // Make sure the point is recorded.
         touchesEnded(touches, with: event)
     }
+    
     
 }
 

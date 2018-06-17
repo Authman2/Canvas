@@ -21,7 +21,6 @@ public extension Canvas {
         context.setStrokeColor(currentBrush.color.cgColor)
         context.setBlendMode(.normal)
         context.setMiterLimit(currentBrush.miter)
-        context.setFlatness(currentBrush.flatness)
         context.setAlpha(currentBrush.opacity)
         context.strokePath()
     }
@@ -31,16 +30,15 @@ public extension Canvas {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         guard let node = nextNode else { return }
         
-        context.saveGState()
         context.addPath(node.mutablePath)
         context.setLineCap(currentBrush.shape)
         context.setLineJoin(currentBrush.joinStyle)
         context.setLineWidth(currentBrush.thickness)
+        context.setStrokeColor(UIColor.blue.cgColor)
+        context.setBlendMode(.normal)
         context.setMiterLimit(currentBrush.miter)
-        context.setBlendMode(.clear)
-        context.setFlatness(currentBrush.flatness)
+        context.setAlpha(currentBrush.opacity)
         context.strokePath()
-        context.restoreGState()
     }
     
     /** Draws the currently executing drawing path before it gets converted to svg. */
@@ -53,7 +51,6 @@ public extension Canvas {
         context.setLineWidth(currentBrush.thickness)
         context.setStrokeColor(currentBrush.color.cgColor)
         context.setMiterLimit(currentBrush.miter)
-        context.setFlatness(currentBrush.flatness)
         context.setAlpha(currentBrush.opacity)
         
         node.lastPoint = currentPoint
@@ -72,7 +69,6 @@ public extension Canvas {
         context.setLineJoin(currentBrush.joinStyle)
         context.setLineWidth(currentBrush.thickness)
         context.setMiterLimit(currentBrush.miter)
-        context.setFlatness(currentBrush.flatness)
         context.setAlpha(currentBrush.opacity)
         
         // Stoke the outline of the shape.
@@ -97,7 +93,6 @@ public extension Canvas {
         context.setLineJoin(currentBrush.joinStyle)
         context.setLineWidth(currentBrush.thickness)
         context.setMiterLimit(currentBrush.miter)
-        context.setFlatness(currentBrush.flatness)
         context.setAlpha(currentBrush.opacity)
         
         // Color the border.

@@ -58,6 +58,7 @@ public class Canvas: UIView, Codable {
     
     
     
+    
     // -- PUBLIC VARS --
     
     /** The delegate. */
@@ -333,7 +334,6 @@ public class Canvas: UIView, Codable {
     
 
     
-    
     // -- COPY / PASTE --
     
     /** Copies a particular node so that it can be pasted later. */
@@ -360,6 +360,9 @@ public class Canvas: UIView, Codable {
         
         delegate?.didPasteNodes(on: self, pastedNodes: cp)
     }
+    
+    
+    
     
     
     

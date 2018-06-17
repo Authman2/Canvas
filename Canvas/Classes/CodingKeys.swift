@@ -38,7 +38,6 @@ enum BrushCodingKeys: CodingKey {
     case brushColor
     case brushThickness
     case brushOpacity
-    case brushFlatness
     case brushMiter
     case brushShape
     case brushJoinStyle
@@ -48,6 +47,7 @@ enum NodeCodingKeys: CodingKey {
     case nodeFirstPoint
     case nodeLastPoint
     case nodeBoundingBox
+    case nodeMovable
     case nodeBezPoints
     case nodeBezTypes
     case nodeFill

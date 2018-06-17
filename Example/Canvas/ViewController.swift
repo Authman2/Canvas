@@ -21,7 +21,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     lazy var canvasView: UIView = {
         let a = UIView()
         a.translatesAutoresizingMaskIntoConstraints = false
-        a.backgroundColor = .white
+        a.backgroundColor = .brown
         
         return a
     }()
@@ -33,6 +33,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         a.translatesAutoresizingMaskIntoConstraints = false
         a.delegate = self
         a.preemptTouch = false
+        a.backgroundColor = .white
         
         return a
     }()
@@ -195,7 +196,6 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        
     }
     
     func didCopyNodes(on canvas: Canvas, copiedNodes: [Node]) {

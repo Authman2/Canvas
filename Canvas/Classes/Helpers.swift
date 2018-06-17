@@ -79,3 +79,31 @@ func pointsOnLine(startPoint : CGPoint, endPoint : CGPoint) -> [CGPoint] {
     allPoints.append(endPoint)
     return allPoints
 }
+
+/** Builds a CGMutablePath from an array of points and instructions. */
+func buildPath(from bTypes: [CGPathElementType], bPoints: [[CGPoint]]) -> CGMutablePath {
+    let mutablePath = CGMutablePath()
+    for i in 0..<bTypes.count {
+        switch bTypes[i] {
+        case .moveToPoint:
+            mutablePath.move(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
+            break
+        case .addLineToPoint:
+            mutablePath.addLine(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
+            break
+        case .addQuadCurveToPoint:
+            mutablePath.addQuadCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y))
+            break
+        case .addCurveToPoint:
+            mutablePath.addCurve(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y), control1: CGPoint(x: bPoints[i][1].x, y: bPoints[i][1].y), control2: CGPoint(x: bPoints[i][2].x, y: bPoints[i][2].y))
+            break
+        default:
+            mutablePath.closeSubpath()
+            break
+        }
+    }
+    return mutablePath
+}
+
+
+
