@@ -290,6 +290,17 @@ public struct Node: Codable {
     }
     
     
-    
+    /** Returns a copy of this node. */
+    public func copy() -> Node {
+        var n = Node()
+        n.mutablePath = self.mutablePath.mutableCopy() ?? CGMutablePath()
+        n.firstPoint = self.firstPoint
+        n.lastPoint = self.lastPoint
+        n.boundingBox = self.boundingBox
+        n.shapeLayer = self.shapeLayer.mutableCopy() as? CAShapeLayer ?? CAShapeLayer()
+        n.isMovable = self.isMovable
+        
+        return n
+    }
     
 }
