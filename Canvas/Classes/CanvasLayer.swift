@@ -93,16 +93,16 @@ public class CanvasLayer: Codable {
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CanvasLayerCodingKeys.self)
-        drawingArray = try container.decode([Node].self, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray)
-        canvas = try container.decode(Canvas.self, forKey: CanvasLayerCodingKeys.canvasLayerCanvas)
-        isVisible = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible)
-        allowsDrawing = try container.decode(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing)
-        name = try container.decode(String.self, forKey: CanvasLayerCodingKeys.canvasLayerName)
+        drawingArray = try container.decodeIfPresent([Node].self, forKey: CanvasLayerCodingKeys.canvasLayerNodeArray) ?? []
+        canvas = try container.decodeIfPresent(Canvas.self, forKey: CanvasLayerCodingKeys.canvasLayerCanvas) ?? Canvas(createDefaultLayer: true)
+        isVisible = try container.decodeIfPresent(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerIsVisible) ?? true
+        allowsDrawing = try container.decodeIfPresent(Bool.self, forKey: CanvasLayerCodingKeys.canvasLayerAllowsDrawing) ?? true
+        name = try container.decodeIfPresent(String?.self, forKey: CanvasLayerCodingKeys.canvasLayerName) ?? nil
         selectedNodes = []
         isDragging = false
-        transformBox = try container.decode(CGRect.self, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox)
-        opacity = try container.decode(CGFloat.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity)
-        if let tint = try container.decode([CGFloat]?.self, forKey: CanvasLayerCodingKeys.canvasLayerTint) {
+        transformBox = try container.decodeIfPresent(CGRect.self, forKey: CanvasLayerCodingKeys.canvasLayerTransformBox) ?? CGRect()
+        opacity = try container.decodeIfPresent(CGFloat.self, forKey: CanvasLayerCodingKeys.canvasLayerOpacity) ?? 1
+        if let tint = try container.decodeIfPresent([CGFloat]?.self, forKey: CanvasLayerCodingKeys.canvasLayerTint) ?? nil {
             tintColor = UIColor(red: tint[0], green: tint[1], blue: tint[2], alpha: tint[3])
         }
     }

@@ -132,15 +132,14 @@ public class Canvas: UIView, Codable {
     public required init(from decoder: Decoder) throws {
         super.init(frame: CGRect.zero)
         let container = try decoder.container(keyedBy: CanvasCodingKeys.self)
-        currentDrawingBrush = try container.decode(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush)
-        currentDrawingBrush = Brush.Default
-        currentPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint)
-        lastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint)
-        lastLastPoint = try container.decode(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint)
-        currentCanvasLayer = try container.decode(Int.self, forKey: CanvasCodingKeys.canvasCurrentLayer)
-        createDefaultLayer = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
-        allowsMultipleTouches = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
-        preemptTouch = try container.decode(Bool.self, forKey: CanvasCodingKeys.canvasPreemptTouches)
+        currentDrawingBrush = try container.decodeIfPresent(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush) ?? Brush.Default
+        currentPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint) ?? CGPoint()
+        lastPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint) ?? CGPoint()
+        lastLastPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint) ?? CGPoint()
+        currentCanvasLayer = try container.decodeIfPresent(Int.self, forKey: CanvasCodingKeys.canvasCurrentLayer) ?? 0
+        createDefaultLayer = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasCreateDefaultLayer) ?? true
+        allowsMultipleTouches = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches) ?? false
+        preemptTouch = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasPreemptTouches) ?? false
     }
     
     public init() {

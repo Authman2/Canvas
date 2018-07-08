@@ -73,13 +73,13 @@ public struct Brush: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: BrushCodingKeys.self)
-        let colors = try container.decode([CGFloat].self, forKey: BrushCodingKeys.brushColor)
+        let colors = try container.decodeIfPresent([CGFloat].self, forKey: BrushCodingKeys.brushColor) ?? [0,0,0,0]
         color = UIColor(red: colors[0], green: colors[1], blue: colors[2], alpha: colors[3])
-        thickness = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushThickness)
-        opacity = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushOpacity)
-        miter = try container.decode(CGFloat.self, forKey: BrushCodingKeys.brushMiter)
-        let s = try container.decode(Int32.self, forKey: BrushCodingKeys.brushShape)
-        let j = try container.decode(Int32.self, forKey: BrushCodingKeys.brushJoinStyle)
+        thickness = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushThickness) ?? 5
+        opacity = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushOpacity) ?? 1
+        miter = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushMiter) ?? 1
+        let s = try container.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.brushShape) ?? CGLineCap.round.rawValue
+        let j = try container.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.brushJoinStyle) ?? CGLineJoin.round.rawValue
         shape = CGLineCap(rawValue: s) ?? .round
         joinStyle = CGLineJoin(rawValue: j) ?? .round
     }

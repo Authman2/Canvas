@@ -45,21 +45,21 @@ public struct Node: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: NodeCodingKeys.self)
-        firstPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint)
-        lastPoint = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint)
-        boundingBox = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox)
-        isMovable = try container.decode(Bool.self, forKey: NodeCodingKeys.nodeMovable)
+        firstPoint = try container.decodeIfPresent(CGPoint.self, forKey: NodeCodingKeys.nodeFirstPoint) ?? CGPoint()
+        lastPoint = try container.decodeIfPresent(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint) ?? CGPoint()
+        boundingBox = try container.decodeIfPresent(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox) ?? CGRect()
+        isMovable = try container.decodeIfPresent(Bool.self, forKey: NodeCodingKeys.nodeMovable) ?? true
         
-        let fill = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeFill)
-        let stroke = try container.decode([CGFloat].self, forKey: NodeCodingKeys.nodeStroke)
-        let cap = try container.decode(String.self, forKey: NodeCodingKeys.nodeLineCap)
-        let join = try container.decode(String.self, forKey: NodeCodingKeys.nodeLineJoin)
-        let width = try container.decode(CGFloat.self, forKey: NodeCodingKeys.nodeLineWidth)
-        let miter = try container.decode(CGFloat.self, forKey: NodeCodingKeys.nodeMiter)
-        let bounds = try container.decode(CGRect.self, forKey: NodeCodingKeys.nodeBounds)
-        let pos = try container.decode(CGPoint.self, forKey: NodeCodingKeys.nodePosition)
-        let bPoints = try container.decode([[CGPoint]].self, forKey: NodeCodingKeys.nodeBezPoints)
-        let bTypes = (try container.decode([Int32].self, forKey: NodeCodingKeys.nodeBezTypes)).map {
+        let fill = try container.decodeIfPresent([CGFloat].self, forKey: NodeCodingKeys.nodeFill) ?? [0,0,0,0]
+        let stroke = try container.decodeIfPresent([CGFloat].self, forKey: NodeCodingKeys.nodeStroke) ?? [0,0,0,0]
+        let cap = try container.decodeIfPresent(String.self, forKey: NodeCodingKeys.nodeLineCap) ?? kCALineCapRound
+        let join = try container.decodeIfPresent(String.self, forKey: NodeCodingKeys.nodeLineJoin) ?? kCALineJoinRound
+        let width = try container.decodeIfPresent(CGFloat.self, forKey: NodeCodingKeys.nodeLineWidth) ?? 5
+        let miter = try container.decodeIfPresent(CGFloat.self, forKey: NodeCodingKeys.nodeMiter) ?? 1
+        let bounds = try container.decodeIfPresent(CGRect.self, forKey: NodeCodingKeys.nodeBounds) ?? CGRect()
+        let pos = try container.decodeIfPresent(CGPoint.self, forKey: NodeCodingKeys.nodePosition) ?? CGPoint()
+        let bPoints = try container.decodeIfPresent([[CGPoint]].self, forKey: NodeCodingKeys.nodeBezPoints) ?? []
+        let bTypes = (try container.decodeIfPresent([Int32].self, forKey: NodeCodingKeys.nodeBezTypes) ?? []).map {
             return CGPathElementType(rawValue: $0) ?? .moveToPoint
         }
         
