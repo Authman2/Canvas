@@ -73,6 +73,14 @@ public class Canvas: UIView, Codable {
     /** The undo/redo manager. */
     public var undoRedoManager: UndoRedoManager!
     
+    /** An inner rectangle to draw on the canvas. */
+    public var innerRect: CGRect? {
+        didSet { self.setNeedsDisplay() }
+    }
+    
+    /** The color of the inner rect. */
+    public var innerColor: UIColor?
+    
     
     
     // -- PUBLIC COMPUTED PROPERTIES --
@@ -368,6 +376,7 @@ public class Canvas: UIView, Codable {
     
     
     
+    
     /************************
      *                      *
      *        DRAWING       *
@@ -375,6 +384,17 @@ public class Canvas: UIView, Codable {
      ************************/
     
     public override func draw(_ rect: CGRect) {
+        if let inner = self.innerRect, let clr = self.innerColor {
+            guard let context = UIGraphicsGetCurrentContext() else { return }
+            context.setLineCap(.square)
+            context.setLineJoin(.miter)
+            context.setLineWidth(2)
+            context.setMiterLimit(1)
+            context.setAlpha(1)
+            context.setFillColor(clr.cgColor)
+            context.fill(inner)
+        }
+        
         layer.sublayers = []
         for i in (0..<layers.count).reversed() {
             let layer = layers[i]

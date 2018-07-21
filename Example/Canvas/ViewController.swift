@@ -173,6 +173,8 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(selectBtn)
         
         setupLayout()
+        canvas.innerColor = .lightGray
+        canvas.innerRect = CGRect(x: 300, y: 300, width: 200, height: 200)
         
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(zoom(sender:)))
         view.addGestureRecognizer(pinch)
