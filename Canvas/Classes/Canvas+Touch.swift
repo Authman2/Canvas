@@ -187,9 +187,11 @@ public extension Canvas {
                     
                     // Get the items that do not have a point in the range of the erase point.
                     let erasedInstructions = instructions.filter { item in
-                        if item.0.contains(where: { (point) -> Bool in
-                            return point.inRange(of: erasePoint, by: 5)
-                        }) {
+                        let contains = item.0.contains { (cgPoint: CGPoint) -> Bool in
+                            return cgPoint.inRange(of: erasePoint, by: 5)
+                        }
+                        
+                        if contains {
                             return false
                         } else {
                             return true
