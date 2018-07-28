@@ -8,14 +8,14 @@
 import Foundation
 
 /** Canvas tools. */
-public enum CanvasTool {
-    case pen
-    case eraser
-    case line
-    case rectangle
-    case ellipse
-    case eyedropper
-    case selection
+public enum CanvasTool: Int {
+    case pen = 0
+    case eraser = 1
+    case line = 2
+    case rectangle = 3
+    case ellipse = 4
+    case eyedropper = 5
+    case selection = 6
 }
 
 
@@ -32,7 +32,9 @@ extension Comparable {
 
 extension CGPoint {
     func distance(to: CGPoint) -> CGFloat {
-        return sqrt(((x ** 2) - (to.x ** 2)) + ((y ** 2) + (to.y ** 2)))
+        let xComp = (to.x - x) ** 2
+        let yComp = (to.y - y) ** 2
+        return sqrt(xComp + yComp)
     }
 }
 

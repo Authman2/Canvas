@@ -16,6 +16,9 @@ public struct Node: Codable {
      *                      *
      ************************/
     
+    /** The type of node that this is. */
+    public var nodeType: Int
+    
     /** The mutable path to draw. */
     public var mutablePath: CGMutablePath
     
@@ -49,6 +52,7 @@ public struct Node: Codable {
         lastPoint = try container.decodeIfPresent(CGPoint.self, forKey: NodeCodingKeys.nodeLastPoint) ?? CGPoint()
         boundingBox = try container.decodeIfPresent(CGRect.self, forKey: NodeCodingKeys.nodeBoundingBox) ?? CGRect()
         isMovable = try container.decodeIfPresent(Bool.self, forKey: NodeCodingKeys.nodeMovable) ?? true
+        nodeType = try container.decodeIfPresent(Int.self, forKey: NodeCodingKeys.nodeType) ?? 0
         
         let fill = try container.decodeIfPresent([CGFloat].self, forKey: NodeCodingKeys.nodeFill) ?? [0,0,0,0]
         let stroke = try container.decodeIfPresent([CGFloat].self, forKey: NodeCodingKeys.nodeStroke) ?? [0,0,0,0]
@@ -89,13 +93,14 @@ public struct Node: Codable {
         setBoundingBox()
     }
     
-    public init() {
+    public init(type: Int = 0) {
         mutablePath = CGMutablePath()
         firstPoint = CGPoint()
         lastPoint = CGPoint()
         boundingBox = CGRect()
         shapeLayer = CAShapeLayer()
         isMovable = true
+        nodeType = 0
     }
     
     
@@ -160,7 +165,6 @@ public struct Node: Codable {
     /** Sets the first point on this node and moves there. */
     mutating func setInitialPoint(point: CGPoint) {
         firstPoint = point
-        mutablePath.move(to: point)
     }
     
     
@@ -179,7 +183,7 @@ public struct Node: Codable {
     
     
     /** Adds a new path to the curve and returns the bounding box of that path. */
-    func addPath(p1: CGPoint, p2: CGPoint, currentPoint: CGPoint, tool: CanvasTool) -> CGRect {
+    mutating func addPath(p1: CGPoint, p2: CGPoint, currentPoint: CGPoint, tool: CanvasTool) -> CGRect {
         switch tool {
         case .pen:
             let mid1 = midpoint(a: p1, b: p2)
@@ -256,12 +260,49 @@ public struct Node: Codable {
     }
     
     
+    /** Returns an array of points that lie on this line. */
+    func pointsOnLine(startPoint : CGPoint, endPoint : CGPoint) -> [CGPoint] {
+        var allPoints: [CGPoint] = [CGPoint]()
+        
+        let deltaX = fabs(endPoint.x - startPoint.x)
+        let deltaY = fabs(endPoint.y - startPoint.y)
+        
+        var x = startPoint.x
+        var y = startPoint.y
+        var err = deltaX - deltaY
+        
+        var sx = -0.5
+        var sy = -0.5
+        if(startPoint.x < endPoint.x){ sx = 0.5 }
+        if(startPoint.y < endPoint.y){ sy = 0.5; }
+        
+        repeat {
+            let pointObj = CGPoint(x: x, y: y)
+            allPoints.append(pointObj)
+            
+            let e = 2*err
+            if(e > -deltaY) {
+                err -= deltaY
+                x += CGFloat(sx)
+            }
+            if(e < deltaX) {
+                err += deltaX
+                y += CGFloat(sy)
+            }
+        } while (round(x) != round(endPoint.x) && round(y) != round(endPoint.y));
+        
+        allPoints.append(endPoint)
+        return allPoints
+    }
+    
+    
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: NodeCodingKeys.self)
         try container.encode(firstPoint, forKey: NodeCodingKeys.nodeFirstPoint)
         try container.encode(lastPoint, forKey: NodeCodingKeys.nodeLastPoint)
         try container.encode(boundingBox, forKey: NodeCodingKeys.nodeBoundingBox)
         try container.encode(isMovable, forKey: NodeCodingKeys.nodeMovable)
+        try container.encode(nodeType, forKey: NodeCodingKeys.nodeType)
         
         // Encode the bezier points and bezier types separately.
         let bezPoints = shapeLayer.path!.bezierPointsAndTypes.map { group in
@@ -299,6 +340,7 @@ public struct Node: Codable {
         n.boundingBox = self.boundingBox
         n.shapeLayer = self.shapeLayer.mutableCopy() as? CAShapeLayer ?? CAShapeLayer()
         n.isMovable = self.isMovable
+        n.nodeType = self.nodeType
         
         return n
     }

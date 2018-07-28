@@ -435,6 +435,8 @@ public class Canvas: UIView, Codable {
                 }
             }
         }
+        
+        drawSelectionArea()
     }
     
     

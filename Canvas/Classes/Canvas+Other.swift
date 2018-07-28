@@ -130,4 +130,23 @@ public extension Canvas {
     }
     
     
+    /** Draws the selection area. */
+    func drawSelectionArea() {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        
+        context.setLineCap(.square)
+        context.setLineJoin(.miter)
+        context.setLineWidth(2)
+        context.setMiterLimit(1)
+        context.setFlatness(1)
+        context.setAlpha(1)
+        context.setLineDash(phase: 0, lengths: [10, 10])
+        
+        // Stoke the outline of the shape.
+        guard let currLayer = currentLayer else { return }
+        context.setStrokeColor(UIColor.red.cgColor)
+        context.stroke(currLayer.transformBox)
+    }
+    
+    
 }

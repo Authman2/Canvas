@@ -98,7 +98,7 @@ public extension Canvas {
         currentPoint = touch.location(in: self)
         
         // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
-        nextNode = Node()
+        nextNode = Node(type: currentTool.rawValue)
         
         // Work with each tool.
         switch currentDrawingTool {
@@ -154,6 +154,7 @@ public extension Canvas {
                 pos.y += touch.deltaY
                 node.shapeLayer.position = pos
                 
+                currLayer.calculateTransformBox()
                 setNeedsDisplay()
             }
         }
@@ -173,7 +174,50 @@ public extension Canvas {
             setNeedsDisplay(boundingBox)
             break
         case .eraser:
+            let erasePoint = currentPoint
             
+            for i in 0..<currLayer.drawingArray.count {
+                var node = currLayer.drawingArray[i]
+                
+                switch node.nodeType {
+                case 0:
+                    // PEN:
+                    // Get the points and instructions that are currently there.
+                    let instructions = node.mutablePath.bezierPointsAndTypes
+                    
+                    // Get the items that do not have a point in the range of the erase point.
+                    let erasedInstructions = instructions.filter {
+                        if $0.0.contains(where: { (point) -> Bool in return point.inRange(of: erasePoint, by: 5) }) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    }
+                    
+                    // Create a new path without the erased sections.
+                    let nPath = buildPath(from: erasedInstructions.map { $0.1 }, bPoints: erasedInstructions.map { $0.0 })
+                    node.mutablePath = nPath
+                    node.shapeLayer.path = node.mutablePath
+                    currLayer.drawingArray[i] = node
+                    break
+                case 2:
+                    // LINE:
+                    currLayer.drawingArray.remove(at: i)
+                    break
+                case 3:
+                    // RECTANGLE:
+                    currLayer.drawingArray.remove(at: i)
+                    break
+                case 4:
+                    // ELLIPSE:
+                    currLayer.drawingArray.remove(at: i)
+                    break
+                default:
+                    break
+                }
+                
+                setNeedsDisplay()
+            }
             break
         case .line:
             next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)

@@ -31,6 +31,8 @@ enum CanvasLayerCodingKeys: CodingKey {
     case canvasLayerOpacity
     case canvasLayerTint
     case canvasLayerName
+    case canvasLayerPoints
+    case canvasLayerTypes
     case canvasLayerTransformBox
 }
 
@@ -48,6 +50,9 @@ enum NodeCodingKeys: CodingKey {
     case nodeLastPoint
     case nodeBoundingBox
     case nodeMovable
+    case nodeType
+    case nodePoints
+    case nodeTypes
     case nodeBezPoints
     case nodeBezTypes
     case nodeFill
