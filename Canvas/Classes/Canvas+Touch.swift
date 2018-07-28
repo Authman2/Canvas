@@ -186,8 +186,10 @@ public extension Canvas {
                     let instructions = node.mutablePath.bezierPointsAndTypes
                     
                     // Get the items that do not have a point in the range of the erase point.
-                    let erasedInstructions = instructions.filter {
-                        if $0.0.contains(where: { (point) -> Bool in return point.inRange(of: erasePoint, by: 5) }) {
+                    let erasedInstructions = instructions.filter { item in
+                        if item.0.contains(where: { (point) -> Bool in
+                            return point.inRange(of: erasePoint, by: 5)
+                        }) {
                             return false
                         } else {
                             return true
