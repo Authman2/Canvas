@@ -1,8 +1,8 @@
 //
-//  CGPoint+InRange.swift
+//  CGPoint+Range.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 7/26/18.
+//  Created by Adeola Uthman on 7/28/18.
 //
 
 import Foundation
