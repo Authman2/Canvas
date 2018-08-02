@@ -157,6 +157,7 @@ public extension Canvas {
                 currLayer.calculateTransformBox()
                 setNeedsDisplay()
             }
+            self.delegate?.didMoveNodes(on: self, movedNodes: currLayer.selectedNodes)
         }
         
         // Draw based on the current tool.
