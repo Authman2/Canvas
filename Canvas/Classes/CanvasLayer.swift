@@ -232,8 +232,9 @@ public class CanvasLayer: Codable {
         sl.path = node.mutablePath
 //        sl.backgroundColor = UIColor.orange.cgColor
         sl.strokeColor = canvas.currentBrush.color.cgColor
-        sl.fillColor = nil
         sl.fillRule = kCAFillRuleEvenOdd
+        sl.fillMode = kCAFillModeBoth
+        sl.fillColor = nil
         sl.opacity = Float(canvas.currentBrush.opacity)
         sl.lineWidth = canvas.currentBrush.thickness
         sl.miterLimit = canvas.currentBrush.miter
@@ -270,7 +271,6 @@ public class CanvasLayer: Codable {
 //        print(node.mutablePath.boundingBox)
         node.shapeLayer = sl
         drawingArray.append(node)
-    
         canvas.setNeedsDisplay()
     }
 

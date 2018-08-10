@@ -213,10 +213,10 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     func didSelectNodes(on canvas: Canvas, selectedNodes: [Node]) {
-        if selectedNodes.count > 0 {
-            print(selectedNodes[0].toSVG())
-        }
-//        canvas.fillSelectedNodes(with: .green)
+//        if selectedNodes.count > 0 {
+//            print(selectedNodes[0].toSVG())
+//        }
+        canvas.fillSelectedNodes(with: canvas.currentBrush.color)
 //        canvas.strokeSelectedNodes(with: .orange)
     }
     

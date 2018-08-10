@@ -88,7 +88,7 @@ public struct Node: Codable {
         }
         
         // Re-build the cgpath.
-        mutablePath = buildPath(from: bTypes, bPoints: bPoints)
+        mutablePath = buildPath(from: bTypes, bPoints: bPoints, type: CanvasTool(rawValue: nodeType)!)
         shapeLayer.path = mutablePath
         setBoundingBox()
     }
@@ -171,14 +171,6 @@ public struct Node: Codable {
     /** Sets the last point and the current point and moves to the current point. */
     mutating func move(from: CGPoint, to: CGPoint, tool: CanvasTool) {
         lastPoint = to
-        
-        switch tool {
-        case .pen:
-            mutablePath.addQuadCurve(to: midpoint(a: from, b: to), control: from)
-            break
-        default:
-            break
-        }
     }
     
     
@@ -190,12 +182,13 @@ public struct Node: Codable {
             let mid2 = midpoint(a: currentPoint, b: p2)
             
             let subpath = CGMutablePath()
-            subpath.move(to: mid1)
+            subpath.move(to: p1)
+            subpath.addQuadCurve(to: mid1, control: p1)
             subpath.addQuadCurve(to: mid2, control: p2)
             let bounds = subpath.boundingBox
             
-            mutablePath.addPath(subpath)
             subpath.closeSubpath()
+            mutablePath.addPath(subpath)
             return bounds
         case .line:
             return CGRect()

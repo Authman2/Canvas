@@ -25,6 +25,9 @@ public extension Canvas {
         switch currentDrawingTool {
         case .pen:
             node.mutablePath.closeSubpath()
+            
+            // Rebuild the path. This is necessary for painting.
+            node.mutablePath = buildPath(from: node.mutablePath.bezierPointsAndTypes.map { $0.1 }, bPoints: node.mutablePath.bezierPointsAndTypes.map { $0.0 }, type: .pen)
             break
         case .line:
             node.mutablePath.move(to: node.firstPoint)
@@ -46,6 +49,23 @@ public extension Canvas {
             break
         default:
             break
+        }
+        
+        if currentTool == .eraser {
+            let cL = self.currentCanvasLayer
+            undoRedoManager.add(undo: {
+                var la = self.layers[cL].drawingArray ?? []
+                if la.count > 0 { la.removeLast() }
+                return (la, cL)
+            }) {
+                var la = self.layers[cL].drawingArray
+                la?.append(node)
+                return (la, cL)
+            }
+            undoRedoManager.clearRedos()
+            
+            self.delegate?.didEndDrawing(on: self, withTool: currentTool)
+            return
         }
         
         // Update the drawing.
@@ -200,7 +220,7 @@ public extension Canvas {
                     }
                     
                     // Create a new path without the erased sections.
-                    let nPath = buildPath(from: erasedInstructions.map { $0.1 }, bPoints: erasedInstructions.map { $0.0 })
+                    let nPath = buildPath(from: erasedInstructions.map { $0.1 }, bPoints: erasedInstructions.map { $0.0 }, type: .pen)
                     node.mutablePath = nPath
                     node.shapeLayer.path = node.mutablePath
                     currLayer.drawingArray[i] = node

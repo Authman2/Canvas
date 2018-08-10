@@ -83,12 +83,16 @@ func pointsOnLine(startPoint : CGPoint, endPoint : CGPoint) -> [CGPoint] {
 }
 
 /** Builds a CGMutablePath from an array of points and instructions. */
-func buildPath(from bTypes: [CGPathElementType], bPoints: [[CGPoint]]) -> CGMutablePath {
+func buildPath(from bTypes: [CGPathElementType], bPoints: [[CGPoint]], type: CanvasTool) -> CGMutablePath {
     let mutablePath = CGMutablePath()
+    mutablePath.move(to: bPoints[0][0])
+    
     for i in 0..<bTypes.count {
         switch bTypes[i] {
         case .moveToPoint:
-            mutablePath.move(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
+            if type != .pen {
+                mutablePath.move(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
+            }
             break
         case .addLineToPoint:
             mutablePath.addLine(to: CGPoint(x: bPoints[i][0].x, y: bPoints[i][0].y))
