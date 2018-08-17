@@ -325,7 +325,7 @@ public class Canvas: UIView, Codable {
     
     
     /** Exports the given nodes to a UIImage. */
-    public static func export(nodes: [Node], size: CGSize, exported: (_ img: UIImage) -> Void) {
+    public static func export(nodes: [Node], size: CGSize) -> UIImage {
         UIGraphicsBeginImageContext(size)
         
         for node in nodes {
@@ -335,7 +335,7 @@ public class Canvas: UIView, Codable {
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        exported(img ?? UIImage())
+        return img ?? UIImage()
     }
     
     
