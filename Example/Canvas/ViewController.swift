@@ -189,56 +189,6 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
      *                      *
      ************************/
     
-    func didBeginDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        
-    }
-    
-    func isDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-        
-    }
-    
-    func didEndDrawing(on canvas: Canvas, withTool tool: CanvasTool) {
-    }
-    
-    func didCopyNodes(on canvas: Canvas, copiedNodes: [Node]) {
-        
-    }
-    
-    func didPasteNodes(on canvas: Canvas, pastedNodes: [Node]) {
-        
-    }
-    
-    func didMoveNodes(on canvas: Canvas, movedNodes: [Node]) {
-        
-    }
-    
-    func didSelectNodes(on canvas: Canvas, selectedNodes: [Node]) {
-//        if selectedNodes.count > 0 {
-//            print(selectedNodes[0].toSVG())
-//        }
-        canvas.fillSelectedNodes(with: canvas.currentBrush.color)
-//        canvas.strokeSelectedNodes(with: .orange)
-    }
-    
-    func didChangeFill(on canvas: Canvas, filledNodes: [Node], fillColor: UIColor) {
-        
-    }
-    
-    func didChangeStroke(on canvas: Canvas, paintedNodes: [Node], strokeColor: UIColor) {
-        
-    }
-    
-    func didSampleColor(on canvas: Canvas, color: UIColor) {
-        
-    }
-    
-    func didUndo(on canvas: Canvas) {
-        
-    }
-    
-    func didRedo(on canvas: Canvas) {
-        
-    }
     
     
     
@@ -249,66 +199,37 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
      ************************/
     
     @objc func newColor() {
-        let c: [UIColor] = [.green, .red, .blue, .orange, .purple]
-        let rand = Int(arc4random_uniform(UInt32(c.count)))
         
-        let nBrush: Brush = {
-            var a = Brush()
-            a.color = c[rand]
-            a.thickness = canvas.currentBrush.thickness == 10 ? 5 : 10
-            return a
-        }()
-        canvas.setBrush(brush: nBrush)
         
         alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color.rgba) and size \(nBrush.thickness)")
     }
     
     @objc func newTool() {
-        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .ellipse, .eyedropper]
-        let rand = Int(arc4random_uniform(UInt32(tools.count)))
         
-        let last = canvas.currentTool
-        canvas.setTool(tool: tools[rand])
-        
-        // Changing the tool will be counted as an undo/redo action.
-        canvas.addCustomUndoRedo(cUndo: {
-            self.canvas.setTool(tool: last)
-        }) {
-            self.canvas.setTool(tool: tools[rand])
-        }
-
         alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
     @objc func selectTool() {
-        canvas.setTool(tool: CanvasTool.selection)
         alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
     @objc func undo() {
-        canvas.undo()
+        
     }
     
     @objc func redo() {
-        canvas.redo()
+        
     }
     
     @objc func clear() {
-        canvas.clear()
+        
     }
     
     @objc func addLayer() {
-        let n = CanvasLayer(canvas: canvas)
-        n.name = "Layer \(canvas.canvasLayers.count)"
-        canvas.addDrawingLayer(newLayer: n, position: .below)
-        
         alert(title: "New Layer", message: "Added a new layer to the canvas.")
     }
     
     @objc func switchLayer() {
-        let rand = Int(arc4random_uniform(UInt32(canvas.canvasLayers.count)))
-        canvas.switchLayer(to: rand)
-        
         alert(title: "Switched Layer", message: "You are now on layer \(canvas.currentLayerIndex)")
     }
     
@@ -327,9 +248,6 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func exportImage() {
-        canvas.export { (img: UIImage) in
-            UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
-        }
         
         // Alert export success.
         alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
@@ -340,7 +258,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
-        canvas.importImage(image: image)
+        
         self.dismiss(animated: true, completion: nil)
     }
     
