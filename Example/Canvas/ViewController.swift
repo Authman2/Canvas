@@ -9,7 +9,7 @@
 import UIKit
 import Canvas
 
-class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class ViewController: UIViewController, CanvasEvents, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     /************************
      *                      *
@@ -29,10 +29,8 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     /** The actual canvas, which has a clear background. */
     lazy var canvas: Canvas = {
-        let a = Canvas()
+        let a = Canvas(type: .raster, createDefaultLayer: true)
         a.translatesAutoresizingMaskIntoConstraints = false
-        a.delegate = self
-        a.preemptTouch = false
         a.backgroundColor = .white
         
         return a
@@ -173,8 +171,6 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
         view.addSubview(selectBtn)
         
         setupLayout()
-        canvas.innerColor = .lightGray
-        canvas.innerRect = CGRect(x: 300, y: 300, width: 200, height: 200)
         
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(zoom(sender:)))
         view.addGestureRecognizer(pinch)
@@ -189,6 +185,18 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
      *                      *
      ************************/
     
+    func willBeginDrawing(on canvas: Canvas) {
+        
+    }
+    
+    func isDrawing(on canvas: Canvas) {
+        
+    }
+    
+    func didFinishDrawing(on canvas: Canvas) {
+        
+    }
+    
     
     
     
@@ -200,17 +208,14 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     
     @objc func newColor() {
         
-        
-        alert(title: "Switched Brush", message: "You are now using a brush with color \(nBrush.color.rgba) and size \(nBrush.thickness)")
     }
     
     @objc func newTool() {
         
-        alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
     }
     
     @objc func selectTool() {
-        alert(title: "Switched Tool", message: "You are now using the \(canvas.currentTool) tool.")
+        
     }
     
     @objc func undo() {
@@ -230,7 +235,7 @@ class ViewController: UIViewController, CanvasDelegate, UINavigationControllerDe
     }
     
     @objc func switchLayer() {
-        alert(title: "Switched Layer", message: "You are now on layer \(canvas.currentLayerIndex)")
+        
     }
     
     @objc func importImage() {

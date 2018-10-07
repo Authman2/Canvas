@@ -1,20 +1,31 @@
 //
-//  Canvas.swift
+//  CanvasLayer.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 10/4/18.
+//  Created by Adeola Uthman on 10/7/18.
 //
 
 import Foundation
 
-/** */
-class Canvas: UIView {
+/** A layer of the canvas that contains drawing data. */
+public class CanvasLayer {
     
     /************************
      *                      *
      *       VARIABLES      *
      *                      *
      ************************/
+    
+    // -- PRIVATE VARS
+    
+    
+    // -- PUBLIC VARS
+    
+    
+    // -- COMPUTED PROPERTIES
+    
+    
+    
     
     
     
