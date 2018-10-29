@@ -18,6 +18,13 @@ public class CanvasLayer {
     
     // -- PRIVATE VARS
     
+    /** The array of nodes on this layer. */
+    internal var drawings: [Node] = []
+    
+    /** The type of layer this is: raster or vector. */
+    internal var type: LayerType = .raster
+    
+    
     
     // -- PUBLIC VARS
     
@@ -36,6 +43,10 @@ public class CanvasLayer {
      *         INIT         *
      *                      *
      ************************/
+    
+    init(type: LayerType) {
+        self.type = type
+    }
     
     
     

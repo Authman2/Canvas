@@ -18,18 +18,23 @@ public class Canvas: UIView {
     
     // -- PRIVATE VARS
     
-    /** What type of canvas this is. */
-    internal var type: CanvasType!
-    
     /** The touch points. */
     internal var currentPoint: CGPoint = CGPoint()
     internal var lastPoint: CGPoint = CGPoint()
     internal var lastLastPoint: CGPoint = CGPoint()
     
+    /** The next node to be drawn on the canvas. */
+    internal var nextNode: Node? = nil
+    
     /** A collection of the layers on this canvas. */
     internal var _canvasLayers: [CanvasLayer] = []
     internal var _currentCanvasLayer: Int = 0
     
+    /** The current brush that is being used to style drawings. */
+    internal var _currentBrush: Brush = Brush.Default
+    
+    /** The current tool that is being used to draw. */
+    internal var _currentTool: CanvasTool = CanvasTool.rectangle
     
     
     
@@ -37,6 +42,8 @@ public class Canvas: UIView {
     
     /** Events delegate. */
     public var delegate: CanvasEvents?
+    
+    
     
     
     
@@ -65,26 +72,14 @@ public class Canvas: UIView {
         setup()
     }
     
-    public init(type: CanvasType, createDefaultLayer: Bool) {
-        super.init(frame: CGRect.zero)
-        setup(type: type, createDefaultLayer: createDefaultLayer)
-    }
-    
     public init(createDefaultLayer: Bool) {
         super.init(frame: CGRect.zero)
         setup(createDefaultLayer: createDefaultLayer)
     }
     
-    public init(type: CanvasType) {
-        super.init(frame: CGRect.zero)
-        setup(type: type)
-    }
-    
-    private func setup(type: CanvasType = .vector, createDefaultLayer: Bool = false) {
-        self.type = type
-        
+    private func setup(createDefaultLayer: Bool = false) {
         if createDefaultLayer == true {
-            let defLay = CanvasLayer()
+            let defLay = CanvasLayer(type: LayerType.raster)
             self.addLayer(newLayer: defLay, position: .above)
         }
     }
@@ -103,9 +98,82 @@ public class Canvas: UIView {
     
     /************************
      *                      *
-     *        LAYOUT        *
+     *        DRAWING       *
      *                      *
      ************************/
     
+    public override func draw(_ rect: CGRect) {
+        // 1.) Clear all sublayers.
+        layer.sublayers = []
+        
+        // 2.) Go through each layer and render it using either raster or vector graphics.
+        for i in (0..<self._canvasLayers.count).reversed() {
+            let layer = self._canvasLayers[i]
+            
+            if layer.type == .raster {
+                drawRaster(layer: layer, rect)
+            } else {
+                drawVector(layer: layer, rect)
+            }
+        }
+        
+        // 3.) Draw the temporary drawing.
+        guard let next = nextNode else { return }
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        let path = build(from: next.points, using: next.instructions, tool: next.type)
+        context.addPath(path)
+        context.setLineCap(self._currentBrush.shape)
+        context.setLineJoin(self._currentBrush.joinStyle)
+        context.setLineWidth(self._currentBrush.thickness)
+        context.setStrokeColor(self._currentBrush.color.cgColor)
+        context.setBlendMode(.normal)
+        context.setMiterLimit(self._currentBrush.miter)
+        context.setAlpha(self._currentBrush.opacity)
+        context.strokePath()
+    }
+    
+    private func drawRaster(layer: CanvasLayer, _ rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext() else { print("something"); return }
+        
+        // Create a CGContext to draw all of the lines on that layer.
+        for node in layer.drawings {
+            // Draw using the context.
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            
+            context.addPath(path)
+            context.setLineCap(self._currentBrush.shape)
+            context.setLineJoin(self._currentBrush.joinStyle)
+            context.setLineWidth(self._currentBrush.thickness)
+            context.setStrokeColor(self._currentBrush.color.cgColor)
+            context.setBlendMode(.normal)
+            context.setMiterLimit(self._currentBrush.miter)
+            context.setAlpha(self._currentBrush.opacity)
+            context.strokePath()
+        }
+    }
+    
+    private func drawVector(layer: CanvasLayer, _ rect: CGRect) {
+        for node in layer.drawings {
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.bounds = path.boundingBox
+            shapeLayer.path = path
+            //        shapeLayer.backgroundColor = UIColor.orange.cgColor
+            shapeLayer.strokeColor = self._currentBrush.color.cgColor
+            shapeLayer.fillRule = kCAFillRuleEvenOdd
+            shapeLayer.fillMode = kCAFillModeBoth
+            shapeLayer.fillColor = nil
+            shapeLayer.opacity = Float(self._currentBrush.opacity)
+            shapeLayer.lineWidth = self._currentBrush.thickness
+            shapeLayer.miterLimit = self._currentBrush.miter
+            
+            var nPos = path.boundingBox.origin
+            nPos.x += path.boundingBox.width / 2
+            nPos.y += path.boundingBox.height / 2
+            shapeLayer.position = nPos
+            
+            self.layer.addSublayer(shapeLayer)
+        }
+    }
     
 }

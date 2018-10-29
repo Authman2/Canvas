@@ -29,7 +29,7 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     
     /** The actual canvas, which has a clear background. */
     lazy var canvas: Canvas = {
-        let a = Canvas(type: .raster, createDefaultLayer: true)
+        let a = Canvas(createDefaultLayer: true)
         a.translatesAutoresizingMaskIntoConstraints = false
         a.backgroundColor = .white
         

@@ -8,7 +8,7 @@
 import Foundation
 
 /** A point, line, shape, etc. that exists on a layer of the canvas. */
-class Node: Codable {
+public class Node {
     
     /************************
      *                      *
@@ -16,6 +16,23 @@ class Node: Codable {
      *                      *
      ************************/
     
+    // -- PRIVATE VARS
+    
+    /** What type of node this is. */
+    internal var type: CanvasTool!
+    
+    
+    // -- PUBLIC VARS
+    
+    /** The points that make up this node. */
+    public var points: [[CGPoint]] = []
+    
+    /** The instructions used to draw the points. */
+    public var instructions: [CGPathElementType] = []
+    
+    
+    
+    // -- COMPUTED PROPERTIES
     
     
     
@@ -26,6 +43,9 @@ class Node: Codable {
      *                      *
      ************************/
     
+    init(type: CanvasTool) {
+        self.type = type
+    }
     
     
     
