@@ -65,9 +65,10 @@ extension Canvas {
         currentPoint = touch.location(in: self)
         lastPoint = touch.location(in: self)
         lastLastPoint = touch.location(in: self)
+        eraserStartPoint = touch.location(in: self)
         
         // 2.) Create a new node that will be placed on the canvas.
-        if _currentTool != .eyedropper {
+        if _currentTool != .eyedropper && _currentTool != .eraser {
             nextNode = Node(type: self._currentTool)
             nextNode?.points.append([currentPoint])
             nextNode?.instructions.append(CGPathElementType.moveToPoint)
@@ -97,10 +98,15 @@ extension Canvas {
             next.instructions.append(CGPathElementType.addQuadCurveToPoint)
             break
         case .eraser:
-            // Start from the first erase point.
-            // Map the points of points into just average points
-            // Remove the points points at the in-range-average-point
-            // Split the node into two nodes: one for 0..erase-start and one from erase-end to node-end.
+            // 1.) Find all of the nodes where the touch is within its bounding box. This
+            //     will cut the number of nodes to look through down to 1 in the best case or "n" in the worst case.
+            // 2.) For every touched node, map its points into an average of its points. This should still be the same
+            //     size array as before. Then, as you loop through each point, store its averages in an array at index i.
+            // 3.) Loop through each set of average points for each node. If you come across one that is within range of
+            //     the touch, save that index i and remove it from the original nodes points points array.
+            // 4.) Then split that node into two nodes. The first one will contain all the points and instructions from
+            //     0...i with the last instruction being changed to closeSubpath. The second node will be from i...end
+            //     and the first instruction will be changed to moveToPoint.
             break
         case .line:
             let tempFirst = next.points[0][0]

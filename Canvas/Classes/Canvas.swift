@@ -22,6 +22,7 @@ public class Canvas: UIView {
     internal var currentPoint: CGPoint = CGPoint()
     internal var lastPoint: CGPoint = CGPoint()
     internal var lastLastPoint: CGPoint = CGPoint()
+    internal var eraserStartPoint: CGPoint = CGPoint()
     
     /** The next node to be drawn on the canvas. */
     internal var nextNode: Node? = nil
