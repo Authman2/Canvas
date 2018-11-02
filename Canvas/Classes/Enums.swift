@@ -17,20 +17,29 @@ public enum LayerType: Int {
 }
 
 
-/** The position of the layer. */
+/** The position of the layer relative to another. */
 public enum LayerPosition: Int {
     case above = 0
     case below = 1
 }
 
 
-/** Determines what type of shape a node is. */
+/** The type of tool to use when drawing on the canvas. */
 public enum CanvasTool: Int {
     case pen = 0
-    case eraser = 1
+    case eraser = 1 // todo
     case line = 2
     case rectangle = 3
     case ellipse = 4
-    case paint = 5
+    case paint = 5 // todo
     case eyedropper = 6
+}
+
+
+/** Relative position of points. */
+public enum RelativePointPosition: Int {
+    case upperRight = 0
+    case upperLeft = 1
+    case lowerRight = 2
+    case lowerLeft = 3
 }

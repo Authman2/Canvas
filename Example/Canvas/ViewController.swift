@@ -32,6 +32,7 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         let a = Canvas(createDefaultLayer: true)
         a.translatesAutoresizingMaskIntoConstraints = false
         a.backgroundColor = .white
+        a.delegate = self
         
         return a
     }()
@@ -194,9 +195,12 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     func didFinishDrawing(on canvas: Canvas) {
-        
+        canvas.currentTool = .eraser
     }
     
+    func didSampleColor(on canvas: Canvas, sampledColor color: UIColor) {
+        print("Sampled color: \(color.rgba)")
+    }
     
     
     

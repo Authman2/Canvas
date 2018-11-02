@@ -13,24 +13,18 @@ public func build(from points: [[CGPoint]], using instructions: [CGPathElementTy
     mutablePath.move(to: points[0][0])
     
     // Handle rectangles and ellipses.
-    if tool == .rectangle {
-        let w = points[0][1].x > points[0][0].x ? points[0][1].x - points[0][0].x : points[0][0].x - points[0][1].x
-        let h = points[0][1].y > points[0][0].y ? points[0][1].y - points[0][0].y : points[0][0].y - points[0][1].y
-        let size = CGSize(width: w, height: h)
-        var origin = CGPoint()
+    if tool == .rectangle || tool == .ellipse {        
+        let first = points[0][0]
+        let last = points[0][1]
+        let w = last.x - first.x
+        let h = last.y - first.y
+        let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
         
-        if points[0][1].x > points[0][0].x && points[0][1].y > points[0][0].y {
-            origin = points[0][0]
-        } else if points[0][1].x > points[0][0].x && points[0][1].y <= points[0][0].y {
-            origin = points[0][1]
-        } else if points[0][1].x <= points[0][0].x && points[0][1].y > points[0][0].y {
-            origin = points[1][0]
-        } else {
-            origin = points[1][1]
+        if tool == .rectangle {
+            mutablePath.addRect(dest)
+        } else if tool == .ellipse {
+            mutablePath.addEllipse(in: dest)
         }
-        
-        let dest = CGRect(origin: origin, size: size)
-        mutablePath.addRect(dest)
         return mutablePath
     }
     

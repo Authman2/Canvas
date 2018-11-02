@@ -18,6 +18,10 @@
 		5A191B92216A7BB0008CC5F0 /* Canvas+Touch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A191B91216A7BB0008CC5F0 /* Canvas+Touch.swift */; };
 		5A191B94216A7DDD008CC5F0 /* Canvas+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A191B93216A7DDD008CC5F0 /* Canvas+Other.swift */; };
 		5A191B96216A8561008CC5F0 /* Canvas+Layers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A191B95216A8561008CC5F0 /* Canvas+Layers.swift */; };
+		5A7BE850218A1C980016B99A /* CGPoint+RelativeLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */; };
+		5AE1820D218BEB0D000EF323 /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */; };
+		5AE1820F218BEB2E000EF323 /* Canvas+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE1820E218BEB2E000EF323 /* Canvas+Color.swift */; };
+		5AE18211218BEEB3000EF323 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE18210218BEEB3000EF323 /* Helpers.swift */; };
 		5AE19D5F216BD2550051CDAE /* Brush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE19D5E216BD2550051CDAE /* Brush.swift */; };
 		5AE19D61216BD2C10051CDAE /* Canvas+Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE19D60216BD2C10051CDAE /* Canvas+Paths.swift */; };
 		6FE4779B983A092903794F1A92F85CB3 /* Pods-Canvas_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDC9BCD2B5053C08924D62136FDB582 /* Pods-Canvas_Tests-dummy.m */; };
@@ -56,6 +60,10 @@
 		5A191B91216A7BB0008CC5F0 /* Canvas+Touch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Touch.swift"; path = "Canvas/Classes/Canvas+Touch.swift"; sourceTree = "<group>"; };
 		5A191B93216A7DDD008CC5F0 /* Canvas+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Other.swift"; path = "Canvas/Classes/Canvas+Other.swift"; sourceTree = "<group>"; };
 		5A191B95216A8561008CC5F0 /* Canvas+Layers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Layers.swift"; path = "Canvas/Classes/Canvas+Layers.swift"; sourceTree = "<group>"; };
+		5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CGPoint+RelativeLocation.swift"; path = "Canvas/Classes/CGPoint+RelativeLocation.swift"; sourceTree = "<group>"; };
+		5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIColor+RGB.swift"; path = "Canvas/Classes/UIColor+RGB.swift"; sourceTree = "<group>"; };
+		5AE1820E218BEB2E000EF323 /* Canvas+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Color.swift"; path = "Canvas/Classes/Canvas+Color.swift"; sourceTree = "<group>"; };
+		5AE18210218BEEB3000EF323 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Helpers.swift; path = Canvas/Classes/Helpers.swift; sourceTree = "<group>"; };
 		5AE19D5E216BD2550051CDAE /* Brush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Brush.swift; path = Canvas/Classes/Brush.swift; sourceTree = "<group>"; };
 		5AE19D60216BD2C10051CDAE /* Canvas+Paths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Paths.swift"; path = "Canvas/Classes/Canvas+Paths.swift"; sourceTree = "<group>"; };
 		64AD4ECCF677EC2AE12A0DAB5F52B6F6 /* Pods-Canvas_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-Canvas_Tests.modulemap"; sourceTree = "<group>"; };
@@ -171,11 +179,15 @@
 				5A191B95216A8561008CC5F0 /* Canvas+Layers.swift */,
 				5A191B93216A7DDD008CC5F0 /* Canvas+Other.swift */,
 				5AE19D60216BD2C10051CDAE /* Canvas+Paths.swift */,
+				5AE1820E218BEB2E000EF323 /* Canvas+Color.swift */,
 				5A191B85216A75E3008CC5F0 /* CanvasLayer.swift */,
 				5AE19D5E216BD2550051CDAE /* Brush.swift */,
 				5A191B8F216A7B6F008CC5F0 /* Node.swift */,
 				5A191B89216A76A2008CC5F0 /* Enums.swift */,
 				5A191B8B216A76D4008CC5F0 /* CanvasEvents.swift */,
+				5AE18210218BEEB3000EF323 /* Helpers.swift */,
+				5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */,
+				5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
 				4EAF8B9810D832A8FA7B2CC9547EB64D /* Support Files */,
 			);
@@ -379,12 +391,16 @@
 				89BCF01696FBF00B6D964FFE23176FD5 /* Canvas-dummy.m in Sources */,
 				5AE19D5F216BD2550051CDAE /* Brush.swift in Sources */,
 				5A191B86216A75E3008CC5F0 /* CanvasLayer.swift in Sources */,
+				5AE1820D218BEB0D000EF323 /* UIColor+RGB.swift in Sources */,
+				5AE1820F218BEB2E000EF323 /* Canvas+Color.swift in Sources */,
 				5A191B96216A8561008CC5F0 /* Canvas+Layers.swift in Sources */,
+				5A7BE850218A1C980016B99A /* CGPoint+RelativeLocation.swift in Sources */,
 				5A191B90216A7B6F008CC5F0 /* Node.swift in Sources */,
 				5A191B92216A7BB0008CC5F0 /* Canvas+Touch.swift in Sources */,
 				5A191B88216A7679008CC5F0 /* Canvas.swift in Sources */,
 				5A191B94216A7DDD008CC5F0 /* Canvas+Other.swift in Sources */,
 				5A191B8A216A76A2008CC5F0 /* Enums.swift in Sources */,
+				5AE18211218BEEB3000EF323 /* Helpers.swift in Sources */,
 				5AE19D61216BD2C10051CDAE /* Canvas+Paths.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

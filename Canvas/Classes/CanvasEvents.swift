@@ -19,4 +19,8 @@ public protocol CanvasEvents {
     
     /** Called when you lift your finger off of the canvas. */
     func didFinishDrawing(on canvas: Canvas)
+    
+    
+    /** Called when a color is sampled using the eyedropper tool. */
+    func didSampleColor(on canvas: Canvas, sampledColor color: UIColor)
 }

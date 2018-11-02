@@ -34,7 +34,7 @@ public class Canvas: UIView {
     internal var _currentBrush: Brush = Brush.Default
     
     /** The current tool that is being used to draw. */
-    internal var _currentTool: CanvasTool = CanvasTool.rectangle
+    internal var _currentTool: CanvasTool = CanvasTool.pen
     
     
     
@@ -43,7 +43,17 @@ public class Canvas: UIView {
     /** Events delegate. */
     public var delegate: CanvasEvents?
     
+    /** The brush that is currently being used to style drawings. */
+    public var currentBrush: Brush {
+        set { _currentBrush = newValue }
+        get { return _currentBrush }
+    }
     
+    /** The tool that is currently being used to draw on the canvas. */
+    public var currentTool: CanvasTool {
+        set { _currentTool = newValue }
+        get { return _currentTool }
+    }
     
     
     
@@ -133,7 +143,7 @@ public class Canvas: UIView {
     }
     
     private func drawRaster(layer: CanvasLayer, _ rect: CGRect) {
-        guard let context = UIGraphicsGetCurrentContext() else { print("something"); return }
+        guard let context = UIGraphicsGetCurrentContext() else { return }
         
         // Create a CGContext to draw all of the lines on that layer.
         for node in layer.drawings {
