@@ -27,4 +27,13 @@ public protocol CanvasEvents {
     
     /** Called when you paint one or more nodes. */
     func didPaintNodes(on canvas: Canvas, nodes: [Node], strokeColor: UIColor, fillColor: UIColor?)
+    
+    
+    /** Called when you undo an action. */
+    func didUndo(on canvas: Canvas)
+    
+    
+    /** Called when you redo an action. */
+    func didRedo(on canvas: Canvas)
+    
 }

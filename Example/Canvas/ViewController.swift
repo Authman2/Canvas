@@ -195,17 +195,22 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     func didFinishDrawing(on canvas: Canvas) {
-//        canvas.currentTool = .paint
-        canvas.currentBrush.opacity = 0.4
-        print("Switched to eraser")
     }
     
     func didSampleColor(on canvas: Canvas, sampledColor color: UIColor) {
-        print("Sampled color: \(color.rgba)")
+        
     }
     
     func didPaintNodes(on canvas: Canvas, nodes: [Node], strokeColor: UIColor, fillColor: UIColor?) {
-        print("Painted nodes: \(nodes) with color: \(strokeColor.rgba)")
+        
+    }
+    
+    func didUndo(on canvas: Canvas) {
+        
+    }
+    
+    func didRedo(on canvas: Canvas) {
+        
     }
     
     
@@ -217,11 +222,16 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
      ************************/
     
     @objc func newColor() {
-        
+        let colors: [UIColor] = [.green, .blue, .red, .purple, .black]
+        let rand = Int(arc4random_uniform(UInt32(colors.count)))
+        let nColor = colors[rand]
+        canvas.currentBrush.strokeColor = nColor
     }
     
     @objc func newTool() {
-        
+        let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .ellipse, .eyedropper, .paint]
+        let rand = Int(arc4random_uniform(UInt32(tools.count)))
+        canvas.currentTool = tools[rand]
     }
     
     @objc func selectTool() {
@@ -229,23 +239,26 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     @objc func undo() {
-        
+        canvas.undo()
     }
     
     @objc func redo() {
-        
+        canvas.redo()
     }
     
     @objc func clear() {
-        
+        canvas.clear()
     }
     
     @objc func addLayer() {
-        alert(title: "New Layer", message: "Added a new layer to the canvas.")
+        let rand = Int(arc4random_uniform(UInt32(2)))
+        let layer = CanvasLayer(type: rand == 0 ? .raster : .vector)
+        canvas.addLayer(newLayer: layer, position: .above)
     }
     
     @objc func switchLayer() {
-        
+        let rand = Int(arc4random_uniform(UInt32(canvas.canvasLayers.count)))
+        canvas.switchLayer(to: rand)
     }
     
     @objc func importImage() {
@@ -263,18 +276,8 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     @objc func exportImage() {
-        
-        // Alert export success.
-        alert(title: "Exported!", message: "Your drawing has been saved to the photo album.")
-    }
-    
-    
-    
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else { return }
-        
-        self.dismiss(animated: true, completion: nil)
+        let exp = canvas.export()
+        UIImageWriteToSavedPhotosAlbum(exp, nil, nil, nil)
     }
     
     

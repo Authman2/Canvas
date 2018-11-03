@@ -45,7 +45,7 @@ public class Node {
      *                      *
      ************************/
     
-    init(type: CanvasTool) {
+    public init(type: CanvasTool) {
         self.type = type
     }
     

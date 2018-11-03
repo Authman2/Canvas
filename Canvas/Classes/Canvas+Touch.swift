@@ -21,6 +21,14 @@ extension Canvas {
         
         if let next = nextNode {
             currLayer.drawings.append(next)
+            
+            // Undo/Redo.
+            undoRedoManager.add(undo: {
+                currLayer.drawings.removeLast()
+            }, redo: {
+                currLayer.drawings.append(next)
+            })
+            undoRedoManager.clearRedos()
         } else {
 
             // Some tools do not produce nodes, so handle their actions differently here.
@@ -33,8 +41,19 @@ extension Canvas {
                 for node in currLayer.drawings {
                     // Base case: the line tool.
                     if node.type == .line {
+                        let lastColor = node.brush.strokeColor
                         node.brush.strokeColor = self._currentBrush.strokeColor
                         painted.append(node)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            node.brush.strokeColor = lastColor
+                        }, redo: {
+                            let newColor = self._currentBrush.strokeColor
+                            node.brush.strokeColor = newColor
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
                         continue
                     }
                     
@@ -57,7 +76,19 @@ extension Canvas {
                         var exit: Bool = false
                         for pt in points {
                             if pt.inRange(of: currentPoint, by: 5.0) {
+                                let lastColor = node.brush.strokeColor
                                 node.brush.strokeColor = self._currentBrush.strokeColor
+                                
+                                // Undo/Redo.
+                                undoRedoManager.add(undo: {
+                                    node.brush.strokeColor = lastColor
+                                }, redo: {
+                                    let newColor = self._currentBrush.strokeColor
+                                    node.brush.strokeColor = newColor
+                                    return nil
+                                })
+                                undoRedoManager.clearRedos()
+                                
                                 exit = true
                                 break
                             }
@@ -66,10 +97,22 @@ extension Canvas {
                             painted.append(node)
                             continue
                         }
+                        let lastColor = node.brush.fillColor
                         node.brush.fillColor = self._currentBrush.fillColor
                         painted.append(node)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            node.brush.fillColor = lastColor
+                        }, redo: {
+                            let newColor = self._currentBrush.fillColor
+                            node.brush.fillColor = newColor
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
                     }
                 }
+                
                 self.delegate?.didPaintNodes(on: self, nodes: painted, strokeColor: self.currentBrush.strokeColor, fillColor: self.currentBrush.fillColor)
                 break
             default:
@@ -187,10 +230,25 @@ extension Canvas {
                     let point = averagesForNode[i]
                     
                     if point.inRange(of: currentPoint, by: 5.0) {
-                        if i < touchingNodes[key as? Int ?? 0].points.count {
+                        if i < 0 || i >= touchingNodes[key as? Int ?? 0].points.count { continue }
+                        
+                        let savedP = touchingNodes[key as? Int ?? 0].points[i]
+                        let savedI = touchingNodes[key as? Int ?? 0].instructions[i]
+                        
+                        touchingNodes[key as? Int ?? 0].points.remove(at: i)
+                        touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            touchingNodes[key as? Int ?? 0].points.insert(savedP, at: i)
+                            touchingNodes[key as? Int ?? 0].instructions.insert(savedI, at: i)
+                            return nil
+                        }, redo: {
                             touchingNodes[key as? Int ?? 0].points.remove(at: i)
                             touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
-                        }
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
                     }
                 }
             }

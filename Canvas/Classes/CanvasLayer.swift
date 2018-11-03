@@ -39,7 +39,10 @@ public class CanvasLayer {
     
     // -- COMPUTED PROPERTIES
     
-    
+    /** The number of nodes (drawings) on this layer. */
+    public var nodeCount: Int {
+        return self.drawings.count
+    }
     
     
     
@@ -52,7 +55,7 @@ public class CanvasLayer {
      *                      *
      ************************/
     
-    init(type: LayerType) {
+    public init(type: LayerType) {
         self.type = type
     }
     
@@ -65,6 +68,22 @@ public class CanvasLayer {
      *       FUNCTIONS      *
      *                      *
      ************************/
+    
+    /** Clears the drawing on this layer. */
+    public func clear(from canvas: Canvas) {
+        drawings = []
+        canvas.setNeedsDisplay()
+    }
+    
+    
+    /** Adds a new node (drawing) to this layer. */
+    public func add(node: Node, on canvas: Canvas) {
+        drawings.append(node)
+        canvas.setNeedsDisplay()
+    }
+    
+    
+    
     
     
     
