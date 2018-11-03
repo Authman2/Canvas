@@ -23,4 +23,8 @@ public protocol CanvasEvents {
     
     /** Called when a color is sampled using the eyedropper tool. */
     func didSampleColor(on canvas: Canvas, sampledColor color: UIColor)
+    
+    
+    /** Called when you paint one or more nodes. */
+    func didPaintNodes(on canvas: Canvas, nodes: [Node], color: UIColor)
 }

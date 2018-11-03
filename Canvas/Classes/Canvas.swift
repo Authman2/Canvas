@@ -136,10 +136,10 @@ public class Canvas: UIView {
         context.setLineCap(self._currentBrush.shape)
         context.setLineJoin(self._currentBrush.joinStyle)
         context.setLineWidth(self._currentBrush.thickness)
-        context.setStrokeColor(self._currentBrush.color.cgColor)
-        context.setBlendMode(.normal)
+        context.setStrokeColor(next.strokeColor?.cgColor ?? self._currentBrush.color.cgColor)
         context.setMiterLimit(self._currentBrush.miter)
         context.setAlpha(self._currentBrush.opacity)
+        context.setBlendMode(.normal)
         context.strokePath()
     }
     
@@ -155,11 +155,15 @@ public class Canvas: UIView {
             context.setLineCap(self._currentBrush.shape)
             context.setLineJoin(self._currentBrush.joinStyle)
             context.setLineWidth(self._currentBrush.thickness)
-            context.setStrokeColor(self._currentBrush.color.cgColor)
-            context.setBlendMode(.normal)
             context.setMiterLimit(self._currentBrush.miter)
             context.setAlpha(self._currentBrush.opacity)
-            context.strokePath()
+            context.setBlendMode(.normal)
+            
+            context.setFillColor(node.fillColor?.cgColor ?? UIColor.clear.cgColor)
+            context.setStrokeColor(node.strokeColor?.cgColor ?? _currentBrush.color.cgColor)
+            context.drawPath(using: CGPathDrawingMode.eoFillStroke)
+            
+//            context.stroke(path.boundingBox)
         }
     }
     
@@ -169,11 +173,11 @@ public class Canvas: UIView {
             let shapeLayer = CAShapeLayer()
             shapeLayer.bounds = path.boundingBox
             shapeLayer.path = path
-            //        shapeLayer.backgroundColor = UIColor.orange.cgColor
-            shapeLayer.strokeColor = self._currentBrush.color.cgColor
+//            shapeLayer.backgroundColor = UIColor.orange.cgColor
+            shapeLayer.strokeColor = node.strokeColor?.cgColor ?? self._currentBrush.color.cgColor
             shapeLayer.fillRule = kCAFillRuleEvenOdd
             shapeLayer.fillMode = kCAFillModeBoth
-            shapeLayer.fillColor = nil
+            shapeLayer.fillColor = node.fillColor?.cgColor ?? nil
             shapeLayer.opacity = Float(self._currentBrush.opacity)
             shapeLayer.lineWidth = self._currentBrush.thickness
             shapeLayer.miterLimit = self._currentBrush.miter
