@@ -56,6 +56,8 @@ public class Canvas: UIView {
         get { return _currentTool }
     }
     
+    /** The action to use for the eyedropper: set stroke or fill color. */
+    public var eyedropperOptions: EyedropperOptions = .stroke
     
     
     
@@ -120,6 +122,7 @@ public class Canvas: UIView {
         // 2.) Go through each layer and render it using either raster or vector graphics.
         for i in (0..<self._canvasLayers.count).reversed() {
             let layer = self._canvasLayers[i]
+            if layer.isVisible == false { continue }
             
             if layer.type == .raster {
                 drawRaster(layer: layer, rect)
@@ -136,7 +139,7 @@ public class Canvas: UIView {
         context.setLineCap(self._currentBrush.shape)
         context.setLineJoin(self._currentBrush.joinStyle)
         context.setLineWidth(self._currentBrush.thickness)
-        context.setStrokeColor(next.strokeColor?.cgColor ?? self._currentBrush.color.cgColor)
+        context.setStrokeColor(self.currentBrush.strokeColor.cgColor)
         context.setMiterLimit(self._currentBrush.miter)
         context.setAlpha(self._currentBrush.opacity)
         context.setBlendMode(.normal)
@@ -152,15 +155,15 @@ public class Canvas: UIView {
             let path = build(from: node.points, using: node.instructions, tool: node.type)
             
             context.addPath(path)
-            context.setLineCap(self._currentBrush.shape)
-            context.setLineJoin(self._currentBrush.joinStyle)
-            context.setLineWidth(self._currentBrush.thickness)
-            context.setMiterLimit(self._currentBrush.miter)
-            context.setAlpha(self._currentBrush.opacity)
+            context.setLineCap(node.brush.shape)
+            context.setLineJoin(node.brush.joinStyle)
+            context.setLineWidth(node.brush.thickness)
+            context.setMiterLimit(node.brush.miter)
+            context.setAlpha(node.brush.opacity)
             context.setBlendMode(.normal)
             
-            context.setFillColor(node.fillColor?.cgColor ?? UIColor.clear.cgColor)
-            context.setStrokeColor(node.strokeColor?.cgColor ?? _currentBrush.color.cgColor)
+            context.setFillColor(node.brush.fillColor?.cgColor ?? UIColor.clear.cgColor)
+            context.setStrokeColor(node.brush.strokeColor.cgColor)
             context.drawPath(using: CGPathDrawingMode.eoFillStroke)
             
 //            context.stroke(path.boundingBox)
@@ -174,10 +177,10 @@ public class Canvas: UIView {
             shapeLayer.bounds = path.boundingBox
             shapeLayer.path = path
 //            shapeLayer.backgroundColor = UIColor.orange.cgColor
-            shapeLayer.strokeColor = node.strokeColor?.cgColor ?? self._currentBrush.color.cgColor
+            shapeLayer.strokeColor = node.brush.strokeColor.cgColor
             shapeLayer.fillRule = kCAFillRuleEvenOdd
             shapeLayer.fillMode = kCAFillModeBoth
-            shapeLayer.fillColor = node.fillColor?.cgColor ?? nil
+            shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
             shapeLayer.opacity = Float(self._currentBrush.opacity)
             shapeLayer.lineWidth = self._currentBrush.thickness
             shapeLayer.miterLimit = self._currentBrush.miter

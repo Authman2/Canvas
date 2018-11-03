@@ -30,7 +30,11 @@ public extension Canvas {
             
             let color = UIColor(red: r, green: g, blue: b, alpha: a)
             var nBrush: Brush = self._currentBrush
-            nBrush.color = color
+            if self.eyedropperOptions == .stroke {
+                nBrush.strokeColor = color
+            } else {
+                nBrush.fillColor = color
+            }
             self._currentBrush = nBrush
             self.delegate?.didSampleColor(on: self, sampledColor: color)
         }

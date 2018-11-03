@@ -195,8 +195,8 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     func didFinishDrawing(on canvas: Canvas) {
-        canvas.currentTool = .paint
-        canvas.currentBrush.color = .green
+//        canvas.currentTool = .paint
+        canvas.currentBrush.opacity = 0.4
         print("Switched to eraser")
     }
     
@@ -204,8 +204,8 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         print("Sampled color: \(color.rgba)")
     }
     
-    func didPaintNodes(on canvas: Canvas, nodes: [Node], color: UIColor) {
-        print("Painted nodes: \(nodes) with color: \(color.rgba)")
+    func didPaintNodes(on canvas: Canvas, nodes: [Node], strokeColor: UIColor, fillColor: UIColor?) {
+        print("Painted nodes: \(nodes) with color: \(strokeColor.rgba)")
     }
     
     

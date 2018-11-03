@@ -43,3 +43,10 @@ public enum RelativePointPosition: Int {
     case lowerRight = 2
     case lowerLeft = 3
 }
+
+
+/** Defines how the eyedropper tool should pick up colors: either by setting the stroke color or the fill color. */
+public enum EyedropperOptions {
+    case stroke
+    case fill
+}

@@ -30,11 +30,8 @@ public class Node {
     /** The instructions used to draw the points. */
     public var instructions: [CGPathElementType] = []
     
-    /** The color that this node should be filled with. */
-    public var fillColor: UIColor?
-    
-    /** The color that this node should be stroked with. */
-    public var strokeColor: UIColor?
+    /** The brush that this node uses for styling. */
+    public var brush: Brush = .Default
     
     
     // -- COMPUTED PROPERTIES

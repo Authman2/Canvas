@@ -26,5 +26,5 @@ public protocol CanvasEvents {
     
     
     /** Called when you paint one or more nodes. */
-    func didPaintNodes(on canvas: Canvas, nodes: [Node], color: UIColor)
+    func didPaintNodes(on canvas: Canvas, nodes: [Node], strokeColor: UIColor, fillColor: UIColor?)
 }

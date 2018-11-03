@@ -33,7 +33,7 @@ extension Canvas {
                 for node in currLayer.drawings {
                     // Base case: the line tool.
                     if node.type == .line {
-                        node.strokeColor = self._currentBrush.color
+                        node.brush.strokeColor = self._currentBrush.strokeColor
                         painted.append(node)
                         continue
                     }
@@ -57,7 +57,7 @@ extension Canvas {
                         var exit: Bool = false
                         for pt in points {
                             if pt.inRange(of: currentPoint, by: 5.0) {
-                                node.strokeColor = self._currentBrush.color
+                                node.brush.strokeColor = self._currentBrush.strokeColor
                                 exit = true
                                 break
                             }
@@ -66,11 +66,11 @@ extension Canvas {
                             painted.append(node)
                             continue
                         }
-                        node.fillColor = self._currentBrush.color
+                        node.brush.fillColor = self._currentBrush.fillColor
                         painted.append(node)
                     }
                 }
-                self.delegate?.didPaintNodes(on: self, nodes: painted, color: self.currentBrush.color)
+                self.delegate?.didPaintNodes(on: self, nodes: painted, strokeColor: self.currentBrush.strokeColor, fillColor: self.currentBrush.fillColor)
                 break
             default:
                 break
@@ -101,6 +101,7 @@ extension Canvas {
         guard let touch = touches.first else { return }
         guard let allTouches = event?.allTouches else { return }
         if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
         // 1.) Set up the touch points.
         currentPoint = touch.location(in: self)
@@ -111,7 +112,7 @@ extension Canvas {
         // 2.) Create a new node that will be placed on the canvas.
         if _currentTool != .eyedropper && _currentTool != .eraser && _currentTool != .paint {
             nextNode = Node(type: self._currentTool)
-            nextNode?.strokeColor = self._currentBrush.color
+            nextNode?.brush = currentBrush
             nextNode?.points.append([currentPoint])
             nextNode?.instructions.append(CGPathElementType.moveToPoint)
         }
@@ -126,6 +127,7 @@ extension Canvas {
         guard let touch = touches.first else { return }
         guard let allTouches = event?.allTouches else { return }
         if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
         // 1.) Update the touch points.
         currentPoint = touch.location(in: self)
@@ -230,6 +232,7 @@ extension Canvas {
         let currLayer = self._canvasLayers[self._currentCanvasLayer]
         guard let allTouches = event?.allTouches else { return }
         if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
         finishDrawing()
     }
@@ -239,6 +242,7 @@ extension Canvas {
         let currLayer = self._canvasLayers[self._currentCanvasLayer]
         guard let allTouches = event?.allTouches else { return }
         if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
         finishDrawing()
     }

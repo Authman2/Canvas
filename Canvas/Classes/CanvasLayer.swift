@@ -28,6 +28,14 @@ public class CanvasLayer {
     
     // -- PUBLIC VARS
     
+    /** Whether or not this layer is visible. */
+    public var isVisible: Bool = true
+    
+    /** Whether or not this layer allows drawing. */
+    public var allowsDrawing: Bool = true
+    
+    
+    
     
     // -- COMPUTED PROPERTIES
     

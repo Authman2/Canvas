@@ -16,8 +16,11 @@ public struct Brush {
      *                      *
      ************************/
     
-    /** The color of the brush. */
-    public var color: UIColor
+    /** The stroke color of the brush. */
+    public var strokeColor: UIColor
+    
+    /** The fill color of the brush. */
+    public var fillColor: UIColor?
     
     /** The thickness of the brush. */
     public var thickness: CGFloat
@@ -50,7 +53,8 @@ public struct Brush {
     /** A default Brush to use. */
     public static let Default: Brush = {
         var a = Brush()
-        a.color = .black
+        a.strokeColor = .black
+        a.fillColor = nil
         a.thickness = 5
         a.opacity = 1
         a.miter = 1
@@ -72,7 +76,8 @@ public struct Brush {
     
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public init() {
-        color = UIColor.black
+        strokeColor = UIColor.black
+        fillColor = nil
         thickness = 2
         opacity = 1
         miter = 1
