@@ -159,6 +159,21 @@ extension Canvas {
             nextNode?.points.append([currentPoint])
             nextNode?.instructions.append(CGPathElementType.moveToPoint)
         }
+        if _currentTool == .selection && currLayer.selectedNodes.count > 0 {
+            var atLeastOne: Bool = false
+            for node in currLayer.selectedNodes {
+                let path = build(from: node.points, using: node.instructions, tool: node.type)
+                if path.boundingBox.contains(currentPoint) {
+                    atLeastOne = true
+                    break
+                }
+            }
+            if atLeastOne == false {
+                currLayer.selectedNodes.removeAll()
+                nextNode = nil
+                setNeedsDisplay()
+            }
+        }
         
         // 3.) Call delegate method.
         self.delegate?.willBeginDrawing(on: self)
@@ -288,25 +303,41 @@ extension Canvas {
                 next.points.append([tempFirst, currentPoint])
                 next.instructions.append(CGPathElementType.addLineToPoint)
             } else {
+                nextNode = nil
+                
+                var containsAtLeastOne: Bool = false
                 for node in currLayer.selectedNodes {
                     // See if the current point is within the node's bounding box.
                     let path = build(from: node.points, using: node.instructions, tool: node.type)
-                    if !path.boundingBox.contains(currentPoint) { continue }
-                    
-                    // Move the points by the selection translation amount.
-                    let nPoints = node.points.map { (points: [CGPoint]) -> [CGPoint] in
-                        var nP = points
-                        for i in 0..<points.count {
-                            nP[i].x += touch.deltaX
-                            nP[i].y += touch.deltaY
+                    if path.boundingBox.contains(currentPoint) {
+                        containsAtLeastOne = true
+                        break
+                    }
+                }
+                
+                // Make sure the touch is within at least one bounding box.
+                if containsAtLeastOne == true {
+                    for node in currLayer.selectedNodes {
+                        // Move the points by the selection translation amount.
+                        let nPoints = node.points.map { (points: [CGPoint]) -> [CGPoint] in
+                            var nP = points
+                            for i in 0..<points.count {
+                                nP[i].x += touch.deltaX
+                                nP[i].y += touch.deltaY
+                            }
+                            return nP
                         }
-                        return nP
+                    
+                        // Set the new points.
+                        node.points = nPoints
                     }
                     
-                    // Set the new points.
-                    print(node.points)
-                    node.points = nPoints
-                    print(node.points)
+                    // Delegate.
+                    self.delegate?.didMoveNodes(on: self, movedNodes: currLayer.selectedNodes)
+                } else {
+                    // Reset the selected nodes.
+                    currLayer.selectedNodes.removeAll()
+                    setNeedsDisplay()
                 }
             }
             break
@@ -338,9 +369,9 @@ extension Canvas {
                 let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
             
                 handleSelection(with: dest)
-                nextNode = nil
                 setNeedsDisplay()
             }
+            nextNode = nil
         } else {
             finishDrawing()
         }
@@ -354,16 +385,18 @@ extension Canvas {
         if currLayer.allowsDrawing == false { return }
         
         if _currentTool == .selection {
-            guard let next = nextNode else { return }
-            let first = next.points[0][0]
-            let last = next.points[0][1]
-            let w = last.x - first.x
-            let h = last.y - first.y
-            let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
-            
-            handleSelection(with: dest)
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let first = next.points[0][0]
+                let last = next.points[0][1]
+                let w = last.x - first.x
+                let h = last.y - first.y
+                let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
+                
+                handleSelection(with: dest)
+                setNeedsDisplay()
+            }
             nextNode = nil
-            setNeedsDisplay()
         } else {
             finishDrawing()
         }

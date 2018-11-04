@@ -376,20 +376,30 @@ public class Canvas: UIView {
         // 3.) Draw the temporary drawing.
         guard let next = nextNode else { return }
         guard let context = UIGraphicsGetCurrentContext() else { return }
-        let path = build(from: next.points, using: next.instructions, tool: next.type)
-        context.addPath(path)
-        context.setLineCap(self._currentBrush.shape)
-        context.setLineJoin(self._currentBrush.joinStyle)
-        context.setLineWidth(self._currentBrush.thickness)
-        context.setStrokeColor(self.currentBrush.strokeColor.cgColor)
-        context.setMiterLimit(self._currentBrush.miter)
-        context.setAlpha(self._currentBrush.opacity)
         if _currentTool == .selection {
+            let path = build(from: next.points, using: next.instructions, tool: next.type)
+            context.addPath(path)
+            context.setLineCap(.butt)
+            context.setLineJoin(.miter)
+            context.setStrokeColor(UIColor.black.cgColor)
+            context.setMiterLimit(1)
+            context.setAlpha(1)
             context.setLineWidth(1)
             context.setLineDash(phase: 0, lengths: [10, 10])
+            context.setBlendMode(.normal)
+            context.strokePath()
+        } else {
+            let path = build(from: next.points, using: next.instructions, tool: next.type)
+            context.addPath(path)
+            context.setLineCap(self._currentBrush.shape)
+            context.setLineJoin(self._currentBrush.joinStyle)
+            context.setLineWidth(self._currentBrush.thickness)
+            context.setStrokeColor(self.currentBrush.strokeColor.cgColor)
+            context.setMiterLimit(self._currentBrush.miter)
+            context.setAlpha(self._currentBrush.opacity)
+            context.setBlendMode(.normal)
+            context.strokePath()
         }
-        context.setBlendMode(.normal)
-        context.strokePath()
     }
     
     private func drawRaster(layer: CanvasLayer, _ rect: CGRect) {
@@ -458,7 +468,9 @@ public class Canvas: UIView {
             nPos.y += path.boundingBox.height / 2
             shapeLayer.position = nPos
             
-            self.layer.addSublayer(shapeLayer)
+//            self.layer.addSublayer(shapeLayer)
+            let insertIndex = self._currentCanvasLayer == 0 ? 0 : self._currentCanvasLayer
+            self.layer.insertSublayer(shapeLayer, at: UInt32(insertIndex))
         }
     }
     

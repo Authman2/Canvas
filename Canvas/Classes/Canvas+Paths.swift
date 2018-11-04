@@ -10,10 +10,13 @@ import Foundation
 /** Builds and returns a CGMutablePath from a set of points and instructions. */
 public func build(from points: [[CGPoint]], using instructions: [CGPathElementType], tool: CanvasTool) -> CGMutablePath {
     let mutablePath = CGMutablePath()
+    if points.count == 0 { return mutablePath }
+    if points[0].count == 0 { return mutablePath }
+    
     mutablePath.move(to: points[0][0])
     
     // Handle rectangles and ellipses.
-    if tool == .rectangle || tool == .ellipse {
+    if tool == .rectangle || tool == .ellipse || tool == .selection {
         let first = points[0][0]
         let last = points[0][1]
         let w = last.x - first.x

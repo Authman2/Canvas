@@ -44,4 +44,12 @@ public protocol CanvasEvents {
     /** Called when nodes are pasted. */
     func didPasteNodes(on canvas: Canvas, on layer: CanvasLayer, nodes: [Node])
     
+    
+    /** Called when one or more nodes are selected. */
+    func didSelectNodes(on canvas: Canvas, on layer: CanvasLayer, selectedNodes: [Node])
+    
+    
+    /** Called when nodes change position (i.e. when they are moved) on the canvas. */
+    func didMoveNodes(on canvas: Canvas, movedNodes: [Node])
+    
 }

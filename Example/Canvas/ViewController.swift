@@ -194,9 +194,7 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     func didFinishDrawing(on canvas: Canvas) {
-        if canvas.canvasLayers[0].nodeCount >= 4 {
-            canvas.currentTool = .selection
-        }
+        
     }
     
     func didSampleColor(on canvas: Canvas, sampledColor color: UIColor) {
@@ -223,7 +221,13 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         
     }
     
+    func didSelectNodes(on canvas: Canvas, on layer: CanvasLayer, selectedNodes: [Node]) {
+        
+    }
     
+    func didMoveNodes(on canvas: Canvas, movedNodes: [Node]) {
+        
+    }
     
     
     
@@ -245,10 +249,11 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         let tools: [CanvasTool] = [.pen, .eraser, .line, .rectangle, .ellipse, .eyedropper, .paint]
         let rand = Int(arc4random_uniform(UInt32(tools.count)))
         canvas.currentTool = tools[rand]
+        print("tool: \(canvas.currentTool)")
     }
     
     @objc func selectTool() {
-        
+        canvas.currentTool = .selection
     }
     
     @objc func undo() {

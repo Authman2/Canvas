@@ -50,6 +50,9 @@ extension Canvas {
                 currLayer.selectedNodes.append(node)
             }
         }
+        
+        // Delegate.
+        self.delegate?.didSelectNodes(on: self, on: currLayer, selectedNodes: currLayer.selectedNodes)
     }
     
     
