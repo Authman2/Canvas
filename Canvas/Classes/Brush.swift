@@ -2,14 +2,13 @@
 //  Brush.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 2/10/18.
+//  Created by Adeola Uthman on 10/8/18.
 //
 
 import Foundation
 
-
 /** A Brush defines the styling for how things should be drawn on the canvas. */
-public struct Brush: Codable {
+public struct Brush {
     
     /************************
      *                      *
@@ -17,8 +16,11 @@ public struct Brush: Codable {
      *                      *
      ************************/
     
-    /** The color of the brush. */
-    public var color: UIColor
+    /** The stroke color of the brush. */
+    public var strokeColor: UIColor
+    
+    /** The fill color of the brush. */
+    public var fillColor: UIColor?
     
     /** The thickness of the brush. */
     public var thickness: CGFloat
@@ -51,7 +53,8 @@ public struct Brush: Codable {
     /** A default Brush to use. */
     public static let Default: Brush = {
         var a = Brush()
-        a.color = .black
+        a.strokeColor = .black
+        a.fillColor = nil
         a.thickness = 5
         a.opacity = 1
         a.miter = 1
@@ -71,22 +74,10 @@ public struct Brush: Codable {
      *                      *
      ************************/
     
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: BrushCodingKeys.self)
-        let colors = try container.decodeIfPresent([CGFloat].self, forKey: BrushCodingKeys.brushColor) ?? [0,0,0,0]
-        color = UIColor(red: colors[0], green: colors[1], blue: colors[2], alpha: colors[3])
-        thickness = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushThickness) ?? 5
-        opacity = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushOpacity) ?? 1
-        miter = try container.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.brushMiter) ?? 1
-        let s = try container.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.brushShape) ?? CGLineCap.round.rawValue
-        let j = try container.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.brushJoinStyle) ?? CGLineJoin.round.rawValue
-        shape = CGLineCap(rawValue: s) ?? .round
-        joinStyle = CGLineJoin(rawValue: j) ?? .round
-    }
-    
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public init() {
-        color = UIColor.black
+        strokeColor = UIColor.black
+        fillColor = nil
         thickness = 2
         opacity = 1
         miter = 1
@@ -102,15 +93,5 @@ public struct Brush: Codable {
      *       FUNCTIONS      *
      *                      *
      ************************/
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: BrushCodingKeys.self)
-        try container.encode(color.rgba, forKey: BrushCodingKeys.brushColor)
-        try container.encode(thickness, forKey: BrushCodingKeys.brushThickness)
-        try container.encode(opacity, forKey: BrushCodingKeys.brushOpacity)
-        try container.encode(miter, forKey: BrushCodingKeys.brushMiter)
-        try container.encode(shape.rawValue, forKey: BrushCodingKeys.brushShape)
-        try container.encode(joinStyle.rawValue, forKey: BrushCodingKeys.brushJoinStyle)
-    }
     
 }

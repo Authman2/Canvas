@@ -2,151 +2,69 @@
 //  Canvas+Other.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 2/10/18.
+//  Created by Adeola Uthman on 10/7/18.
 //
 
 import Foundation
 
-public extension Canvas {
+extension Canvas {
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    internal func drawTemporaryPen() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard let node = nextNode else { return }
-        
-        context.addPath(node.mutablePath)
-        context.setLineCap(currentBrush.shape)
-        context.setLineJoin(currentBrush.joinStyle)
-        context.setLineWidth(currentBrush.thickness)
-        context.setStrokeColor(currentBrush.color.cgColor)
-        context.setBlendMode(.normal)
-        context.setMiterLimit(currentBrush.miter)
-        context.setAlpha(currentBrush.opacity)
-        context.strokePath()
-    }
+    /************************
+     *                      *
+     *       VARIABLES      *
+     *                      *
+     ************************/
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    func drawTemporaryEraser() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard let node = nextNode else { return }
-        
-        context.addPath(node.mutablePath)
-        context.setLineCap(currentBrush.shape)
-        context.setLineJoin(currentBrush.joinStyle)
-        context.setLineWidth(currentBrush.thickness)
-        context.setStrokeColor(UIColor.blue.cgColor)
-        context.setBlendMode(.normal)
-        context.setMiterLimit(currentBrush.miter)
-        context.setAlpha(currentBrush.opacity)
-        context.strokePath()
-    }
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    func drawTemporaryLine() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard var node = nextNode else { return }
-        
-        context.setLineCap(currentBrush.shape)
-        context.setLineJoin(currentBrush.joinStyle)
-        context.setLineWidth(currentBrush.thickness)
-        context.setStrokeColor(currentBrush.color.cgColor)
-        context.setMiterLimit(currentBrush.miter)
-        context.setAlpha(currentBrush.opacity)
-        
-        node.lastPoint = currentPoint
-        context.move(to: node.firstPoint)
-        context.addLine(to: node.lastPoint)
-        
-        context.strokePath()
-    }
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    func drawTemporaryRectangle() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard var node = nextNode else { return }
-        
-        context.setLineCap(currentBrush.shape)
-        context.setLineJoin(currentBrush.joinStyle)
-        context.setLineWidth(currentBrush.thickness)
-        context.setMiterLimit(currentBrush.miter)
-        context.setAlpha(currentBrush.opacity)
-        
-        // Stoke the outline of the shape.
-        node.lastPoint = currentPoint
-        node.setBoundingBox()
-        context.setStrokeColor(currentBrush.color.cgColor)
-        context.stroke(node.boundingBox)
-        
-        // If the shape has a fill color, color in the fill inside of the border.
-//        if let fill = node.fillColor {
-//            context.setFillColor(fill)
-//            context.fill(node.innerRect ?? node.boundingBox.insetBy(dx: currentBrush.thickness, dy: currentBrush.thickness))
-//        }
-    }
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    func drawTemporaryEllipse() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard var node = nextNode else { return }
+    
+    
+    /************************
+     *                      *
+     *         INIT         *
+     *                      *
+     ************************/
+    
+    
+    
+    
+    
+    /************************
+     *                      *
+     *       FUNCTIONS      *
+     *                      *
+     ************************/
+    
+    func handleSelection(with selectionArea: CGRect) {
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
+        if currLayer.allowsDrawing == false { return }
+        currLayer.selectedNodes.removeAll()
         
-        context.setLineCap(currentBrush.shape)
-        context.setLineJoin(currentBrush.joinStyle)
-        context.setLineWidth(currentBrush.thickness)
-        context.setMiterLimit(currentBrush.miter)
-        context.setAlpha(currentBrush.opacity)
+        // Find the nodes that are within the selection box.
+        for node in currLayer.drawings {
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            
+            if selectionArea.contains(path.boundingBox) {
+                currLayer.selectedNodes.append(node)
+            }
+        }
         
-        // Color the border.
-        node.lastPoint = currentPoint
-        node.setBoundingBox()
-        context.setStrokeColor(currentBrush.color.cgColor)
-        context.strokeEllipse(in: node.boundingBox)
-        
-        // If the shape has a fill color, color in the fill inside of the border.
-//        if let fill = node.fillColor {
-//            context.setFillColor(fill)
-//            context.fillEllipse(in: node.innerRect ?? node.boundingBox.insetBy(dx: currentBrush.thickness, dy: currentBrush.thickness))
-//        }
+        // Delegate.
+        self.delegate?.didSelectNodes(on: self, on: currLayer, selectedNodes: currLayer.selectedNodes)
     }
     
     
-    /** Draws the currently executing drawing path before it gets converted to svg. */
-    func drawTemporarySelection() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        guard var node = nextNode else { return }
-        
-        context.setLineCap(.square)
-        context.setLineJoin(.miter)
-        context.setLineWidth(1)
-        context.setMiterLimit(1)
-        context.setFlatness(1)
-        context.setAlpha(1)
-        context.setLineDash(phase: 0, lengths: [10, 10])
-        
-        // Stoke the outline of the shape.
-        node.lastPoint = currentPoint
-        node.setBoundingBox()
-        context.setStrokeColor(currentBrush.color.cgColor)
-        context.stroke(node.boundingBox)
-    }
     
     
-    /** Draws the selection area. */
-    func drawSelectionArea() {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
-        
-        context.setLineCap(.square)
-        context.setLineJoin(.miter)
-        context.setLineWidth(2)
-        context.setMiterLimit(1)
-        context.setFlatness(1)
-        context.setAlpha(1)
-        context.setLineDash(phase: 0, lengths: [10, 10])
-        
-        // Stoke the outline of the shape.
-        guard let currLayer = currentLayer else { return }
-        context.setStrokeColor(UIColor.red.cgColor)
-        context.stroke(currLayer.transformBox)
-    }
+    
+    
+    /************************
+     *                      *
+     *        LAYOUT        *
+     *                      *
+     ************************/
     
     
 }

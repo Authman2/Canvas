@@ -2,21 +2,13 @@
 //  Canvas.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 1/10/18.
+//  Created by Adeola Uthman on 10/7/18.
 //
 
 import Foundation
-// 1.) Fix eraser tool
-// 2.)
 
-/** The position to add a new layer on: above or below. */
-public enum LayerPosition {
-    case above
-    case below
-}
-
-/** A component that the user can draw on. */
-public class Canvas: UIView, Codable {
+/** An area of the screen that allows drawing. */
+public class Canvas: UIView {
     
     /************************
      *                      *
@@ -24,95 +16,78 @@ public class Canvas: UIView, Codable {
      *                      *
      ************************/
     
-    // -- PRIVATE VARS --
-    
-    /** The type of tool that is currently being used. */
-    internal var currentDrawingTool: CanvasTool! {
-        didSet {
-            if currentDrawingTool != .selection {
-                currentLayer?.selectedNodes = []
-            }
-        }
-    }
-    
-    /** The brush to use when drawing. */
-    internal var currentDrawingBrush: Brush!
+    // -- PRIVATE VARS
     
     /** The touch points. */
     internal var currentPoint: CGPoint = CGPoint()
     internal var lastPoint: CGPoint = CGPoint()
     internal var lastLastPoint: CGPoint = CGPoint()
+    internal var eraserStartPoint: CGPoint = CGPoint()
     
-    /** The different layers of the canvas. */
-    internal var layers: [CanvasLayer]!
-    internal var currentCanvasLayer: Int = 0
+    /** The next node to be drawn on the canvas. */
+    internal var nextNode: Node? = nil
     
-    /** Whether or not the canvas should create a default layer. */
-    internal var createDefaultLayer: Bool = true
+    /** A collection of the layers on this canvas. */
+    internal var _canvasLayers: [CanvasLayer] = []
+    internal var _currentCanvasLayer: Int = 0
     
-    /** The next node to draw. */
-    internal var nextNode: Node?
+    /** The current brush that is being used to style drawings. */
+    internal var _currentBrush: Brush = Brush.Default
+    
+    /** The current tool that is being used to draw. */
+    internal var _currentTool: CanvasTool = CanvasTool.pen
     
     /** The copied nodes. */
-    internal var copiedNodes: [Node]?
+    internal var _copiedNodes: [Node] = []
     
     
     
+    // -- PUBLIC VARS
     
-    // -- PUBLIC VARS --
+    /** Events delegate. */
+    public var delegate: CanvasEvents?
     
-    /** The delegate. */
-    public var delegate: CanvasDelegate?
-    
-    /** Whether or not the canvas should allow for multiple touches at a time. False by default. */
-    public var allowsMultipleTouches: Bool!
-    
-    /** A condition that, when true, will preempt any drawing when a touch occurs on the canvas. */
-    public var preemptTouch: Bool!
-    
-    /** The undo/redo manager. */
-    public var undoRedoManager: UndoRedoManager!
-    
-    /** An inner rectangle to draw on the canvas. */
-    public var innerRect: CGRect? {
-        didSet { self.setNeedsDisplay() }
+    /** The brush that is currently being used to style drawings. */
+    public var currentBrush: Brush {
+        set { _currentBrush = newValue }
+        get { return _currentBrush }
     }
     
-    /** The color of the inner rect. */
-    public var innerColor: UIColor?
+    /** The tool that is currently being used to draw on the canvas. */
+    public var currentTool: CanvasTool {
+        set { _currentTool = newValue }
+        get { return _currentTool }
+    }
+    
+    /** The action to use for the eyedropper: set stroke or fill color. */
+    public var eyedropperOptions: EyedropperOptions = .stroke
+    
+    /** The undo redo manager. */
+    public var undoRedoManager: UndoRedoManager = UndoRedoManager()
     
     
     
-    // -- PUBLIC COMPUTED PROPERTIES --
     
-    /** The brush that the canvas is currently using. */
-    public var currentBrush: Brush { return self.currentDrawingBrush }
+    // -- COMPUTED PROPS
     
+    /** The layer that you are currently on. */
+    public var currentCanvasLayer: Int {
+        return self._currentCanvasLayer
+    }
     
-    /** The tool that the canvas is currently using to draw. */
-    public var currentTool: CanvasTool { return self.currentDrawingTool }
-    
-    
-    /** Returns all of the layers on the canvas. */
-    public var canvasLayers: [CanvasLayer] { return self.layers }
-    
-    
-    /** Returns the current canvas layer as an object. */
+    /** The layer that you are currently on. */
     public var currentLayer: CanvasLayer? {
-        if layers.count == 0 { return nil }
-        if currentCanvasLayer >= layers.count { return nil }
-        return layers[currentCanvasLayer]
+        if self._currentCanvasLayer < 0 || self._currentCanvasLayer >= self._canvasLayers.count {
+            return nil
+        } else {
+            return self._canvasLayers[self._currentCanvasLayer]
+        }
     }
     
-    
-    /** Returns the index of the current layer, or -1 if there are no layers. */
-    public var currentLayerIndex: Int {
-        if layers.count == 0 { return -1 }
-        return currentCanvasLayer
+    /** The layers of the canvas. */
+    public var canvasLayers: [CanvasLayer] {
+        return self._canvasLayers
     }
-    
-    
-    
     
     
     
@@ -125,61 +100,26 @@ public class Canvas: UIView, Codable {
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        currentDrawingBrush = aDecoder.decodeObject(forKey: "canvas_currentDrawingBrush") as! Brush
-        currentPoint = aDecoder.decodeCGPoint(forKey: "canvas_currentPoint")
-        lastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastPoint")
-        lastLastPoint = aDecoder.decodeCGPoint(forKey: "canvas_lastLastPoint")
-        undoRedoManager = aDecoder.decodeObject(forKey: "canvas_undoRedoManager") as! UndoRedoManager
-        layers = aDecoder.decodeObject(forKey: "canvas_layers") as! [CanvasLayer]
-        currentCanvasLayer = aDecoder.decodeInteger(forKey: "canvas_currentCanvasLayer")
-        createDefaultLayer = aDecoder.decodeBool(forKey: "canvas_createDefaultLayer")
-        allowsMultipleTouches = aDecoder.decodeBool(forKey: "canvas_allowsMultipleTouches")
-        preemptTouch = aDecoder.decodeObject(forKey: "canvas_preempTouches") as? Bool ?? false
+        setup()
     }
     
-    public required init(from decoder: Decoder) throws {
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    public init(createDefaultLayer: Bool) {
         super.init(frame: CGRect.zero)
-        let container = try decoder.container(keyedBy: CanvasCodingKeys.self)
-        currentDrawingBrush = try container.decodeIfPresent(Brush.self, forKey: CanvasCodingKeys.canvasDrawingBrush) ?? Brush.Default
-        currentPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasCurrentPoint) ?? CGPoint()
-        lastPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasLastPoint) ?? CGPoint()
-        lastLastPoint = try container.decodeIfPresent(CGPoint.self, forKey: CanvasCodingKeys.canvasLastLastPoint) ?? CGPoint()
-        currentCanvasLayer = try container.decodeIfPresent(Int.self, forKey: CanvasCodingKeys.canvasCurrentLayer) ?? 0
-        createDefaultLayer = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasCreateDefaultLayer) ?? true
-        allowsMultipleTouches = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches) ?? false
-        preemptTouch = try container.decodeIfPresent(Bool.self, forKey: CanvasCodingKeys.canvasPreemptTouches) ?? false
+        setup(createDefaultLayer: createDefaultLayer)
     }
     
-    public init() {
-        super.init(frame: CGRect.zero)
-        setupCanvas()
-    }
-    
-    public init(createDefaultLayer b: Bool) {
-        super.init(frame: CGRect.zero)
-        self.createDefaultLayer = b
-        setupCanvas()
-    }
-    
-    
-    /** Configure the Canvas. */
-    private func setupCanvas() {
-        undoRedoManager = UndoRedoManager()
-        
-        allowsMultipleTouches = false
-        preemptTouch = false
-        
+    private func setup(createDefaultLayer: Bool = false) {
+        if createDefaultLayer == true {
+            let defLay = CanvasLayer(type: LayerType.raster)
+            self.addLayer(newLayer: defLay, position: .above)
+        }
         backgroundColor = .clear
-        contentMode = UIViewContentMode.scaleAspectFit
-        isMultipleTouchEnabled = allowsMultipleTouches == false ? true : false
-        
-        if createDefaultLayer == true { layers = [CanvasLayer(canvas: self)] }
-        else { layers = [] }
-        
-        currentDrawingTool = .pen
-        currentDrawingBrush = Brush.Default
     }
-    
     
     
     
@@ -190,21 +130,6 @@ public class Canvas: UIView, Codable {
      *                      *
      ************************/
     
-    // -- TOOLS AND BRUSHES --
-    
-    /** Sets the tool that the canvas should use to draw. */
-    public func setTool(tool: CanvasTool) {
-        self.currentDrawingTool = tool
-    }
-    
-    
-    /** Changes the brush that the canvas is currently using to style drawings. */
-    public func setBrush(brush: Brush) {
-        self.currentDrawingBrush = brush
-    }
-    
-    
-    
     // -- UNDO / REDO / CLEAR --
     
     /** Allows the user to define custom behavior for undo and redo. For example, a custom function to undo changing the tool. */
@@ -213,160 +138,190 @@ public class Canvas: UIView, Codable {
     }
     
     
-    /** Undo the last drawing stroke. */
+    /** Undo the last action on the canvas. */
     public func undo() {
-        let undid = undoRedoManager.performUndo()
-        
-        // Handle standard undo.
-        if undid is ([Node], Int) {
-            if let (nodes, index) = undid as? ([Node], Int) {
-                self.layers[index].drawingArray = nodes
-                self.setNeedsDisplay()
-            }
-        }
-        
-        delegate?.didUndo(on: self)
+        let _ = undoRedoManager.performUndo()
+        setNeedsDisplay()
+        self.delegate?.didUndo(on: self)
     }
     
     
-    /** Redo the last drawing stroke. */
+    /** Redo the last action on the canvas. */
     public func redo() {
-        let redid = undoRedoManager.performRedo()
-        
-        // Handle standard redo.
-        if redid is ([Node], Int) {
-            if let (nodes, index) = redid as? ([Node], Int) {
-                self.layers[index].drawingArray = nodes
-                self.setNeedsDisplay()
-            }
-        }
-        
-        delegate?.didRedo(on: self)
+        let _ = undoRedoManager.performRedo()
+        setNeedsDisplay()
+        self.delegate?.didRedo(on: self)
     }
     
     
     /** Clears the entire canvas. */
     public func clear() {
-        for i in 0..<layers.count { clearLayer(at: i) }
+        for i in 0..<_canvasLayers.count { clearLayer(at: i) }
         setNeedsDisplay()
     }
     
     
     /** Clears a drawing on the layer at the specified index. */
     public func clearLayer(at: Int) {
-        if at < 0 || at >= layers.count { return }
-        layers[at].clear()
+        if at < 0 || at >= _canvasLayers.count { return }
+        _canvasLayers[at].clear(from: self)
         undoRedoManager.clearRedos()
         setNeedsDisplay()
     }
     
     
     
-    
     // -- IMPORT / EXPORT --
     
-    /** Import an image onto the canvas. */
-    public func importImage(image: UIImage) {
-        guard let cL = currentLayer else { return }
-        cL.importedImage = image
-        setNeedsDisplay()
-        
-        undoRedoManager.add(undo: {
-            cL.importedImage = nil
-            self.setNeedsDisplay()
-            return nil
-        }, redo: {
-            cL.importedImage = image
-            self.setNeedsDisplay()
-            return nil
-        })
-    }
-    
-    
-    /** Imports a drawing from an SVG string. */
-    // todo
-    func importSVG(svgString: String) {
-        // 1.) Convert SVG to CMutableGPath
-        // 2.) Create new node with that path.
-        // 3.) Go to the current layer and add that node.
-    }
-    
-    
     /** Exports the canvas drawing. */
-    public func export(exported: (_ img: UIImage) -> Void) {
-        UIGraphicsBeginImageContext(frame.size)
-        if let ctx = UIGraphicsGetCurrentContext() {
-            layer.render(in: ctx)
-            let img = UIGraphicsGetImageFromCurrentImageContext()
-            exported(img ?? UIImage())
-        } else {
-            exported(UIImage())
-        }
+    public func export() -> UIImage {
+        UIGraphicsBeginImageContext(self.frame.size)
+        guard let ctx = UIGraphicsGetCurrentContext() else { return UIImage() }
+        self.layer.render(in: ctx)
+        
+        let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
+        return img ?? UIImage()
     }
     
     
     /** Exports the drawing on a specific layer. */
-    public func exportLayer(at: Int, exported: (_ img: UIImage) -> Void) {
-        if at < 0 || at >= layers.count { exported(UIImage()); return }
-        if layers[at].drawingArray.isEmpty { exported(UIImage()); return }
+    public func exportLayer(at: Int) -> UIImage {
+        if at < 0 || at >= _canvasLayers.count { return UIImage() }
+        if _canvasLayers[at].drawings.isEmpty { return UIImage() }
+        UIGraphicsBeginImageContext(self.frame.size)
         
-        UIGraphicsBeginImageContext(frame.size)
-
-        for node in layers[at].drawingArray {
-            node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
+        for node in _canvasLayers[at].drawings {
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.bounds = path.boundingBox
+            shapeLayer.path = path
+            shapeLayer.strokeColor = node.brush.strokeColor.cgColor
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
+            shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
+            shapeLayer.opacity = Float(node.brush.opacity)
+            shapeLayer.lineWidth = node.brush.thickness
+            shapeLayer.miterLimit = node.brush.miter
+            switch node.brush.shape {
+            case .butt:
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
+                break
+            case .round:
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
+                break
+            case .square:
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
+                break
+            }
+            switch node.brush.joinStyle {
+            case .bevel:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
+                break
+            case .miter:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
+                break
+            case .round:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
+                break
+            }
+            
+            var nPos = path.boundingBox.origin
+            nPos.x += path.boundingBox.width / 2
+            nPos.y += path.boundingBox.height / 2
+            shapeLayer.position = nPos
+            
+            shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
         }
-
+        
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
-        exported(img ?? UIImage())
+        return img ?? UIImage()
     }
     
     
     /** Exports the given nodes to a UIImage. */
     public static func export(nodes: [Node], size: CGSize) -> UIImage {
         UIGraphicsBeginImageContext(size)
-        
+
         for node in nodes {
-            node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.bounds = path.boundingBox
+            shapeLayer.path = path
+            shapeLayer.strokeColor = node.brush.strokeColor.cgColor
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
+            shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
+            shapeLayer.opacity = Float(node.brush.opacity)
+            shapeLayer.lineWidth = node.brush.thickness
+            shapeLayer.miterLimit = node.brush.miter
+            switch node.brush.shape {
+            case .butt:
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
+                break
+            case .round:
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
+                break
+            case .square:
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
+                break
+            }
+            switch node.brush.joinStyle {
+            case .bevel:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
+                break
+            case .miter:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
+                break
+            case .round:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
+                break
+            }
+            
+            var nPos = path.boundingBox.origin
+            nPos.x += path.boundingBox.width / 2
+            nPos.y += path.boundingBox.height / 2
+            shapeLayer.position = nPos
+            
+            shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
         }
-        
+
         let img = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
+
         return img ?? UIImage()
     }
     
     
-
     
     // -- COPY / PASTE --
     
     /** Copies a particular node so that it can be pasted later. */
     public func copy(nodes: [Node]) {
-        copiedNodes = nodes
-        delegate?.didCopyNodes(on: self, copiedNodes: nodes)
+        _copiedNodes = nodes
+        self.delegate?.didCopyNodes(on: self, nodes: nodes)
     }
     
     
     /** Pastes the copied node on to the current layer. */
     public func paste() {
         guard let cl = currentLayer else { return }
-        guard let cp = copiedNodes else { return }
-        cl.drawingArray.append(contentsOf: cp)
+        cl.drawings.append(contentsOf: _copiedNodes)
         setNeedsDisplay()
         
         undoRedoManager.add(undo: {
-            cl.drawingArray.removeLast()
+            cl.drawings.removeLast()
             return nil
         }, redo: {
-            cl.drawingArray.append(contentsOf: cp)
+            cl.drawings.append(contentsOf: self._copiedNodes)
             return nil
         })
         
-        delegate?.didPasteNodes(on: self, pastedNodes: cp)
+        self.delegate?.didPasteNodes(on: self, on: cl, nodes: _copiedNodes)
     }
+    
+    
     
     
     
@@ -384,98 +339,139 @@ public class Canvas: UIView, Codable {
      ************************/
     
     public override func draw(_ rect: CGRect) {
-        if let inner = self.innerRect, let clr = self.innerColor {
-            guard let context = UIGraphicsGetCurrentContext() else { return }
-            context.setLineCap(.square)
-            context.setLineJoin(.miter)
-            context.setLineWidth(2)
-            context.setMiterLimit(1)
-            context.setAlpha(1)
-            context.setFillColor(clr.cgColor)
-            context.fill(inner)
-        }
-        
+        // 1.) Clear all sublayers.
         layer.sublayers = []
-        for i in (0..<layers.count).reversed() {
-            let layer = layers[i]
+        
+        // 2.) Go through each layer and render it using either raster or vector graphics.
+        for i in (0..<self._canvasLayers.count).reversed() {
+            let layer = self._canvasLayers[i]
             if layer.isVisible == false { continue }
-            else {
-                // Draw the imported image.
-                if layer.importedImage != nil {
-                    layer.importedImage!.draw(in: frame)
-                }
-                
-                // Draw the nodes.
-                for n in layer.drawingArray { self.layer.addSublayer(n.shapeLayer) }
-                
-                // Draw the temporary stroke before it converts to svg.
-                switch currentDrawingTool {
-                case .selection:
-                    if layer.isDragging == false {
-                        drawTemporarySelection()
-                    }
-                    break
-                case .pen:
-                    drawTemporaryPen()
-                    break
-                case .eraser:
-                    drawTemporaryEraser()
-                    break
-                case .line:
-                    drawTemporaryLine()
-                    break
-                case .rectangle:
-                    drawTemporaryRectangle()
-                    break
-                case .ellipse:
-                    drawTemporaryEllipse()
-                    break
-                default:
-                    break
-                }
+            
+            if layer.type == .raster {
+                drawRaster(layer: layer, rect)
+            } else {
+                drawVector(layer: layer, rect)
             }
         }
         
-        drawSelectionArea()
+        // 2.5.) If there are node that are selected, draw the selection box.
+        if let currLayer = self.currentLayer {
+            guard let context = UIGraphicsGetCurrentContext() else { return }
+            for node in currLayer.selectedNodes {
+                let path = build(from: node.points, using: node.instructions, tool: node.type)
+                
+                context.addPath(path)
+                context.setLineCap(.butt)
+                context.setLineJoin(.miter)
+                context.setLineWidth(1)
+                context.setMiterLimit(1)
+                context.setAlpha(1)
+                context.setBlendMode(.normal)
+                context.setStrokeColor(UIColor.black.cgColor)
+                context.setLineDash(phase: 0, lengths: [10, 10])
+                context.stroke(path.boundingBox)
+            }
+        }
+        
+        // 3.) Draw the temporary drawing.
+        guard let next = nextNode else { return }
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        if _currentTool == .selection {
+            let path = build(from: next.points, using: next.instructions, tool: next.type)
+            context.addPath(path)
+            context.setLineCap(.butt)
+            context.setLineJoin(.miter)
+            context.setStrokeColor(UIColor.black.cgColor)
+            context.setMiterLimit(1)
+            context.setAlpha(1)
+            context.setLineWidth(1)
+            context.setLineDash(phase: 0, lengths: [10, 10])
+            context.setBlendMode(.normal)
+            context.strokePath()
+        } else {
+            let path = build(from: next.points, using: next.instructions, tool: next.type)
+            context.addPath(path)
+            context.setLineCap(self._currentBrush.shape)
+            context.setLineJoin(self._currentBrush.joinStyle)
+            context.setLineWidth(self._currentBrush.thickness)
+            context.setStrokeColor(self.currentBrush.strokeColor.cgColor)
+            context.setMiterLimit(self._currentBrush.miter)
+            context.setAlpha(self._currentBrush.opacity)
+            context.setBlendMode(.normal)
+            context.strokePath()
+        }
     }
     
-    
-    
-    
-    
-    
-    
-    /************************
-     *                      *
-     *         OTHER        *
-     *                      *
-     ************************/
-    
-    public override func encode(with aCoder: NSCoder) {
-        aCoder.encode(currentDrawingBrush, forKey: "canvas_currentDrawingBrush")
-        aCoder.encode(currentPoint, forKey: "canvas_currentPoint")
-        aCoder.encode(lastPoint, forKey: "canvas_lastPoint")
-        aCoder.encode(lastLastPoint, forKey: "canvas_lastLastPoint")
-        aCoder.encode(undoRedoManager, forKey: "canvas_undoRedoManager")
-        aCoder.encode(layers, forKey: "canvas_layers")
-        aCoder.encode(currentCanvasLayer, forKey: "canvas_currentCanvasLayer")
-        aCoder.encode(createDefaultLayer, forKey: "canvas_createDefaultLayer")
-        aCoder.encode(allowsMultipleTouches, forKey: "canvas_allowsMultipleTouches")
-        aCoder.encode(preemptTouch, forKey: "canvas_preempTouches")
+    private func drawRaster(layer: CanvasLayer, _ rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        
+        // Create a CGContext to draw all of the lines on that layer.
+        for node in layer.drawings {
+            // Draw using the context.
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            
+            context.addPath(path)
+            context.setLineCap(node.brush.shape)
+            context.setLineJoin(node.brush.joinStyle)
+            context.setLineWidth(node.brush.thickness)
+            context.setMiterLimit(node.brush.miter)
+            context.setAlpha(node.brush.opacity)
+            context.setBlendMode(.normal)
+            
+            context.setFillColor(node.brush.fillColor?.cgColor ?? UIColor.clear.cgColor)
+            context.setStrokeColor(node.brush.strokeColor.cgColor)
+            context.drawPath(using: CGPathDrawingMode.eoFillStroke)
+            
+//            context.stroke(path.boundingBox)
+        }
     }
     
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CanvasCodingKeys.self)
-        try container.encode(currentDrawingBrush, forKey: .canvasDrawingBrush)
-        try container.encode(currentPoint, forKey: CanvasCodingKeys.canvasCurrentPoint)
-        try container.encode(lastPoint, forKey: CanvasCodingKeys.canvasLastPoint)
-        try container.encode(lastLastPoint, forKey: CanvasCodingKeys.canvasLastLastPoint)
-//        try container.encode(undoRedoManager, forKey: CanvasCodingKeys.canvasUndoRedoManager)
-        try container.encode(currentCanvasLayer, forKey: CanvasCodingKeys.canvasCurrentLayer)
-        try container.encode(createDefaultLayer, forKey: CanvasCodingKeys.canvasCreateDefaultLayer)
-        try container.encode(allowsMultipleTouches, forKey: CanvasCodingKeys.canvasAllowsMultipleTouches)
-        try container.encode(preemptTouch, forKey: CanvasCodingKeys.canvasPreemptTouches)
+    private func drawVector(layer: CanvasLayer, _ rect: CGRect) {
+        for node in layer.drawings {
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.bounds = path.boundingBox
+            shapeLayer.path = path
+//            shapeLayer.backgroundColor = UIColor.orange.cgColor
+            shapeLayer.strokeColor = node.brush.strokeColor.cgColor
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
+            shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
+            shapeLayer.opacity = Float(node.brush.opacity)
+            shapeLayer.lineWidth = node.brush.thickness
+            shapeLayer.miterLimit = node.brush.miter
+            switch node.brush.shape {
+            case .butt:
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
+                break
+            case .round:
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
+                break
+            case .square:
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
+                break
+            }
+            switch node.brush.joinStyle {
+            case .bevel:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
+                break
+            case .miter:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
+                break
+            case .round:
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
+                break
+            }
+            
+            var nPos = path.boundingBox.origin
+            nPos.x += path.boundingBox.width / 2
+            nPos.y += path.boundingBox.height / 2
+            shapeLayer.position = nPos
+            
+//            self.layer.addSublayer(shapeLayer)
+            let insertIndex = self._currentCanvasLayer == 0 ? 0 : self._currentCanvasLayer
+            self.layer.insertSublayer(shapeLayer, at: UInt32(insertIndex))
+        }
     }
     
 }
-

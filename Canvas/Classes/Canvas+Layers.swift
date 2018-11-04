@@ -2,114 +2,121 @@
 //  Canvas+Layers.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 2/10/18.
+//  Created by Adeola Uthman on 10/7/18.
 //
 
 import Foundation
 
-
-/** This extension handles interacting with the layers of the canvas.
- 
- Add Layer:
- - When adding a layer you can choose to add it either above or below the current layer.
- - Adding above looks like this:
-    [* LAYER 1] ----> [LAYER 2]
-                    [* LAYER 1]
-    So you see that the array of layers inserts the new layer before the one at the current position.
- 
- - Adding below looks like this:
-    [* LAYER 1] ----> [* LAYER 1]
-    [LAYER 2]         [LAYER 2]
-                      [LAYER 3]
-    And you can see here that layer 2 gets inserted directly after the current layer.
- - Adding layers like this makes it very easy to understand what is going on visually. Looking at an array
-   representation as a vertical line, we see that the first element (the top) is clearly the top layer of the
-   canvas, while the last item (the bottom) is clearly the bottom layer of the canvas.
- - Also, don't forget to update the current layer variable whenever you add a layer.
- 
- 
- */
 public extension Canvas {
     
-    /** Adds a new drawing layer to the canvas. By default the layer is added above the current layer. */
-    public func addDrawingLayer(newLayer nl: CanvasLayer, position: LayerPosition = .above) {
-        
-        // If there are no layers yet, just make the array of one object.
-        if layers.count == 0 { layers = [nl]; return }
+    /************************
+     *                      *
+     *       VARIABLES      *
+     *                      *
+     ************************/
+    
+    
+    
+    
+    
+    /************************
+     *                      *
+     *         INIT         *
+     *                      *
+     ************************/
+    
+    
+    
+    
+    
+    /************************
+     *                      *
+     *       FUNCTIONS      *
+     *                      *
+     ************************/
+    
+    /** Adds a new layer to the canvas. */
+    public func addLayer(newLayer nl: CanvasLayer, position: LayerPosition) {
+        if self._canvasLayers.count == 0 {
+            self._canvasLayers = [nl]
+            return
+        }
         
         switch position {
         case .above:
-            let insertIndex = currentLayerIndex == 0 ? 0 : (currentLayerIndex)
-            layers.insert(nl, at: insertIndex)
-            currentCanvasLayer += 1
+            let insertIndex = self._currentCanvasLayer == 0 ? 0 : self._currentCanvasLayer
+            self._canvasLayers.insert(nl, at: insertIndex)
             break
         case .below:
-            layers.insert(nl, at: currentLayerIndex+1)
+            self._canvasLayers.insert(nl, at: self._currentCanvasLayer+1)
             break
         }
     }
     
     
+    /** Removes a layer from the canvas. */
+    public func removeLayer(at index: Int) {
+        if self._canvasLayers.count == 0 { return }
+        if index < 0 || index >= self._canvasLayers.count { return }
+        
+        self._canvasLayers.remove(at: index)
+        
+        if _currentCanvasLayer >= self._canvasLayers.count {
+            self._currentCanvasLayer = self._canvasLayers.count - 1
+        }
+        
+        setNeedsDisplay()
+    }
+    
+    
     /** Switches the drawing to the specified layer. If an invalid layer index is put in, nothing will happen. */
     public func switchLayer(to: Int) {
-        if to >= layers.count { currentCanvasLayer = layers.count - 1 }
-        else if to < 0 { currentCanvasLayer = 0 }
-        else { currentCanvasLayer = to }
+        if to >= _canvasLayers.count { _currentCanvasLayer = _canvasLayers.count - 1 }
+        else if to < 0 { _currentCanvasLayer = 0 }
+        else { _currentCanvasLayer = to }
     }
     
     
     /** Moves one layer to a new location. */
     public func moveLayer(at: Int, toPosition to: Int) {
-        if layers.count == 0 { return }
-        if at >= layers.count { return }
+        if _canvasLayers.count == 0 { return }
+        if at >= _canvasLayers.count { return }
         
         var t = to
-        if to >= layers.count { t = layers.count - 1 }
+        if to >= _canvasLayers.count { t = _canvasLayers.count - 1 }
         
-        let layer = layers[at]
-        layers.remove(at: at)
-        layers.insert(layer, at: t)
+        let layer = _canvasLayers[at]
+        _canvasLayers.remove(at: at)
+        _canvasLayers.insert(layer, at: t)
         
-        let before = currentCanvasLayer
-        currentCanvasLayer = at
+        let before = _currentCanvasLayer
+        _currentCanvasLayer = at
         setNeedsDisplay()
-        currentCanvasLayer = before
+        _currentCanvasLayer = before
     }
     
     
     /** Swaps the positions of two layers using the indexes of those layers. */
     public func swapLayers(first: Int, second: Int) {
-        if layers.count == 0 { return }
-        if first >= layers.count { return }
-        if second >= layers.count { return }
+        if _canvasLayers.count == 0 { return }
+        if first >= _canvasLayers.count { return }
+        if second >= _canvasLayers.count { return }
         
-        layers.swapAt(first, second)
+        _canvasLayers.swapAt(first, second)
         
-        let before = currentCanvasLayer
-        currentCanvasLayer = second
+        let before = _currentCanvasLayer
+        _currentCanvasLayer = second
         setNeedsDisplay()
-        currentCanvasLayer = before
+        _currentCanvasLayer = before
     }
-    
-    
-    /** Removes a layer at the given index. */
-    public func removeLayer(at: Int) {
-        if layers.count == 0 { return }
-        if at < 0 && at >= layers.count { return }
-        
-        if currentCanvasLayer == layers.count { currentCanvasLayer = layers.count - 1 }
-        layers.remove(at: at)
-        
-        setNeedsDisplay()
-    }    
     
     
     /** Hides the layer at the given index. */
     public func hideLayer(at: Int) {
-        if at >= layers.count { return }
+        if at >= _canvasLayers.count { return }
         if at < 0 { return }
         
-        layers[at].isVisible = false
+        _canvasLayers[at].isVisible = false
         
         setNeedsDisplay()
     }
@@ -117,10 +124,10 @@ public extension Canvas {
     
     /** Makes the layer at the given index visible. */
     public func showLayer(at: Int) {
-        if at >= layers.count { return }
+        if at >= _canvasLayers.count { return }
         if at < 0 { return }
         
-        layers[at].isVisible = true
+        _canvasLayers[at].isVisible = true
         
         setNeedsDisplay()
     }
@@ -128,21 +135,29 @@ public extension Canvas {
     
     /** Locks a layer so that the user cannot draw on it. */
     public func lockLayer(at: Int) {
-        if layers.count == 0 { return }
-        if at >= layers.count { return }
+        if _canvasLayers.count == 0 { return }
+        if at >= _canvasLayers.count { return }
         
-        layers[at].allowsDrawing = false
+        _canvasLayers[at].allowsDrawing = false
     }
     
     
     /** Unlocks a layer so that the user can draw on it. */
     public func unlockLayer(at: Int) {
-        if layers.count == 0 { return }
-        if at >= layers.count { return }
+        if _canvasLayers.count == 0 { return }
+        if at >= _canvasLayers.count { return }
         
-        layers[at].allowsDrawing = true
+        _canvasLayers[at].allowsDrawing = true
     }
     
+    
+    
+    
+    /************************
+     *                      *
+     *        LAYOUT        *
+     *                      *
+     ************************/
     
     
 }

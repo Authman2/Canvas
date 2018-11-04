@@ -1,12 +1,11 @@
 //
-//  UIImage+Extras.swift
+//  UIImage+Properties.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 2/19/18.
+//  Created by Adeola Uthman on 11/3/18.
 //
 
 import Foundation
-
 
 /** Extension to UIImage that allows the adding of multiple images. */
 public extension UIImage {
@@ -31,36 +30,6 @@ public extension UIImage {
         UIGraphicsEndImageContext()
         
         return combine
-    }
-    
-    
-    
-    /** Returns this UIImage, but dimmed with the specified opacity. */
-    func withOpacity(_ value: CGFloat) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        var img: UIImage = self
-        if let context = UIGraphicsGetCurrentContext() {
-            let area = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-            context.scaleBy(x: 1, y: -1)
-            context.translateBy(x: 0, y: -area.size.height)
-            context.setBlendMode(.multiply)
-            context.setAlpha(value)
-            context.draw(cgImage!, in: area)
-            img = UIGraphicsGetImageFromCurrentImageContext()!
-        }
-        UIGraphicsEndImageContext()
-        return img
-    }
-    
-    
-    /** Returns this UIImage, but with a particular tint. */
-    func withTint(color: UIColor) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        withRenderingMode(.alwaysTemplate).draw(in: CGRect(origin: .zero, size: size))
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return img ?? self
     }
     
 }

@@ -1,8 +1,8 @@
 //
-//  UIColor+RGB.swift
+//  UIColor+RGG.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 2/19/18.
+//  Created by Adeola Uthman on 11/1/18.
 //
 
 import Foundation

@@ -2,11 +2,10 @@
 //  UndoRedoManager.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 3/11/18.
+//  Created by Adeola Uthman on 11/3/18.
 //
 
 import Foundation
-
 
 /** The manager that handles undoing and redoing actions while working with the canvas. The generic used here represents what should count toward the undo/redo stack. This way, users can define exactly what actions in their app should trigger undos and redos. */
 public class UndoRedoManager {

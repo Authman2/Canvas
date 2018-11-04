@@ -2,7 +2,7 @@
 //  UITouch+Translation.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 3/12/18.
+//  Created by Adeola Uthman on 11/4/18.
 //
 
 import Foundation

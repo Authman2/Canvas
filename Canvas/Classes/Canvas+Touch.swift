@@ -2,12 +2,12 @@
 //  Canvas+Touch.swift
 //  Canvas
 //
-//  Created by Adeola Uthman on 1/10/18.
+//  Created by Adeola Uthman on 10/7/18.
 //
 
 import Foundation
 
-public extension Canvas {
+extension Canvas {
     
     /************************
      *                      *
@@ -15,80 +15,117 @@ public extension Canvas {
      *                      *
      ************************/
     
-    /** Cleans up the line when you finish drawing a line. */
-    private func finishDrawingNode() {
-        guard let currLayer = currentLayer else { return }
-        guard var node = nextNode else { return }
-        node.lastPoint = currentPoint
+    private func finishDrawing() {
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
         
-        // Finish with a certain tool.
-        switch currentDrawingTool {
-        case .pen:
-            node.mutablePath.closeSubpath()
+        if let next = nextNode {
+            currLayer.drawings.append(next)
             
-            // Rebuild the path. This is necessary for painting.
-            node.mutablePath = buildPath(from: node.mutablePath.bezierPointsAndTypes.map { $0.1 }, bPoints: node.mutablePath.bezierPointsAndTypes.map { $0.0 }, type: .pen)
-            break
-        case .line:
-            node.mutablePath.move(to: node.firstPoint)
-            node.mutablePath.addLine(to: node.lastPoint)
-            break
-        case .rectangle:
-            let w = node.lastPoint.x - node.firstPoint.x
-            let h = node.lastPoint.y - node.firstPoint.y
-            let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
-            node.mutablePath.move(to: node.firstPoint)
-            node.mutablePath.addRect(rect)
-            break
-        case .ellipse:
-            let w = node.lastPoint.x - node.firstPoint.x
-            let h = node.lastPoint.y - node.firstPoint.y
-            let rect = CGRect(x: node.firstPoint.x, y: node.firstPoint.y, width: w, height: h)
-            node.mutablePath.move(to: node.firstPoint)
-            node.mutablePath.addEllipse(in: rect)
-            break
-        default:
-            break
-        }
-        
-        if currentTool == .eraser {
-            let cL = self.currentCanvasLayer
+            // Undo/Redo.
             undoRedoManager.add(undo: {
-                var la = self.layers[cL].drawingArray ?? []
-                if la.count > 0 { la.removeLast() }
-                return (la, cL)
-            }) {
-                var la = self.layers[cL].drawingArray
-                la?.append(node)
-                return (la, cL)
-            }
+                currLayer.drawings.removeLast()
+            }, redo: {
+                currLayer.drawings.append(next)
+            })
             undoRedoManager.clearRedos()
+        } else {
+
+            // Some tools do not produce nodes, so handle their actions differently here.
+            switch _currentTool {
+            case .eyedropper:
+                handleEyedrop(point: currentPoint)
+                break
+            case .paint:
+                var painted: [Node] = []
+                for node in currLayer.drawings {
+                    // Base case: the line tool.
+                    if node.type == .line {
+                        let lastColor = node.brush.strokeColor
+                        node.brush.strokeColor = self._currentBrush.strokeColor
+                        painted.append(node)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            node.brush.strokeColor = lastColor
+                        }, redo: {
+                            let newColor = self._currentBrush.strokeColor
+                            node.brush.strokeColor = newColor
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
+                        continue
+                    }
+                    
+                    let path = build(from: node.points, using: node.instructions, tool: node.type)
+                    
+                    // Only take the nodes where the touch is within the bounding box.
+                    if path.boundingBox.contains(currentPoint) {
+                        // Get the average points.
+                        let points = node.points.map { (p) -> CGPoint in
+                            var sumX: CGFloat = 0
+                            var sumY: CGFloat = 0
+                            for pt in p {
+                                sumX += pt.x
+                                sumY += pt.y
+                            }
+                            return CGPoint(x: sumX / CGFloat(p.count), y: sumY / CGFloat(p.count))
+                        }
+                        
+                        // If the touch is on a point on the line, then color that. Otherwise fill the inside.
+                        var exit: Bool = false
+                        for pt in points {
+                            if pt.inRange(of: currentPoint, by: 5.0) {
+                                let lastColor = node.brush.strokeColor
+                                node.brush.strokeColor = self._currentBrush.strokeColor
+                                
+                                // Undo/Redo.
+                                undoRedoManager.add(undo: {
+                                    node.brush.strokeColor = lastColor
+                                }, redo: {
+                                    let newColor = self._currentBrush.strokeColor
+                                    node.brush.strokeColor = newColor
+                                    return nil
+                                })
+                                undoRedoManager.clearRedos()
+                                
+                                exit = true
+                                break
+                            }
+                        }
+                        if exit == true {
+                            painted.append(node)
+                            continue
+                        }
+                        let lastColor = node.brush.fillColor
+                        node.brush.fillColor = self._currentBrush.fillColor
+                        painted.append(node)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            node.brush.fillColor = lastColor
+                        }, redo: {
+                            let newColor = self._currentBrush.fillColor
+                            node.brush.fillColor = newColor
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
+                    }
+                }
+                
+                self.delegate?.didPaintNodes(on: self, nodes: painted, strokeColor: self.currentBrush.strokeColor, fillColor: self.currentBrush.fillColor)
+                break
+            default:
+                break
+            }
             
-            self.delegate?.didEndDrawing(on: self, withTool: currentTool)
-            return
         }
-        
-        // Update the drawing.
-        currLayer.makeNewShapeLayer(node: &node)
-        
-        // Undo/redo
-        let cL = self.currentCanvasLayer
-
-        undoRedoManager.add(undo: {
-            var la = self.layers[cL].drawingArray ?? []
-            if la.count > 0 { la.removeLast() }
-            return (la, cL)
-        }) {
-            var la = self.layers[cL].drawingArray
-            la?.append(node)
-            return (la, cL)
-        }
-        undoRedoManager.clearRedos()
-
-        self.delegate?.didEndDrawing(on: self, withTool: currentDrawingTool)
         nextNode = nil
+        setNeedsDisplay()
+        
+        // Call delegate method.
+        self.delegate?.didFinishDrawing(on: self)
     }
-    
     
     
     
@@ -102,264 +139,267 @@ public extension Canvas {
      ************************/
     
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
         guard let touch = touches.first else { return }
-        guard let currLayer = currentLayer else { return }
+        guard let allTouches = event?.allTouches else { return }
+        if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
-        // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch == true { return }
-        
-        // Don't continue if there is more than one touch.
-        if let evT = event?.touches(for: self) {
-            if evT.count > 1 { return }
-        }
-        
-        // Get the first touch point.
-        lastPoint = touch.previousLocation(in: self)
+        // 1.) Set up the touch points.
         currentPoint = touch.location(in: self)
+        lastPoint = touch.location(in: self)
+        lastLastPoint = touch.location(in: self)
+        eraserStartPoint = touch.location(in: self)
         
-        // Init (or reinit) the bezier curve. Makes sure the current tool always draws something.
-        nextNode = Node(type: currentTool.rawValue)
-        
-        // Work with each tool.
-        switch currentDrawingTool {
-        case .pen, .line, .rectangle, .ellipse:
-            nextNode?.setInitialPoint(point: currentPoint)
-            delegate?.didBeginDrawing(on: self, withTool: currentDrawingTool)
-        case .selection:
-            nextNode?.setInitialPoint(point: currentPoint)
-            
-            // Initial click of selection.
-            if currLayer.transformBox.contains(currentPoint) { currLayer.isDragging = true }
-            else { currLayer.isDragging = false }
-            break
-        case .eyedropper:
-            break
-        default:
-            break
+        // 2.) Create a new node that will be placed on the canvas.
+        if _currentTool != .eyedropper && _currentTool != .eraser && _currentTool != .paint {
+            nextNode = Node(type: self._currentTool)
+            nextNode?.brush = currentBrush
+            nextNode?.points.append([currentPoint])
+            nextNode?.instructions.append(CGPathElementType.moveToPoint)
         }
+        if _currentTool == .selection && currLayer.selectedNodes.count > 0 {
+            var atLeastOne: Bool = false
+            for node in currLayer.selectedNodes {
+                let path = build(from: node.points, using: node.instructions, tool: node.type)
+                if path.boundingBox.contains(currentPoint) {
+                    atLeastOne = true
+                    break
+                }
+            }
+            if atLeastOne == false {
+                currLayer.selectedNodes.removeAll()
+                nextNode = nil
+                setNeedsDisplay()
+            }
+        }
+        
+        // 3.) Call delegate method.
+        self.delegate?.willBeginDrawing(on: self)
     }
     
-    
-    
-    
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
         guard let touch = touches.first else { return }
-        guard let currLayer = currentLayer else { return }
-        guard var next = nextNode else { return }
+        guard let allTouches = event?.allTouches else { return }
+        if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
-        // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
-        
-        // Don't continue if there is more than one touch.
-        if let evT = event?.touches(for: self) {
-            if evT.count > 1 { return }
-        }
-        
-        // Collect touches.
+        // 1.) Update the touch points.
+        currentPoint = touch.location(in: self)
         lastLastPoint = lastPoint
         lastPoint = touch.previousLocation(in: self)
-        currentPoint = touch.location(in: self)
         
-        // Calculate the translation of the touch.
+        // 1.5) Calculate the translation of the touch.
         touch.deltaX = currentPoint.x - lastPoint.x
         touch.deltaY = currentPoint.y - lastPoint.y
         
-        // Is nodes are selected, drag them.
-        if !currLayer.selectedNodes.isEmpty && currLayer.isDragging {
-            for node in currLayer.selectedNodes {
-                if !node.isMovable { continue }
-                
-                var pos = node.shapeLayer.position
-                pos.x += touch.deltaX
-                pos.y += touch.deltaY
-                node.shapeLayer.position = pos
-                
-                currLayer.calculateTransformBox()
-                setNeedsDisplay()
-            }
-            self.delegate?.didMoveNodes(on: self, movedNodes: currLayer.selectedNodes)
-        }
-        
-        // Draw based on the current tool.
-        switch currentDrawingTool {
-        case .eyedropper:
-            return
+        // 2.) Depending on the tool, add points and instructions for drawing.
+        switch _currentTool {
         case .pen:
-            var boundingBox = next.addPath(p1: lastLastPoint, p2: lastPoint, currentPoint: currentPoint, tool: currentDrawingTool)
-            boundingBox.origin.x -= currentBrush.thickness * 2.0;
-            boundingBox.origin.y -= currentBrush.thickness * 2.0;
-            boundingBox.size.width += currentBrush.thickness * 4.0;
-            boundingBox.size.height += currentBrush.thickness * 4.0;
-            
-            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
-            setNeedsDisplay(boundingBox)
+            guard let next = nextNode else { return }
+            next.points.append([currentPoint, lastPoint, lastLastPoint])
+            next.instructions.append(CGPathElementType.addQuadCurveToPoint)
             break
         case .eraser:
-            let erasePoint = currentPoint
+            // 1.) Find all of the nodes where the touch is within its bounding box. This
+            //     will cut the number of nodes to look through down to 1 in the best case or "n" in the worst case.
+            // 2.) For every touched node, map its points into an average of its points. This should still be the same
+            //     size array as before. Then, as you loop through each point, store its averages in an array at index i.
+            // 3.) Loop through each set of average points for each node. If you come across one that is within range of
+            //     the touch, save that index i and remove it from the original nodes points points array.
+            // 4.) Then split that node into two nodes. The first one will contain all the points and instructions from
+            //     0...i with the last instruction being changed to closeSubpath. The second node will be from i...end
+            //     and the first instruction will be changed to moveToPoint.
             
-            for i in 0..<currLayer.drawingArray.count {
-                var node = currLayer.drawingArray[i]
-                
-                switch node.nodeType {
-                case 0:
-                    // PEN:
-                    // Get the points and instructions that are currently there.
-                    let instructions = node.mutablePath.bezierPointsAndTypes
-                    
-                    // Get the items that do not have a point in the range of the erase point.
-                    let erasedInstructions = instructions.filter { item in
-                        let contains = item.0.contains { (cgPoint: CGPoint) -> Bool in
-                            return cgPoint.inRange(of: erasePoint, by: 5)
-                        }
-                        
-                        if contains {
-                            return false
-                        } else {
-                            return true
-                        }
-                    }
-                    
-                    // Create a new path without the erased sections.
-                    let nPath = buildPath(from: erasedInstructions.map { $0.1 }, bPoints: erasedInstructions.map { $0.0 }, type: .pen)
-                    node.mutablePath = nPath
-                    node.shapeLayer.path = node.mutablePath
-                    currLayer.drawingArray[i] = node
-                    break
-                case 2:
-                    // LINE:
-                    currLayer.drawingArray.remove(at: i)
-                    break
-                case 3:
-                    // RECTANGLE:
-                    currLayer.drawingArray.remove(at: i)
-                    break
-                case 4:
-                    // ELLIPSE:
-                    currLayer.drawingArray.remove(at: i)
-                    break
-                default:
-                    break
+            // 1.
+            var touchingNodes: [Node] = []
+            for node in currLayer.drawings {
+                let path = build(from: node.points, using: node.instructions, tool: node.type)
+                if path.boundingBox.contains(currentPoint) {
+                    touchingNodes.append(node)
                 }
+            }
+            
+            // 2.
+            let averages: NSMutableDictionary = NSMutableDictionary()
+            for i in 0..<touchingNodes.count {
+                let node = touchingNodes[i]
+                let averaged = node.points.map { (p: [CGPoint]) -> CGPoint in
+                    if p.count == 3 {
+                        return CGPoint(x: (p[0].x + p[1].x + p[2].x)/3, y: (p[0].y + p[1].y + p[2].y)/3)
+                    } else if p.count == 2 {
+                        return CGPoint(x: (p[0].x + p[1].x)/2, y: (p[0].y + p[1].y)/2)
+                    } else if p.count == 1 {
+                        return CGPoint(x: p[0].x, y: p[0].y)
+                    } else {
+                        return CGPoint()
+                    }
+                }
+                averages.setValue(averaged, forKey: "\(i)")
+            }
+            
+            // 3.
+            for (key, val) in averages {
+                let averagesForNode = val as? [CGPoint] ?? []
                 
-                setNeedsDisplay()
+                for i in 0..<averagesForNode.count {
+                    let point = averagesForNode[i]
+                    
+                    if point.inRange(of: currentPoint, by: 5.0) {
+                        if i < 0 || i >= touchingNodes[key as? Int ?? 0].points.count { continue }
+                        
+                        let savedP = touchingNodes[key as? Int ?? 0].points[i]
+                        let savedI = touchingNodes[key as? Int ?? 0].instructions[i]
+                        
+                        touchingNodes[key as? Int ?? 0].points.remove(at: i)
+                        touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
+                        
+                        // Undo/Redo.
+                        undoRedoManager.add(undo: {
+                            touchingNodes[key as? Int ?? 0].points.insert(savedP, at: i)
+                            touchingNodes[key as? Int ?? 0].instructions.insert(savedI, at: i)
+                            return nil
+                        }, redo: {
+                            touchingNodes[key as? Int ?? 0].points.remove(at: i)
+                            touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
+                            return nil
+                        })
+                        undoRedoManager.clearRedos()
+                    }
+                }
             }
             break
         case .line:
-            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
-            setNeedsDisplay()
+            guard let next = nextNode else { return }
+            let tempFirst = next.points[0][0]
+            next.points.removeAll()
+            next.instructions.removeAll()
+            
+            next.points.append([tempFirst])
+            next.points.append([currentPoint])
+            
+            next.instructions.append(CGPathElementType.moveToPoint)
+            next.instructions.append(CGPathElementType.addLineToPoint)
             break
-        case .rectangle, .selection:
-            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
-            next.setBoundingBox()
-            setNeedsDisplay()
+        case .rectangle, .ellipse:
+            guard let next = nextNode else { return }
+            let tempFirst = next.points[0][0]
+            next.points.removeAll()
+            next.instructions.removeAll()
+            
+            next.points.append([tempFirst, currentPoint])
+            next.instructions.append(CGPathElementType.addLineToPoint)
             break
-        case .ellipse:
-            next.move(from: lastPoint, to: currentPoint, tool: currentDrawingTool)
-            next.setBoundingBox()
-            setNeedsDisplay()
-            break
-        default:
-            break
-        }
-        
-        self.delegate?.isDrawing(on: self, withTool: currentDrawingTool)
-    }
-    
-    
-    
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let currLayer = currentLayer else { return }
-        
-        // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
-        
-        // Don't continue if there is more than one touch.
-        if let evT = event?.touches(for: self) {
-            if evT.count > 1 { return }
-        }
-        
-        // Selection tool vs other tools
-        switch currentDrawingTool {
         case .selection:
-            nextNode?.lastPoint = currentPoint
-            nextNode!.setBoundingBox()
-            var x: CGFloat = 0
-            var y: CGFloat = 0
-            var w: CGFloat = 0
-            var h: CGFloat = 0
-            var selectionBox: CGRect
-            
-            // Get the bounding box of the selection.
-            switch nextNode!.lastPoint.location(relative: nextNode!.firstPoint) {
-            case .behindX:
-                x = nextNode!.lastPoint.x
-                y = nextNode!.lastPoint.y
-                w = nextNode!.firstPoint.x - x
-                h = nextNode!.firstPoint.y - y
-                selectionBox = CGRect(x: x, y: y, width: w, height: h)
-                break
-            case .behindY:
-                x = nextNode!.lastPoint.x
-                y = nextNode!.lastPoint.y
-                w = nextNode!.firstPoint.x - x
-                h = nextNode!.firstPoint.y - y
-                selectionBox = CGRect(x: x, y: y, width: w, height: h)
-                break
-            case .behindBoth:
-                x = nextNode!.lastPoint.x
-                y = nextNode!.lastPoint.y
-                w = nextNode!.firstPoint.x - x
-                h = nextNode!.firstPoint.y - y
-                selectionBox = CGRect(x: x, y: y, width: w, height: h)
-                break
-            case .inFront:
-                selectionBox = nextNode!.boundingBox
-                break
-            }
-            
-            // Get the nodes inside the rectangle.
-            currLayer.selectedNodes = []
-            for node in currLayer.drawingArray {
-                if selectionBox.intersects(node.shapeLayer.frame) || selectionBox.contains(node.shapeLayer.frame) {
-                    currLayer.selectedNodes.append(node)
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let tempFirst = next.points[0][0]
+                next.points.removeAll()
+                next.instructions.removeAll()
+                
+                next.points.append([tempFirst, currentPoint])
+                next.instructions.append(CGPathElementType.addLineToPoint)
+            } else {
+                nextNode = nil
+                
+                var containsAtLeastOne: Bool = false
+                for node in currLayer.selectedNodes {
+                    // See if the current point is within the node's bounding box.
+                    let path = build(from: node.points, using: node.instructions, tool: node.type)
+                    if path.boundingBox.contains(currentPoint) {
+                        containsAtLeastOne = true
+                        break
+                    }
+                }
+                
+                // Make sure the touch is within at least one bounding box.
+                if containsAtLeastOne == true {
+                    for node in currLayer.selectedNodes {
+                        // Move the points by the selection translation amount.
+                        let nPoints = node.points.map { (points: [CGPoint]) -> [CGPoint] in
+                            var nP = points
+                            for i in 0..<points.count {
+                                nP[i].x += touch.deltaX
+                                nP[i].y += touch.deltaY
+                            }
+                            return nP
+                        }
+                    
+                        // Set the new points.
+                        node.points = nPoints
+                    }
+                    
+                    // Delegate.
+                    self.delegate?.didMoveNodes(on: self, movedNodes: currLayer.selectedNodes)
+                } else {
+                    // Reset the selected nodes.
+                    currLayer.selectedNodes.removeAll()
+                    setNeedsDisplay()
                 }
             }
-            currLayer.calculateTransformBox()
-            delegate?.didSelectNodes(on: self, selectedNodes: currLayer.selectedNodes)
-            
-            // Clear the rect.
-            nextNode = nil
-            setNeedsDisplay()
-            break
-        case .eyedropper:
-            handleEyedrop(point: currentPoint)
             break
         default:
-            touchesMoved(touches, with: event)
-            self.finishDrawingNode()
             break
         }
+        
+        // 3.) Update the temporary drawing on screen.
+        setNeedsDisplay()
+        
+        // 4.) Call delegate method.
+        self.delegate?.isDrawing(on: self)
     }
     
-    
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
+        guard let allTouches = event?.allTouches else { return }
+        if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
+        
+        if _currentTool == .selection {
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let first = next.points[0][0]
+                let last = next.points[0][1]
+                let w = last.x - first.x
+                let h = last.y - first.y
+                let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
+            
+                handleSelection(with: dest)
+                setNeedsDisplay()
+            }
+            nextNode = nil
+        } else {
+            finishDrawing()
+        }
+    }
     
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let currLayer = currentLayer else { return }
+        if self._currentCanvasLayer >= self._canvasLayers.count { return }
+        let currLayer = self._canvasLayers[self._currentCanvasLayer]
+        guard let allTouches = event?.allTouches else { return }
+        if allTouches.count > 1 { return }
+        if currLayer.allowsDrawing == false { return }
         
-        // Don't continue if the layer does not allow drawing or should be preempted.
-        if currLayer.allowsDrawing == false || preemptTouch == true  { return }
-        
-        // Don't continue if there is more than one touch.
-        if let evT = event?.touches(for: self) {
-            if evT.count > 1 { return }
+        if _currentTool == .selection {
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let first = next.points[0][0]
+                let last = next.points[0][1]
+                let w = last.x - first.x
+                let h = last.y - first.y
+                let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
+                
+                handleSelection(with: dest)
+                setNeedsDisplay()
+            }
+            nextNode = nil
+        } else {
+            finishDrawing()
         }
-        
-        // Make sure the point is recorded.
-        touchesEnded(touches, with: event)
     }
     
-    
 }
-
-
-
