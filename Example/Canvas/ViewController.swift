@@ -115,7 +115,6 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         a.translatesAutoresizingMaskIntoConstraints = false
         a.setTitle("Import Image", for: .normal)
         a.backgroundColor = UIColor.gray
-        a.addTarget(self, action: #selector(importImage), for: .touchUpInside)
         
         return a
     }()
@@ -213,6 +212,17 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
         
     }
     
+    func didCopyNodes(on canvas: Canvas, nodes: [Node]) {
+        
+    }
+    
+    func didPasteNodes(on canvas: Canvas, on layer: CanvasLayer, nodes: [Node]) {
+        
+    }
+    
+    
+    
+    
     
     
     /************************
@@ -259,20 +269,6 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     @objc func switchLayer() {
         let rand = Int(arc4random_uniform(UInt32(canvas.canvasLayers.count)))
         canvas.switchLayer(to: rand)
-    }
-    
-    @objc func importImage() {
-        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-            let imagePicker: UIImagePickerController = {
-                let a = UIImagePickerController()
-                a.delegate = self
-                a.sourceType = .photoLibrary
-                a.allowsEditing = false
-                return a
-            }()
-            
-            self.present(imagePicker, animated: true, completion: nil)
-        }
     }
     
     @objc func exportImage() {

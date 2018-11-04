@@ -36,4 +36,12 @@ public protocol CanvasEvents {
     /** Called when you redo an action. */
     func didRedo(on canvas: Canvas)
     
+    
+    /** Called when nodse get copied. */
+    func didCopyNodes(on canvas: Canvas, nodes: [Node])
+    
+    
+    /** Called when nodes are pasted. */
+    func didPasteNodes(on canvas: Canvas, on layer: CanvasLayer, nodes: [Node])
+    
 }

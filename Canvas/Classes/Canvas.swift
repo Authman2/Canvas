@@ -37,6 +37,9 @@ public class Canvas: UIView {
     /** The current tool that is being used to draw. */
     internal var _currentTool: CanvasTool = CanvasTool.pen
     
+    /** The copied nodes. */
+    internal var _copiedNodes: [Node] = []
+    
     
     
     // -- PUBLIC VARS
@@ -238,18 +241,86 @@ public class Canvas: UIView {
     
     
     /** Exports the given nodes to a UIImage. */
-//    public static func export(nodes: [Node], size: CGSize) -> UIImage {
-//        UIGraphicsBeginImageContext(size)
-//
-//        for node in nodes {
-//            node.shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
-//        }
-//
-//        let img = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//
-//        return img ?? UIImage()
-//    }
+    public static func export(nodes: [Node], size: CGSize) -> UIImage {
+        UIGraphicsBeginImageContext(size)
+
+        for node in nodes {
+            let path = build(from: node.points, using: node.instructions, tool: node.type)
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.bounds = path.boundingBox
+            shapeLayer.path = path
+            shapeLayer.strokeColor = node.brush.strokeColor.cgColor
+            shapeLayer.fillRule = kCAFillRuleEvenOdd
+            shapeLayer.fillMode = kCAFillModeBoth
+            shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
+            shapeLayer.opacity = Float(node.brush.opacity)
+            shapeLayer.lineWidth = node.brush.thickness
+            shapeLayer.miterLimit = node.brush.miter
+            switch node.brush.shape {
+            case .butt:
+                shapeLayer.lineCap = kCALineCapButt
+                break
+            case .round:
+                shapeLayer.lineCap = kCALineCapRound
+                break
+            case .square:
+                shapeLayer.lineCap = kCALineCapSquare
+                break
+            }
+            switch node.brush.joinStyle {
+            case .bevel:
+                shapeLayer.lineJoin = kCALineJoinBevel
+                break
+            case .miter:
+                shapeLayer.lineJoin = kCALineJoinMiter
+                break
+            case .round:
+                shapeLayer.lineJoin = kCALineJoinRound
+                break
+            }
+            
+            var nPos = path.boundingBox.origin
+            nPos.x += path.boundingBox.width / 2
+            nPos.y += path.boundingBox.height / 2
+            shapeLayer.position = nPos
+            
+            shapeLayer.render(in: UIGraphicsGetCurrentContext()!)
+        }
+
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return img ?? UIImage()
+    }
+    
+    
+    
+    // -- COPY / PASTE --
+    
+    /** Copies a particular node so that it can be pasted later. */
+    public func copy(nodes: [Node]) {
+        _copiedNodes = nodes
+        self.delegate?.didCopyNodes(on: self, nodes: nodes)
+    }
+    
+    
+    /** Pastes the copied node on to the current layer. */
+    public func paste() {
+        guard let cl = currentLayer else { return }
+        cl.drawings.append(contentsOf: _copiedNodes)
+        setNeedsDisplay()
+        
+        undoRedoManager.add(undo: {
+            cl.drawings.removeLast()
+            return nil
+        }, redo: {
+            cl.drawings.append(contentsOf: self._copiedNodes)
+            return nil
+        })
+        
+        self.delegate?.didPasteNodes(on: self, on: cl, nodes: _copiedNodes)
+    }
+    
     
     
     
