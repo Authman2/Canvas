@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'Canvas+'
-    s.version          = '3.0.0'
+    s.version          = '3.0.1'
     s.summary          = 'A customizable painting canvas for iOS applications.'
     
     # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
     s.source           = { :git => 'https://github.com/authman2/Canvas.git', :tag => s.version.to_s }
     # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
     
-    s.ios.deployment_target = '9.0'
+    s.ios.deployment_target = '11.0'
     
     s.source_files = 'Canvas/Classes/**/*'
     

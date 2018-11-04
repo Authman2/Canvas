@@ -197,32 +197,32 @@ public class Canvas: UIView {
             shapeLayer.bounds = path.boundingBox
             shapeLayer.path = path
             shapeLayer.strokeColor = node.brush.strokeColor.cgColor
-            shapeLayer.fillRule = kCAFillRuleEvenOdd
-            shapeLayer.fillMode = kCAFillModeBoth
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
             shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
             shapeLayer.opacity = Float(node.brush.opacity)
             shapeLayer.lineWidth = node.brush.thickness
             shapeLayer.miterLimit = node.brush.miter
             switch node.brush.shape {
             case .butt:
-                shapeLayer.lineCap = kCALineCapButt
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
                 break
             case .round:
-                shapeLayer.lineCap = kCALineCapRound
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
                 break
             case .square:
-                shapeLayer.lineCap = kCALineCapSquare
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
                 break
             }
             switch node.brush.joinStyle {
             case .bevel:
-                shapeLayer.lineJoin = kCALineJoinBevel
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
                 break
             case .miter:
-                shapeLayer.lineJoin = kCALineJoinMiter
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
                 break
             case .round:
-                shapeLayer.lineJoin = kCALineJoinRound
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
                 break
             }
             
@@ -250,32 +250,32 @@ public class Canvas: UIView {
             shapeLayer.bounds = path.boundingBox
             shapeLayer.path = path
             shapeLayer.strokeColor = node.brush.strokeColor.cgColor
-            shapeLayer.fillRule = kCAFillRuleEvenOdd
-            shapeLayer.fillMode = kCAFillModeBoth
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
             shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
             shapeLayer.opacity = Float(node.brush.opacity)
             shapeLayer.lineWidth = node.brush.thickness
             shapeLayer.miterLimit = node.brush.miter
             switch node.brush.shape {
             case .butt:
-                shapeLayer.lineCap = kCALineCapButt
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
                 break
             case .round:
-                shapeLayer.lineCap = kCALineCapRound
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
                 break
             case .square:
-                shapeLayer.lineCap = kCALineCapSquare
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
                 break
             }
             switch node.brush.joinStyle {
             case .bevel:
-                shapeLayer.lineJoin = kCALineJoinBevel
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
                 break
             case .miter:
-                shapeLayer.lineJoin = kCALineJoinMiter
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
                 break
             case .round:
-                shapeLayer.lineJoin = kCALineJoinRound
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
                 break
             }
             
@@ -434,32 +434,32 @@ public class Canvas: UIView {
             shapeLayer.path = path
 //            shapeLayer.backgroundColor = UIColor.orange.cgColor
             shapeLayer.strokeColor = node.brush.strokeColor.cgColor
-            shapeLayer.fillRule = kCAFillRuleEvenOdd
-            shapeLayer.fillMode = kCAFillModeBoth
+            shapeLayer.fillRule = CAShapeLayerFillRule.evenOdd
+            shapeLayer.fillMode = CAMediaTimingFillMode.both
             shapeLayer.fillColor = node.brush.fillColor?.cgColor ?? nil
             shapeLayer.opacity = Float(node.brush.opacity)
             shapeLayer.lineWidth = node.brush.thickness
             shapeLayer.miterLimit = node.brush.miter
             switch node.brush.shape {
             case .butt:
-                shapeLayer.lineCap = kCALineCapButt
+                shapeLayer.lineCap = CAShapeLayerLineCap.butt
                 break
             case .round:
-                shapeLayer.lineCap = kCALineCapRound
+                shapeLayer.lineCap = CAShapeLayerLineCap.round
                 break
             case .square:
-                shapeLayer.lineCap = kCALineCapSquare
+                shapeLayer.lineCap = CAShapeLayerLineCap.square
                 break
             }
             switch node.brush.joinStyle {
             case .bevel:
-                shapeLayer.lineJoin = kCALineJoinBevel
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
                 break
             case .miter:
-                shapeLayer.lineJoin = kCALineJoinMiter
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.miter
                 break
             case .round:
-                shapeLayer.lineJoin = kCALineJoinRound
+                shapeLayer.lineJoin = CAShapeLayerLineJoin.round
                 break
             }
             
