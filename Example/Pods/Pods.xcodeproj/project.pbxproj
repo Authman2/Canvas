@@ -21,6 +21,7 @@
 		5A348D0E218E2613009056BC /* UIImage+Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A348D0D218E2613009056BC /* UIImage+Properties.swift */; };
 		5A5C1C17218D62E1003C9CFE /* UndoRedoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5C1C16218D62E1003C9CFE /* UndoRedoManager.swift */; };
 		5A7BE850218A1C980016B99A /* CGPoint+RelativeLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */; };
+		5A8D1DEA218EAB8B00F3A25E /* UITouch+Translation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8D1DE9218EAB8B00F3A25E /* UITouch+Translation.swift */; };
 		5AE1820D218BEB0D000EF323 /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */; };
 		5AE1820F218BEB2E000EF323 /* Canvas+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE1820E218BEB2E000EF323 /* Canvas+Color.swift */; };
 		5AE18211218BEEB3000EF323 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE18210218BEEB3000EF323 /* Helpers.swift */; };
@@ -65,6 +66,7 @@
 		5A348D0D218E2613009056BC /* UIImage+Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIImage+Properties.swift"; path = "Canvas/Classes/UIImage+Properties.swift"; sourceTree = "<group>"; };
 		5A5C1C16218D62E1003C9CFE /* UndoRedoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UndoRedoManager.swift; path = Canvas/Classes/UndoRedoManager.swift; sourceTree = "<group>"; };
 		5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CGPoint+RelativeLocation.swift"; path = "Canvas/Classes/CGPoint+RelativeLocation.swift"; sourceTree = "<group>"; };
+		5A8D1DE9218EAB8B00F3A25E /* UITouch+Translation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UITouch+Translation.swift"; path = "Canvas/Classes/UITouch+Translation.swift"; sourceTree = "<group>"; };
 		5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIColor+RGB.swift"; path = "Canvas/Classes/UIColor+RGB.swift"; sourceTree = "<group>"; };
 		5AE1820E218BEB2E000EF323 /* Canvas+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+Color.swift"; path = "Canvas/Classes/Canvas+Color.swift"; sourceTree = "<group>"; };
 		5AE18210218BEEB3000EF323 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Helpers.swift; path = Canvas/Classes/Helpers.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				5A7BE84F218A1C980016B99A /* CGPoint+RelativeLocation.swift */,
 				5AE1820C218BEB0D000EF323 /* UIColor+RGB.swift */,
 				5A348D0D218E2613009056BC /* UIImage+Properties.swift */,
+				5A8D1DE9218EAB8B00F3A25E /* UITouch+Translation.swift */,
 				EC48D0C32BB19E6ECFE12FCCB118CCE6 /* Pod */,
 				4EAF8B9810D832A8FA7B2CC9547EB64D /* Support Files */,
 			);
@@ -408,6 +411,7 @@
 				5A191B94216A7DDD008CC5F0 /* Canvas+Other.swift in Sources */,
 				5A191B8A216A76A2008CC5F0 /* Enums.swift in Sources */,
 				5A348D0E218E2613009056BC /* UIImage+Properties.swift in Sources */,
+				5A8D1DEA218EAB8B00F3A25E /* UITouch+Translation.swift in Sources */,
 				5AE18211218BEEB3000EF323 /* Helpers.swift in Sources */,
 				5AE19D61216BD2C10051CDAE /* Canvas+Paths.swift in Sources */,
 			);

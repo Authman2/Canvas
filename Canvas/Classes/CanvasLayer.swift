@@ -24,6 +24,10 @@ public class CanvasLayer {
     /** The type of layer this is: raster or vector. */
     internal var type: LayerType = .raster
     
+    /** The nodes on this layer that are selected. */
+    internal var selectedNodes: [Node] = []
+    
+    
     
     
     // -- PUBLIC VARS

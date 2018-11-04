@@ -354,6 +354,25 @@ public class Canvas: UIView {
             }
         }
         
+        // 2.5.) If there are node that are selected, draw the selection box.
+        if let currLayer = self.currentLayer {
+            guard let context = UIGraphicsGetCurrentContext() else { return }
+            for node in currLayer.selectedNodes {
+                let path = build(from: node.points, using: node.instructions, tool: node.type)
+                
+                context.addPath(path)
+                context.setLineCap(.butt)
+                context.setLineJoin(.miter)
+                context.setLineWidth(1)
+                context.setMiterLimit(1)
+                context.setAlpha(1)
+                context.setBlendMode(.normal)
+                context.setStrokeColor(UIColor.black.cgColor)
+                context.setLineDash(phase: 0, lengths: [10, 10])
+                context.stroke(path.boundingBox)
+            }
+        }
+        
         // 3.) Draw the temporary drawing.
         guard let next = nextNode else { return }
         guard let context = UIGraphicsGetCurrentContext() else { return }
@@ -365,6 +384,10 @@ public class Canvas: UIView {
         context.setStrokeColor(self.currentBrush.strokeColor.cgColor)
         context.setMiterLimit(self._currentBrush.miter)
         context.setAlpha(self._currentBrush.opacity)
+        if _currentTool == .selection {
+            context.setLineWidth(1)
+            context.setLineDash(phase: 0, lengths: [10, 10])
+        }
         context.setBlendMode(.normal)
         context.strokePath()
     }

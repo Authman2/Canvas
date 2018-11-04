@@ -13,14 +13,14 @@ public func build(from points: [[CGPoint]], using instructions: [CGPathElementTy
     mutablePath.move(to: points[0][0])
     
     // Handle rectangles and ellipses.
-    if tool == .rectangle || tool == .ellipse {        
+    if tool == .rectangle || tool == .ellipse {
         let first = points[0][0]
         let last = points[0][1]
         let w = last.x - first.x
         let h = last.y - first.y
         let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
         
-        if tool == .rectangle {
+        if tool == .rectangle || tool == .selection {
             mutablePath.addRect(dest)
         } else if tool == .ellipse {
             mutablePath.addEllipse(in: dest)

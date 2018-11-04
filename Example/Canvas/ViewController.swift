@@ -194,6 +194,9 @@ class ViewController: UIViewController, CanvasEvents, UINavigationControllerDele
     }
     
     func didFinishDrawing(on canvas: Canvas) {
+        if canvas.canvasLayers[0].nodeCount >= 4 {
+            canvas.currentTool = .selection
+        }
     }
     
     func didSampleColor(on canvas: Canvas, sampledColor color: UIColor) {

@@ -27,12 +27,13 @@ public enum LayerPosition: Int {
 /** The type of tool to use when drawing on the canvas. */
 public enum CanvasTool: Int {
     case pen = 0
-    case eraser = 1 // todo
+    case eraser = 1
     case line = 2
     case rectangle = 3
     case ellipse = 4
-    case paint = 5 // todo
+    case paint = 5
     case eyedropper = 6
+    case selection = 7
 }
 
 

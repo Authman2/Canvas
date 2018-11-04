@@ -177,6 +177,10 @@ extension Canvas {
         lastLastPoint = lastPoint
         lastPoint = touch.previousLocation(in: self)
         
+        // 1.5) Calculate the translation of the touch.
+        touch.deltaX = currentPoint.x - lastPoint.x
+        touch.deltaY = currentPoint.y - lastPoint.y
+        
         // 2.) Depending on the tool, add points and instructions for drawing.
         switch _currentTool {
         case .pen:
@@ -274,6 +278,38 @@ extension Canvas {
             next.points.append([tempFirst, currentPoint])
             next.instructions.append(CGPathElementType.addLineToPoint)
             break
+        case .selection:
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let tempFirst = next.points[0][0]
+                next.points.removeAll()
+                next.instructions.removeAll()
+                
+                next.points.append([tempFirst, currentPoint])
+                next.instructions.append(CGPathElementType.addLineToPoint)
+            } else {
+                for node in currLayer.selectedNodes {
+                    // See if the current point is within the node's bounding box.
+                    let path = build(from: node.points, using: node.instructions, tool: node.type)
+                    if !path.boundingBox.contains(currentPoint) { continue }
+                    
+                    // Move the points by the selection translation amount.
+                    let nPoints = node.points.map { (points: [CGPoint]) -> [CGPoint] in
+                        var nP = points
+                        for i in 0..<points.count {
+                            nP[i].x += touch.deltaX
+                            nP[i].y += touch.deltaY
+                        }
+                        return nP
+                    }
+                    
+                    // Set the new points.
+                    print(node.points)
+                    node.points = nPoints
+                    print(node.points)
+                }
+            }
+            break
         default:
             break
         }
@@ -292,7 +328,22 @@ extension Canvas {
         if allTouches.count > 1 { return }
         if currLayer.allowsDrawing == false { return }
         
-        finishDrawing()
+        if _currentTool == .selection {
+            if currLayer.selectedNodes.count == 0 {
+                guard let next = nextNode else { return }
+                let first = next.points[0][0]
+                let last = next.points[0][1]
+                let w = last.x - first.x
+                let h = last.y - first.y
+                let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
+            
+                handleSelection(with: dest)
+                nextNode = nil
+                setNeedsDisplay()
+            }
+        } else {
+            finishDrawing()
+        }
     }
     
     public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -302,7 +353,20 @@ extension Canvas {
         if allTouches.count > 1 { return }
         if currLayer.allowsDrawing == false { return }
         
-        finishDrawing()
+        if _currentTool == .selection {
+            guard let next = nextNode else { return }
+            let first = next.points[0][0]
+            let last = next.points[0][1]
+            let w = last.x - first.x
+            let h = last.y - first.y
+            let dest = CGRect(x: first.x, y: first.y, width: w, height: h)
+            
+            handleSelection(with: dest)
+            nextNode = nil
+            setNeedsDisplay()
+        } else {
+            finishDrawing()
+        }
     }
     
 }
