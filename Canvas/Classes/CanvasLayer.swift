@@ -49,6 +49,13 @@ public class CanvasLayer {
     }
     
     
+    /** All of the nodes on this layer. */
+    public var nodes: [Node] {
+        return self.drawings
+    }
+    
+    
+    
     
     
     
@@ -85,6 +92,34 @@ public class CanvasLayer {
         drawings.append(node)
         canvas.setNeedsDisplay()
     }
+    
+    
+    /** Returns the node at the given index. */
+    public func get(at: Int) -> Node? {
+        if at < 0 || at >= drawings.count { return nil }
+        return drawings[at]
+    }
+    
+    
+    /** Selects the given nodes on this layer. */
+    public func select(nodes: [Node], on canvas: Canvas) {
+        self.selectedNodes = nodes
+        canvas.setNeedsDisplay()
+    }
+    
+    
+    /** Returns the nodes that are selected. */
+    public func getSelectedNodes() -> [Node] {
+        return self.selectedNodes
+    }
+    
+    
+    /** Removes the node at the given index from this layer. */
+    public func removeNode(at: Int) -> Node {
+        let n = self.drawings.remove(at: at)
+        return n
+    }
+    
     
     
     

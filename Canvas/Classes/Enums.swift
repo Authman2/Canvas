@@ -51,3 +51,23 @@ public enum EyedropperOptions {
     case stroke
     case fill
 }
+
+
+/** Coding keys for brush. */
+public enum BrushCodingKeys: CodingKey {
+    case strokeColor
+    case fillColor
+    case thickness
+    case opacity
+    case miter
+    case shape
+    case join
+}
+
+/** Coding keys for node. */
+public enum NodeCodingKeys: CodingKey {
+    case type
+    case points
+    case instructions
+    case brush
+}

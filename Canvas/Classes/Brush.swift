@@ -8,7 +8,7 @@
 import Foundation
 
 /** A Brush defines the styling for how things should be drawn on the canvas. */
-public struct Brush {
+public struct Brush: Codable {
     
     /************************
      *                      *
@@ -74,6 +74,22 @@ public struct Brush {
      *                      *
      ************************/
     
+    public init(from decoder: Decoder) throws {
+        let container = try? decoder.container(keyedBy: BrushCodingKeys.self)
+        thickness = try container?.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.thickness) ?? 5
+        opacity = try container?.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.opacity) ?? 1
+        miter = try container?.decodeIfPresent(CGFloat.self, forKey: BrushCodingKeys.miter) ?? 1
+        shape = CGLineCap(rawValue: try container?.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.shape) ?? 1) ?? .round
+        joinStyle = CGLineJoin(rawValue: try container?.decodeIfPresent(Int32.self, forKey: BrushCodingKeys.join) ?? 1) ?? .round
+        
+        let sc = try container?.decodeIfPresent([CGFloat].self, forKey: BrushCodingKeys.strokeColor) ?? [0,0,0,1]
+        let fc = try container?.decodeIfPresent([CGFloat].self, forKey: BrushCodingKeys.fillColor) ?? nil
+        
+        strokeColor = UIColor(red: sc[0]/255, green: sc[1]/255, blue: sc[2]/255, alpha: sc[3])
+        if fc != nil { fillColor = UIColor(red: fc![0]/255, green: fc![1]/255, blue: fc![2]/255, alpha: fc![3]) }
+        else { fillColor = nil }
+    }
+    
     /** Creates a basic Brush that is colored black, has a thickness of 2, and a round line cap. */
     public init() {
         strokeColor = UIColor.black
@@ -93,5 +109,16 @@ public struct Brush {
      *       FUNCTIONS      *
      *                      *
      ************************/
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: BrushCodingKeys.self)
+        try container.encode(strokeColor.rgba, forKey: BrushCodingKeys.strokeColor)
+        if fillColor != nil { try container.encode(fillColor!.rgba, forKey: BrushCodingKeys.fillColor) }
+        try container.encode(thickness, forKey: BrushCodingKeys.thickness)
+        try container.encode(opacity, forKey: BrushCodingKeys.opacity)
+        try container.encode(miter, forKey: BrushCodingKeys.miter)
+        try container.encode(shape.rawValue, forKey: BrushCodingKeys.shape)
+        try container.encode(joinStyle.rawValue, forKey: BrushCodingKeys.join)
+    }
     
 }

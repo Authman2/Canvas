@@ -311,7 +311,9 @@ public class Canvas: UIView {
         setNeedsDisplay()
         
         undoRedoManager.add(undo: {
-            cl.drawings.removeLast()
+            if cl.drawings.count > 0 {
+                cl.drawings.removeLast()
+            }
             return nil
         }, redo: {
             cl.drawings.append(contentsOf: self._copiedNodes)

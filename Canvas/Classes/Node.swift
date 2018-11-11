@@ -8,7 +8,7 @@
 import Foundation
 
 /** A point, line, shape, etc. that exists on a layer of the canvas. */
-public class Node {
+public class Node: Codable {
     
     /************************
      *                      *
@@ -45,6 +45,17 @@ public class Node {
      *                      *
      ************************/
     
+    public required init(from decoder: Decoder) throws {
+        let container = try? decoder.container(keyedBy: NodeCodingKeys.self)
+        let _type = try container?.decodeIfPresent(Int.self, forKey: NodeCodingKeys.type) ?? 0
+        let _instructions = try container?.decodeIfPresent([Int32].self, forKey: NodeCodingKeys.instructions)
+        
+        type = CanvasTool(rawValue: _type) ?? .pen
+        points = try container?.decodeIfPresent([[CGPoint]].self, forKey: NodeCodingKeys.points) ?? []
+        instructions = _instructions?.map({ (rv) -> CGPathElementType in return CGPathElementType(rawValue: rv) ?? .moveToPoint }) ?? []
+        brush = try container?.decodeIfPresent(Brush.self, forKey: NodeCodingKeys.brush) ?? .Default
+    }
+    
     public init(type: CanvasTool) {
         self.type = type
     }
@@ -67,5 +78,12 @@ public class Node {
      *                      *
      ************************/
     
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: NodeCodingKeys.self)
+        try container.encode(type.rawValue, forKey: NodeCodingKeys.type)
+        try container.encode(points, forKey: NodeCodingKeys.points)
+        try container.encode(instructions.map { return $0.rawValue }, forKey: NodeCodingKeys.instructions)
+        try container.encode(brush, forKey: NodeCodingKeys.brush)
+    }
     
 }

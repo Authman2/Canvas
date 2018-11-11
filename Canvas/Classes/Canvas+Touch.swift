@@ -24,7 +24,10 @@ extension Canvas {
             
             // Undo/Redo.
             undoRedoManager.add(undo: {
-                currLayer.drawings.removeLast()
+                if currLayer.drawings.count > 0 {
+                    currLayer.drawings.removeLast()
+                }
+                return nil
             }, redo: {
                 currLayer.drawings.append(next)
             })
@@ -263,8 +266,12 @@ extension Canvas {
                             touchingNodes[key as? Int ?? 0].instructions.insert(savedI, at: i)
                             return nil
                         }, redo: {
-                            touchingNodes[key as? Int ?? 0].points.remove(at: i)
-                            touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
+                            if touchingNodes[key as? Int ?? 0].points.count > i {
+                                touchingNodes[key as? Int ?? 0].points.remove(at: i)
+                            }
+                            if touchingNodes[key as? Int ?? 0].instructions.count > i {
+                                touchingNodes[key as? Int ?? 0].instructions.remove(at: i)
+                            }
                             return nil
                         })
                         undoRedoManager.clearRedos()
